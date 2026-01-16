@@ -92,7 +92,7 @@ public final class Constants {
   }
 
   /**
-   * Vision and PhotonVision Constants for 2025 Reefscape
+   * Vision and PhotonVision Constants for 2026 Rebuilt
    * 
    * Contains all configuration for AprilTag detection, pose estimation,
    * and vision-based autonomous alignment.

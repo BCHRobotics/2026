@@ -26,7 +26,7 @@ public class RobotContainer {
      * Vision subsystem for AprilTag detection and pose estimation.
      * 
      * Integrates PhotonVision with the drivetrain to provide vision-based
-     * localization using the 2025 Reefscape AprilTag field layout.
+     * localization using the 2026 Rebuilt AprilTag field layout.
      * 
      * IMPORTANT: Requires PhotonVision to be running on a coprocessor and
      * camera configuration to be completed in VisionConstants.

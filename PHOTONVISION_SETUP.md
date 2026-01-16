@@ -1,6 +1,6 @@
-# PhotonVision Setup Guide - 2025 Reefscape
+# PhotonVision Setup Guide - 2026 Rebuilt
 
-This guide walks you through setting up PhotonVision for AprilTag detection and pose estimation on your FRC robot for the 2025 Reefscape game.
+This guide walks you through setting up PhotonVision for AprilTag detection and pose estimation on your FRC robot for the 2026 Rebuilt game.
 
 ## Table of Contents
 1. [Hardware Requirements](#hardware-requirements)
@@ -88,7 +88,7 @@ This guide walks you through setting up PhotonVision for AprilTag detection and 
    - **Resolution**: 1280x720 (good balance) or 640x480 (faster)
    - **FPS**: 30-60 (higher is better, but depends on camera)
    - **Exposure**: Auto or manual (tune for your lighting)
-   - **Tag Family**: 36h11 (standard for FRC 2025)
+   - **Tag Family**: 36h11 (standard for FRC 2026)
 
 ### 3. Camera Calibration
 **Critical for accurate pose estimation!**
@@ -243,7 +243,7 @@ For autonomous alignment to AprilTags:
    - Verify at least 1 tag visible from most locations
    - Identify "blind spots" where no tags are visible
 
-### 2025 Reefscape Tag Locations
+### 2026 Rebuilt Tag Locations
 - **Blue Alliance**: Tags 1-8
 - **Red Alliance**: Tags 9-16
 
@@ -274,7 +274,7 @@ Common tag IDs:
 - Adjust camera exposure
 - Ensure AprilTags are properly printed and mounted
 - Check if camera lens is clean
-- Verify correct tag family (36h11 for FRC 2025)
+- Verify correct tag family (36h11 for FRC 2026)
 
 ### Pose Estimates are Inaccurate
 - **Recalibrate camera** (most common issue)
@@ -312,7 +312,7 @@ Common tag IDs:
 ### Official Documentation
 - PhotonVision Docs: https://docs.photonvision.org/
 - WPILib Pose Estimation: https://docs.wpilib.org/en/stable/docs/software/vision/pose-estimation.html
-- 2025 Game Manual: https://www.firstinspires.org/resource-library/frc/competition-manual-qa-system
+- 2026 Game Manual: https://www.firstinspires.org/resource-library/frc/competition-manual-qa-system
 
 ### Community Resources
 - Chief Delphi: https://www.chiefdelphi.com/
@@ -339,4 +339,4 @@ Common tag IDs:
 
 ---
 
-**Good luck with your 2025 season! 🤖**
+**Good luck with your 2026 season! 🤖**

@@ -1,10 +1,10 @@
 /*
  * Vision.java
  * 
- * Multi-Camera PhotonVision Subsystem for FRC 2025 Reefscape
+ * Multi-Camera PhotonVision Subsystem for FRC 2026 Rebuilt
  * 
  * This subsystem manages vision processing using PhotonVision for AprilTag detection
- * and robot localization on the 2025 Reefscape field. It integrates with the drivetrain's
+ * and robot localization on the 2026 Rebuilt field. It integrates with the drivetrain's
  * odometry system to provide accurate pose estimation.
  * 
  * Key Features:
@@ -29,10 +29,11 @@
  * - Calibrate and set robot-to-camera transforms in VisionConstants.kRobotToCams
  * - Tune vision standard deviations in VisionConstants for your specific setup
  * 
- * 2025 Reefscape AprilTag Layout:
+ * TODO: FIXME: Update AprilTagFieldLayout to 2026 Rebuilt once available in WPILib
+ * 2026 Rebuilt AprilTag Layout:
  * - Blue Alliance: Tags 1-8
  * - Red Alliance: Tags 9-16
- * - See official 2025 game manual for exact positions
+ * - See official 2026 game manual for exact positions
  * 
  * @see Drivetrain For odometry integration
  * @see VisionConstants For camera configuration
@@ -92,10 +93,10 @@ public class Vision extends SubsystemBase {
     private final List<CameraModule> cameraModules = new ArrayList<>();
     
     /**
-     * 2025 Reefscape field layout with AprilTag positions.
+     * 2026 Rebuilt field layout with AprilTag positions.
      * 
      * Loaded from WPILib's built-in field layouts. Contains precise 3D positions
-     * of all 16 AprilTags on the 2025 field.
+     * of all AprilTags on the 2026 field.
      */
     private final AprilTagFieldLayout aprilTagFieldLayout;
     
@@ -117,7 +118,7 @@ public class Vision extends SubsystemBase {
     /**
      * Creates a new Vision subsystem with multi-camera support.
      * 
-     * Initializes all enabled PhotonVision cameras, loads the 2025 Reefscape AprilTag
+     * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
      * field layout, and sets up pose estimators for each camera with their configured transforms.
      * 
      * Only cameras with kCamerasEnabled[i] = true will be initialized.
@@ -127,8 +128,8 @@ public class Vision extends SubsystemBase {
     public Vision(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
         
-        // Load 2025 Reefscape AprilTag field layout
-        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        // Load 2026 Rebuilt AprilTag field layout
+        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
         
         // Initialize each enabled camera
         for (int i = 0; i < VisionConstants.kNumCameras && i < VisionConstants.kCamerasEnabled.length; i++) {
@@ -218,7 +219,7 @@ public class Vision extends SubsystemBase {
      * @return Optional containing the estimated pose if available and valid, empty otherwise
      */
     private Optional<EstimatedRobotPose> getEstimatedGlobalPose(CameraModule module) {
-        // Get latest result from camera (2025 API uses getAllUnreadResults())
+        // Get latest result from camera (2026 API uses getAllUnreadResults())
         var results = module.camera.getAllUnreadResults();
         if (results.isEmpty()) {
             return Optional.empty();
@@ -269,7 +270,7 @@ public class Vision extends SubsystemBase {
      * @return 3x1 matrix of standard deviations [x, y, theta] in meters/radians
      */
     private Matrix<N3, N1> getEstimationStdDevs(CameraModule module, Pose2d estimatedPose) {
-        // Get latest camera result (2025 API)
+        // Get latest camera result (2026 API)
         var results = module.camera.getAllUnreadResults();
         if (results.isEmpty()) {
             // No results available, return default single-tag stddevs
@@ -406,7 +407,7 @@ public class Vision extends SubsystemBase {
      * 
      * Useful for calculating distances to specific tags or getting tag poses.
      * 
-     * @return The 2025 Reefscape AprilTag field layout
+     * @return The 2026 Rebuilt AprilTag field layout
      */
     public AprilTagFieldLayout getFieldLayout() {
         return aprilTagFieldLayout;
