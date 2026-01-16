@@ -21,7 +21,7 @@ This is the robot control software for FRC Team 2386's competition robot, built 
 ### 1.3 Competition Context
 - **Season**: 2026 FRC Season
 - **Team**: 2386 (BCHRobotics)
-- **Framework**: WPILib 2026.1.1 Command-Based Architecture
+- **Framework**: WPILib 2026.2.1 Command-Based Architecture
 - **Language**: Java 17
 
 ## 2. System Architecture
@@ -280,15 +280,15 @@ src/main/java/frc/
 ## 7. Software Dependencies
 
 ### 7.1 Core Framework
-- **WPILib**: 2026.1.1 (GradleRIO plugin)
+- **WPILib**: 2026.2.1 (GradleRIO plugin)
 - **Java**: 17 (source and target compatibility)
 - **Gradle**: 8.11 (build system)
 
 ### 7.2 Vendor Libraries
-- **REVLib**: SPARK MAX motor controllers
-- **PhotonLib**: Vision processing (v2025.3.1)
-- **PathPlannerLib**: Autonomous path planning (v2025.2.7)
-- **Studica**: NavX IMU (2025.0.1)
+- **REVLib**: SPARK MAX motor controllers (2026.0.0)
+- **PhotonLib**: Vision processing (v2026.0.1-beta)
+- **PathPlannerLib**: Autonomous path planning (2026.1.2)
+- **Studica**: NavX IMU (2026.0.0)
 
 ## 8. Control Interface
 
