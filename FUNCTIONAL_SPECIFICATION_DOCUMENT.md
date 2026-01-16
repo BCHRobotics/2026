@@ -1,8 +1,8 @@
 # FRC Team 2386 Robot Control System - Functional Specification Document
 
 ## Document Information
-- **Document Version**: 1.0
-- **Date**: January 12, 2026
+- **Document Version**: 1.1
+- **Date**: January 16, 2026
 - **Project**: FRC Team 2386 Robot Code (2026 Season)
 - **Purpose**: Comprehensive specification for AI agents to understand and extend the robot control system
 
@@ -38,30 +38,31 @@ The system follows WPILib's Command-Based Programming paradigm:
 ```
 src/main/java/frc/
 ├── robot/
-│   ├── Main.java              # JVM entry point
-│   ├── Robot.java             # Main robot class
-│   ├── RobotContainer.java    # Command binding and subsystem initialization
-│   ├── Constants.java         # All configuration constants
-│   ├── commands/              # Command implementations
-│   │   ├── actuator/          # Actuator control commands
-│   │   ├── auto/              # Autonomous commands
-│   │   ├── ballintake/        # Ball intake control commands
-│   │   ├── drive/             # Drive control commands
-│   │   ├── drivetrain/        # Drivetrain commands
-│   │   └── vision/            # Vision commands
-│   └── subsystems/            # Hardware subsystems
-│       ├── Actuator.java      # SPARK MAX PID actuator
-│       ├── Actuator2.java     # WPILib PID actuator
-│       ├── BallIntake.java    # Ball intake subsystem
-│       ├── Drivetrain.java    # Swerve drive subsystem
-│       ├── MAXSwerveModule.java # Individual swerve module
-│       └── Vision.java        # PhotonVision integration
-└── utils/                     # Utility classes
-    ├── AutoUtils.java         # Autonomous helpers
-    ├── DT/                    # Drive/navigation tools
-    ├── M/                     # Math utilities
-    ├── MathUtils.java         # General math functions
-    └── SwerveUtils.java       # Swerve-specific utilities
+│   ├── Configs.java                 # WPILib configuration utilities for motor controllers for motor controllers
+│   ├── Main.java                    # JVM entry point
+│   ├── Robot.java                   # Main robot class
+│   ├── RobotContainer.java          # Command binding and subsystem initialization
+│   ├── Constants.java               # All configuration constants
+│   ├── commands/                    # Command implementations
+│   │   ├── actuator/                # Actuator control commands
+│   │   ├── auto/                    # Autonomous commands
+│   │   ├── ballintake/              # Ball intake control commands
+│   │   ├── drive/                   # Drive control commands
+│   │   ├── drivetrain/              # Drivetrain commands
+│   │   └── vision/                  # Vision commands
+│   └── subsystems/                  # Hardware subsystems
+│       ├── Actuator.java            # SPARK MAX PID actuator
+│       ├── Actuator2.java           # WPILib PID actuator
+│       ├── BallIntake.java          # Ball intake subsystem
+│       ├── Drivetrain.java          # Swerve drive subsystem
+│       ├── MAXSwerveModule.java     # Individual swerve module
+│       └── Vision.java              # PhotonVision integration
+└── utils/                           # Utility classes
+    ├── AutoUtils.java               # Autonomous helpers
+    ├── DT/                          # Drive/navigation tools
+    ├── M/                           # Math utilities
+    ├── MathUtils.java               # General math functions
+    └── SwerveUtils.java             # Swerve-specific utilities
 ```
 
 ## 3. Subsystem Specifications
@@ -77,7 +78,7 @@ src/main/java/frc/
 - Autonomous path following via PathPlanner
 
 **Key Methods**:
-- `drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative)`: Manual drive control
+- `drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)`: Manual drive control with rate limiting option
 - `setModuleStates(SwerveModuleState[] desiredStates)`: Direct module control
 - `resetOdometry(Pose2d pose)`: Reset position tracking
 - `getPose()`: Get current robot pose
@@ -100,10 +101,10 @@ src/main/java/frc/
 - Dynamic trust adjustment based on distance/tag count
 
 **Key Methods**:
-- `getEstimatedGlobalPose()`: Get vision-based robot pose
-- `getPoseEstimator()`: Access pose estimator for odometry fusion
-- `updateVisionMeasurements()`: Process latest camera data
-- `getTargetPose(int tagId)`: Get specific AprilTag pose
+- `getCamera(int index)`: Get specific camera instance
+- `getCameraModules()`: Get list of all camera modules
+- `getActiveCameraCount()`: Get number of active cameras
+- `getFieldLayout()`: Get AprilTag field layout
 
 **Configuration Constants** (VisionConstants):
 - Camera names and enable/disable flags
@@ -122,10 +123,13 @@ src/main/java/frc/
 - Preset position management
 
 **Key Methods**:
-- `setPosition(double position)`: Set target position
-- `setSpeed(double speed)`: Manual speed control
-- `resetEncoder()`: Zero encoder at known position
-- `getPosition()`: Get current position
+- `setPosition(double position)`: Set target position with PID control
+- `setManualSpeed(double speed)`: Direct speed control (bypasses PID)
+- `stop()`: Stop motor immediately
+- `getPosition()`: Get current encoder position
+- `getVelocity()`: Get current velocity
+- `atSetpoint()`: Check if at target position
+- `resetPosition()`: Reset encoder position
 
 **Configuration Constants** (ActuatorConstants):
 - CAN ID and motor configuration
@@ -294,21 +298,25 @@ src/main/java/frc/
 
 ### 8.1 Driver Controls (Xbox Controller - Port 0)
 **Drive**:
-- Left Stick: Translation (X/Y)
-- Right Stick: Rotation (Z)
+- Left Stick: Translation (X/Y) - Forward/backward and strafe
+- Right Stick X: Rotation (Z)
 - Field-oriented with slew rate limiting
 
 **Actuator 1 (SPARK MAX PID)**:
-- Right Stick Y: Manual control
-- A Button: Home position
+- A Button: Home position (retracted)
 - B Button: Mid position
-- Y Button: Max position
+- Y Button: Max position (extended)
 - X Button: Reset encoder
 
 **Actuator 2 (WPILib PID)**:
-- Left/Right Bumpers: Manual control
-- D-Pad: Preset positions
+- Left/Right Bumpers: Manual control (extend/retract while held)
+- D-Pad Down: Home position
+- D-Pad Left/Right: Mid position
+- D-Pad Up: Max position
 - Back Button: Reset encoder
+
+**Vision**:
+- Start Button: Align to AprilTag (while held, 5s timeout)
 
 **Ball Intake**:
 - Left Bumper: Intake balls (while held)
