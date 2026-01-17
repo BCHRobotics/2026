@@ -57,7 +57,7 @@ public class Drivetrain extends SubsystemBase {
   private double m_currentTranslationMag = 0.0;
 
   // A percentage value (0-1) for the linear speed of the robot
-  private double m_maxSpeed = 0.0;
+  private double m_maxSpeed = 0.2;
 
   // slew rates (basically ramp rates?) for the swerve drive
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);

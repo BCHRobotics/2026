@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 
 public class RobotContainer {
     // Subsystems
@@ -58,7 +58,7 @@ public class RobotContainer {
     private final BallIntake m_ballIntake = new BallIntake();
 
     // Controllers
-    CommandXboxController driverController_XBOX = new CommandXboxController(OIConstants.kMainControllerPort);
+    CommandPS5Controller driverController = new CommandPS5Controller(OIConstants.kMainControllerPort);
     
     // Autonomous chooser
     private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
@@ -89,9 +89,9 @@ public class RobotContainer {
         m_robotDrive.setDefaultCommand(
             new TeleopDriveCommand(
                 m_robotDrive,
-                () -> -driverController_XBOX.getLeftY(),    // Forward/backward (inverted)
-                () -> -driverController_XBOX.getLeftX(),    // Left/right (inverted)
-                () -> -driverController_XBOX.getRightX(),   // Rotation (inverted)
+                () -> -driverController.getLeftY(),    // Forward/backward (inverted)
+                () -> -driverController.getLeftX(),    // Left/right (inverted)
+                () -> -driverController.getRightX(),   // Rotation (inverted)
                 OIConstants.kFieldRelative,                 // Field-relative driving
                 OIConstants.kRateLimited                    // Enable slew rate limiting
             )
@@ -109,8 +109,13 @@ public class RobotContainer {
      * - Button bindings for preset positions
      * - Manual override controls
      * 
-     * Actuator 1: Right stick Y-axis, A/B/Y/X buttons
-     * Actuator 2: D-pad for preset positions, Left/Right bumpers for manual
+     * PS5 Controller Layout:
+     * - Left/Right Sticks: Drive and Actuator 1 manual control
+     * - Cross/Circle/Triangle/Square: Actuator 1 preset positions
+     * - D-Pad: Actuator 2 preset positions
+     * - L1/R1: Ball Intake control
+     * - L2/R2: Actuator 2 manual control
+     * - Create/Options: Special functions
      */
     private void configureBindings() {
         // ========== Actuator 1 Default Command: Manual Control ==========
@@ -118,7 +123,7 @@ public class RobotContainer {
         m_actuator.setDefaultCommand(
             Commands.run(
                 () -> {
-                    double speed = -driverController_XBOX.getRightY(); // Invert Y axis (up = positive)
+                    double speed = -driverController.getRightY(); // Invert Y axis (up = positive)
                     // Apply deadband to prevent drift
                     speed = MathUtil.applyDeadband(speed, ActuatorConstants.kManualDeadband);
                     // Scale speed for finer control
@@ -132,43 +137,43 @@ public class RobotContainer {
         
         // ========== Actuator 1 Preset Position Buttons ==========
         
-        // A button: Move to home position (retracted)
-        driverController_XBOX.a().onTrue(
+        // Cross button (PS5): Move to home position (retracted)
+        driverController.cross().onTrue(
             Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kHomePosition), m_actuator)
                     .withName("Actuator Home")
         );
         
-        // B button: Move to mid position
-        driverController_XBOX.b().onTrue(
+        // Circle button (PS5): Move to mid position
+        driverController.circle().onTrue(
             Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kMidPosition), m_actuator)
                     .withName("Actuator Mid")
         );
         
-        // Y button: Move to max extension position
-        driverController_XBOX.y().onTrue(
+        // Triangle button (PS5): Move to max extension position
+        driverController.triangle().onTrue(
             Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kMaxPosition), m_actuator)
                     .withName("Actuator Max")
         );
         
-        // X button: Reset encoder to zero (run when at known home position)
-        driverController_XBOX.x().onTrue(
+        // Square button (PS5): Reset encoder to zero (run when at known home position)
+        driverController.square().onTrue(
             Commands.runOnce(() -> m_actuator.resetPosition(), m_actuator)
                     .withName("Reset Actuator Encoder")
         );
         
         // ========== Actuator 2 Manual Control ==========
-        // Left and Right bumpers for manual control
+        // L2 and R2 triggers for manual control
         m_actuator2.setDefaultCommand(
             Commands.run(
                 () -> {
                     double speed = 0;
                     
-                    // Right bumper = extend
-                    if (driverController_XBOX.rightBumper().getAsBoolean()) {
+                    // R2 trigger = extend
+                    if (driverController.R2().getAsBoolean()) {
                         speed = Actuator2Constants.kManualSpeedScale;
                     }
-                    // Left bumper = retract
-                    else if (driverController_XBOX.leftBumper().getAsBoolean()) {
+                    // L2 trigger = retract
+                    else if (driverController.L2().getAsBoolean()) {
                         speed = -Actuator2Constants.kManualSpeedScale;
                     }
                     
@@ -181,33 +186,33 @@ public class RobotContainer {
         // ========== Actuator 2 Preset Position Buttons (D-pad) ==========
         
         // D-pad Down: Move to home position (retracted)
-        driverController_XBOX.povDown().onTrue(
+        driverController.povDown().onTrue(
             Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kHomePosition), m_actuator2)
                     .withName("Actuator2 Home")
         );
         
         // D-pad Left/Right: Move to mid position
-        driverController_XBOX.povLeft().or(driverController_XBOX.povRight()).onTrue(
+        driverController.povLeft().or(driverController.povRight()).onTrue(
             Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kMidPosition), m_actuator2)
                     .withName("Actuator2 Mid")
         );
         
         // D-pad Up: Move to max extension position
-        driverController_XBOX.povUp().onTrue(
+        driverController.povUp().onTrue(
             Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kMaxPosition), m_actuator2)
                     .withName("Actuator2 Max")
         );
         
-        // Back button: Reset encoder to zero (run when at known home position)
-        driverController_XBOX.back().onTrue(
+        // Create button (PS5): Reset encoder to zero (run when at known home position)
+        driverController.create().onTrue(
             Commands.runOnce(() -> m_actuator2.resetPosition(), m_actuator2)
                     .withName("Reset Actuator2 Encoder")
         );
         
         // ========== Vision Alignment Commands ==========
-        // Start button: Align to nearest AprilTag for autonomous scoring
+        // Options button (PS5): Align to nearest AprilTag for autonomous scoring
         // NOTE: This is an example - tune PID values in AlignToAprilTagCommand for your robot
-        driverController_XBOX.start().whileTrue(
+        driverController.options().whileTrue(
             new AlignToAprilTagCommand(m_vision, m_robotDrive, 4)
                     .withTimeout(5.0) // Safety timeout
         );
@@ -216,28 +221,28 @@ public class RobotContainer {
         // - Align to different tags for different scoring positions
         // - Combine with actuator commands for full scoring sequences
         // Example:
-        // driverController_XBOX.leftTrigger().whileTrue(
+        // driverController.touchpad().whileTrue(
         //     new AlignToAprilTagCommand(m_vision, m_robotDrive, 7)
         // );
         
         // ========== Ball Intake Control Buttons ==========
-        // Left Bumper: Intake balls (while held)
-        driverController_XBOX.leftBumper().whileTrue(
+        // L1 button: Intake balls (while held)
+        driverController.L1().whileTrue(
             new frc.robot.commands.ballintake.IntakeCommand(m_ballIntake)
         );
         
-        // Right Bumper: Eject balls (while held)
-        driverController_XBOX.rightBumper().whileTrue(
+        // R1 button: Eject balls (while held)
+        driverController.R1().whileTrue(
             new frc.robot.commands.ballintake.EjectCommand(m_ballIntake)
         );
         
-        // Left Trigger: Hold balls (while held) - prevents balls from falling out
-        driverController_XBOX.leftTrigger().whileTrue(
+        // Touchpad button: Hold balls (while held) - prevents balls from falling out
+        driverController.touchpad().whileTrue(
             new frc.robot.commands.ballintake.HoldCommand(m_ballIntake)
         );
         
-        // Right Trigger: Stop intake (momentary)
-        driverController_XBOX.rightTrigger().onTrue(
+        // PS button: Stop intake (momentary) - emergency stop
+        driverController.PS().onTrue(
             new frc.robot.commands.ballintake.StopCommand(m_ballIntake)
         );
     }
@@ -308,4 +313,3 @@ public class RobotContainer {
         return m_autoChooser.getSelected();
     }
 }
-
