@@ -36,7 +36,7 @@
  * - See official 2026 game manual for exact positions
  * 
  * @see Drivetrain For odometry integration
- * @see VisionConstants For camera configuration
+ * @see VisionConstants For camera configuration.
  */
 
 package frc.robot.subsystems;
