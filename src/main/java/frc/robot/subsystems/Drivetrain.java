@@ -8,6 +8,8 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.pathplanner.lib.util.DriveFeedforwards;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,6 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
@@ -63,7 +67,7 @@ public class Drivetrain extends SubsystemBase {
   // boolean for keeping track of robot alliance (used for flipping auto path)
   public boolean isRedAlliance;
 
-  // Odometry class for tracking robot pose
+  // Odometry class for tracking robot pose (basic wheel odometry)
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
       Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
@@ -73,6 +77,39 @@ public class Drivetrain extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
       });
+  
+  /**
+   * Pose estimator that fuses wheel odometry with vision measurements using Kalman filtering.
+   * 
+   * Uses an Unscented Kalman Filter (UKF) to optimally combine:
+   * - Wheel odometry (continuous, but drifts over time due to wheel slip)
+   * - Vision measurements (accurate but intermittent, may have outliers)
+   * 
+   * How it works:
+   * 1. Predicts pose based on wheel odometry (process model)
+   * 2. Corrects prediction when vision measurements arrive (measurement update)
+   * 3. Weights each measurement by its uncertainty (standard deviations)
+   * 4. Produces optimal estimate that's better than either source alone
+   * 
+   * Benefits over basic odometry:
+   * - Corrects for wheel slip and drift using AprilTag vision
+   * - Smoothly integrates intermittent vision measurements
+   * - Handles measurement noise and outliers gracefully
+   * - Provides statistically optimal pose estimate
+   * 
+   * The vision subsystem calls addVisionMeasurement() to provide vision updates.
+   */
+  private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
+      new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+      },
+      new Pose2d()
+  );
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
@@ -81,21 +118,59 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Update odometry with latest wheel positions
+    m_odometry.update(
+        Rotation2d.fromDegrees(getHeading()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
     
+    // Update pose estimator with latest wheel positions
+    // Vision measurements are added separately via addVisionMeasurement()
+    m_poseEstimator.update(
+        Rotation2d.fromDegrees(getHeading()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
   }
 
   /**
-   * Returns the currently-estimated pose of the robot
-   * @return The pose
+   * Returns the currently-estimated pose of the robot.
+   * 
+   * This returns the pose from the pose estimator, which fuses wheel odometry
+   * with vision measurements for improved accuracy.
+   * 
+   * @return The pose (uses vision fusion if available, otherwise wheel odometry)
    */
   public Pose2d getPose() {
+    return m_poseEstimator.getEstimatedPosition();
+  }
+  
+  /**
+   * Returns the wheel-odometry-only pose (no vision fusion).
+   * 
+   * Useful for debugging or comparing odometry vs. vision-fused estimates.
+   * 
+   * @return The odometry-only pose
+   */
+  public Pose2d getOdometryPose() {
     return m_odometry.getPoseMeters();
   }
 
   /**
-   * Resets the odometry to the specified pose
+   * Resets the odometry to the specified pose.
+   * 
    * KEEP IN MIND this doesn't actually set the gyro,
-   *  the odometry just works with the current heading as an offset
+   * the odometry just works with the current heading as an offset.
+   * 
+   * This resets both the basic odometry and the vision-fused pose estimator.
+   * 
    * @param pose The pose to which to set the odometry
    */
   public void resetOdometry(Pose2d pose) {
@@ -108,6 +183,44 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
         },
         pose);
+    
+    m_poseEstimator.resetPosition(
+        Rotation2d.fromDegrees(getHeading()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        },
+        pose);
+  }
+  
+  /**
+   * Adds a vision measurement to the Kalman filter pose estimator.
+   * 
+   * This is called by the Vision subsystem when it has a new AprilTag-based
+   * pose estimate. The Unscented Kalman Filter (UKF) will optimally fuse this
+   * with wheel odometry based on the provided standard deviations.
+   * 
+   * Kalman Filter Operation:
+   * - Standard deviations represent measurement uncertainty (covariance)
+   * - Lower stddev = filter trusts this measurement more (higher Kalman gain)
+   * - Higher stddev = filter trusts odometry more (lower Kalman gain)
+   * - Filter finds optimal balance between the two sources
+   * 
+   * Why timestamps matter:
+   * - Vision has processing latency (~20-100ms)
+   * - Timestamp allows filter to apply measurement to correct historical state
+   * - Filter "rewinds" to that time, applies update, then "fast-forwards"
+   * 
+   * @param visionPose The vision-estimated robot pose
+   * @param timestamp The timestamp of the vision measurement (from PhotonVision)
+   * @param stdDevs Standard deviations (measurement uncertainty) [x, y, theta]
+   *                Higher values = less trust in this measurement
+   *                Format: [x_meters, y_meters, theta_radians]
+   */
+  public void addVisionMeasurement(Pose2d visionPose, double timestamp, Matrix<N3, N1> stdDevs) {
+    m_poseEstimator.addVisionMeasurement(visionPose, timestamp, stdDevs);
   }
 
   /**
