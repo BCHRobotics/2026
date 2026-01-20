@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
+import frc.robot.commands.vision.GoToAprilTagCommand;
 import frc.robot.subsystems.Actuator;
 import frc.robot.subsystems.Actuator2;
 import frc.robot.subsystems.BallIntake;
@@ -155,10 +156,10 @@ public class RobotContainer {
                     .withName("Actuator Max")
         );
         
-        // Square button (PS5): Reset encoder to zero (run when at known home position)
-        driverController.square().onTrue(
-            Commands.runOnce(() -> m_actuator.resetPosition(), m_actuator)
-                    .withName("Reset Actuator Encoder")
+        // Square button (PS5): Navigate to 1 meter in front of AprilTag 9
+        driverController.square().whileTrue(
+            new GoToAprilTagCommand(m_vision, m_robotDrive, 9, 1.0)
+                    .withTimeout(10.0) // Safety timeout
         );
         
         // ========== Actuator 2 Manual Control ==========
