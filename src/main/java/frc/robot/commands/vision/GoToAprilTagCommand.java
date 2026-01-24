@@ -22,9 +22,9 @@ public class GoToAprilTagCommand extends Command {
     private final double m_distanceFromTag; // meters
     
     // PID controllers for alignment
-    private final PIDController m_xController = new PIDController(0.5, 0, 0);
-    private final PIDController m_yController = new PIDController(0.5, 0, 0);
-    private final PIDController m_rotController = new PIDController(0.1, 0, 0);
+    private final PIDController m_xController = new PIDController(0.3, 0, 0);
+    private final PIDController m_yController = new PIDController(0.3, 0, 0);
+    private final PIDController m_rotController = new PIDController(0.05, 0, 0);
     
     private static final double kPositionTolerance = 0.1; // meters
     private static final double kRotationTolerance = 5.0; // degrees
