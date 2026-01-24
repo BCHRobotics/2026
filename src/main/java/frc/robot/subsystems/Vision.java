@@ -412,4 +412,42 @@ public class Vision extends SubsystemBase {
     public AprilTagFieldLayout getFieldLayout() {
         return aprilTagFieldLayout;
     }
+    
+    /**
+     * Gets a list of all currently visible AprilTag IDs from all cameras.
+     * 
+     * @return List of visible AprilTag IDs (may contain duplicates if seen by multiple cameras)
+     */
+    public List<Integer> getVisibleAprilTags() {
+        List<Integer> visibleTags = new ArrayList<>();
+        
+        for (CameraModule module : cameraModules) {
+            PhotonPipelineResult result = module.camera.getLatestResult();
+            if (result.hasTargets()) {
+                for (PhotonTrackedTarget target : result.getTargets()) {
+                    visibleTags.add(target.getFiducialId());
+                }
+            }
+        }
+        
+        return visibleTags;
+    }
+    
+    /**
+     * Gets the total number of AprilTags currently visible across all cameras.
+     * 
+     * @return Total count of visible targets (may count same tag multiple times if seen by multiple cameras)
+     */
+    public int getVisibleTagCount() {
+        int count = 0;
+        
+        for (CameraModule module : cameraModules) {
+            PhotonPipelineResult result = module.camera.getLatestResult();
+            if (result.hasTargets()) {
+                count += result.getTargets().size();
+            }
+        }
+        
+        return count;
+    }
 }

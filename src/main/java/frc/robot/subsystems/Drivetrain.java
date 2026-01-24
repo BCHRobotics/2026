@@ -69,6 +69,9 @@ public class Drivetrain extends SubsystemBase {
 
   // Timer for pose output throttling (once per second)
   private double m_lastPrintTime = 0.0;
+  
+  // Optional reference to Vision subsystem for diagnostics
+  private Vision m_vision = null;
 
   // Odometry class for tracking robot pose (basic wheel odometry)
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -118,6 +121,15 @@ public class Drivetrain extends SubsystemBase {
   public Drivetrain() {
     
   }
+  
+  /**
+   * Sets the Vision subsystem reference for diagnostic output.
+   * 
+   * @param vision The Vision subsystem
+   */
+  public void setVision(Vision vision) {
+    m_vision = vision;
+  }
 
   @Override
   public void periodic() {
@@ -142,12 +154,58 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-    // Print pose once per second
+    // Print comprehensive diagnostics once per second
     double currentTime = WPIUtilJNI.now() * 1e-6;
     if (currentTime - m_lastPrintTime >= 1.0) {
-      System.out.println(getPose().getX() + "     " + getPose().getY());
+      printDiagnostics();
       m_lastPrintTime = currentTime;
     }
+  }
+  
+  /**
+   * Prints comprehensive diagnostic information to console.
+   * Includes robot position, heading, visible AprilTags, and motor currents.
+   */
+  private void printDiagnostics() {
+    StringBuilder diagnostics = new StringBuilder();
+    diagnostics.append("\n========== ROBOT DIAGNOSTICS ==========\n");
+    
+    // Robot Position and Heading
+    Pose2d pose = getPose();
+    diagnostics.append(String.format("Position: X=%.2fm, Y=%.2fm, Heading=%.1f°\n", 
+        pose.getX(), pose.getY(), getHeading()));
+    
+    // Vision - AprilTags
+    if (m_vision != null) {
+      java.util.List<Integer> visibleTags = m_vision.getVisibleAprilTags();
+      diagnostics.append(String.format("AprilTags Visible: %d [", visibleTags.size()));
+      if (!visibleTags.isEmpty()) {
+        for (int i = 0; i < visibleTags.size(); i++) {
+          diagnostics.append(visibleTags.get(i));
+          if (i < visibleTags.size() - 1) diagnostics.append(", ");
+        }
+      } else {
+        diagnostics.append("None");
+      }
+      diagnostics.append("]\n");
+    } else {
+      diagnostics.append("AprilTags: Vision subsystem not initialized\n");
+    }
+    
+    // Motor Currents
+    diagnostics.append("Motor Currents:\n");
+    diagnostics.append(String.format("  Front Left:  Drive=%.1fA, Turn=%.1fA\n",
+        m_frontLeft.getDriveCurrent(), m_frontLeft.getTurnCurrent()));
+    diagnostics.append(String.format("  Front Right: Drive=%.1fA, Turn=%.1fA\n",
+        m_frontRight.getDriveCurrent(), m_frontRight.getTurnCurrent()));
+    diagnostics.append(String.format("  Rear Left:   Drive=%.1fA, Turn=%.1fA\n",
+        m_rearLeft.getDriveCurrent(), m_rearLeft.getTurnCurrent()));
+    diagnostics.append(String.format("  Rear Right:  Drive=%.1fA, Turn=%.1fA\n",
+        m_rearRight.getDriveCurrent(), m_rearRight.getTurnCurrent()));
+    
+    diagnostics.append("=======================================\n");
+    
+    System.out.print(diagnostics.toString());
   }
 
   /**

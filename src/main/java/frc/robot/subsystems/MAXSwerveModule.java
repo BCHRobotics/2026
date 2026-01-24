@@ -111,4 +111,22 @@ public class MAXSwerveModule {
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
   }
+  
+  /**
+   * Gets the current draw of the driving motor.
+   * 
+   * @return Current in amps
+   */
+  public double getDriveCurrent() {
+    return m_drivingSpark.getOutputCurrent();
+  }
+  
+  /**
+   * Gets the current draw of the turning motor.
+   * 
+   * @return Current in amps
+   */
+  public double getTurnCurrent() {
+    return m_turningSpark.getOutputCurrent();
+  }
 }

@@ -69,6 +69,9 @@ public class RobotContainer {
      * The container for the robot, initializing everything and setting up the controller chooser
      */
     public RobotContainer() {
+        // Connect Vision subsystem to Drivetrain for diagnostics
+        m_robotDrive.setVision(m_vision);
+        
         // Configure default commands
         configureDefaultCommands();
         
