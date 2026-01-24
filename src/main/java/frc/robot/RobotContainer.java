@@ -178,7 +178,7 @@ public class RobotContainer {
         // Uses vision-based autonomous navigation to position the robot
         // Runs while button is held, cancels when released
         driverController.square().whileTrue(
-            new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
+            new GoToAprilTagCommand(m_vision, m_robotDrive, 17, 1.0)
                     .withTimeout(10.0) // Safety timeout
         );
         
