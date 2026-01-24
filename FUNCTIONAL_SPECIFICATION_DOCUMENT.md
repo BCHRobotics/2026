@@ -49,9 +49,12 @@ src/main/java/frc/
 │   │   ├── actuator/                # Actuator control commands
 │   │   ├── auto/                    # Autonomous commands
 │   │   ├── ballintake/              # Ball intake control commands
-│   │   ├── drive/                   # Drive control commands
+│   │   ├── drive/                   # General drive commands
+│   │   │   └── GoToPositionCommand.java
 │   │   ├── drivetrain/              # Drivetrain commands
 │   │   └── vision/                  # Vision commands
+│   │       ├── AlignToAprilTagCommand.java
+│   │       └── GoToAprilTagCommand.java
 │   └── subsystems/                  # Hardware subsystems
 │       ├── Actuator.java            # SPARK MAX PID actuator
 │       ├── Actuator2.java           # WPILib PID actuator
@@ -210,6 +213,15 @@ src/main/java/frc/
 - Field-relative positioning with rotation control
 - Configurable target tag ID and distance
 - PID-based control with position and rotation tolerances
+- Robot faces the AprilTag with camera/front side
+
+**GoToPositionCommand**: Autonomous navigation to field position
+- Navigates robot to any X, Y coordinate on the field
+- Field-relative positioning with configurable rotation
+- Inputs: X (meters), Y (meters), Rotation (degrees)
+- PID-based control with position and rotation tolerances
+- Uses odometry for field-relative navigation
+- Can be constructed with individual parameters or a Pose2d object
 
 ### 4.2 Actuator Commands (DISABLED - Example Code)
 **Status**: ⚠️ All actuator commands disabled as hardware does not exist
