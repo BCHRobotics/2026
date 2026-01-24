@@ -3,15 +3,15 @@ package frc.robot;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.commands.vision.GoToAprilTagCommand;
-import frc.robot.subsystems.Actuator;
-import frc.robot.subsystems.Actuator2;
-// import frc.robot.subsystems.BallIntake;  // DISABLED: Motor CAN ID 22 does not exist
+// import frc.robot.subsystems.Actuator;  // DISABLED: Example subsystem - hardware does not exist
+// import frc.robot.subsystems.Actuator2;  // DISABLED: Example subsystem - hardware does not exist
+// import frc.robot.subsystems.BallIntake;  // DISABLED: Example subsystem - hardware does not exist
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
-import frc.robot.Constants.ActuatorConstants;
-import frc.robot.Constants.Actuator2Constants;
+// import frc.robot.Constants.ActuatorConstants;  // DISABLED: Not needed when actuators disabled
+// import frc.robot.Constants.Actuator2Constants;  // DISABLED: Not needed when actuators disabled
 import frc.robot.Constants.OIConstants;
-import edu.wpi.first.math.MathUtil;
+// import edu.wpi.first.math.MathUtil;  // DISABLED: Not needed when actuators disabled
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,13 +34,16 @@ public class RobotContainer {
      */
     private final Vision m_vision = new Vision(m_robotDrive);
     
+    /* DISABLED: Example subsystems - Hardware does not physically exist on this robot
+     * Kept in code as examples for future development
+     * 
     /**
      * PID-controlled actuator subsystem (using SPARK MAX onboard PID).
      * 
      * Provides closed-loop position control for mechanisms like elevators,
      * arms, or intakes using a NEO motor with SPARK MAX controller.
      */
-    private final Actuator m_actuator = new Actuator();
+    // private final Actuator m_actuator = new Actuator();
     
     /**
      * WPILib PID-controlled actuator subsystem (using RoboRIO-based PID).
@@ -48,9 +51,8 @@ public class RobotContainer {
      * Similar to Actuator but uses WPILib's PIDController for more flexibility
      * and easier real-time tuning via SmartDashboard.
      */
-    private final Actuator2 m_actuator2 = new Actuator2();
+    // private final Actuator2 m_actuator2 = new Actuator2();
     
-    /* DISABLED: Ball Intake subsystem (Motor CAN ID 22 does not physically exist)
     /**
      * Ball Intake subsystem for collecting and controlling game pieces.
      * 
@@ -115,15 +117,23 @@ public class RobotContainer {
      * - Button bindings for preset positions
      * - Manual override controls
      * 
-     * PS5 Controller Layout:
-     * - Left/Right Sticks: Drive and Actuator 1 manual control
-     * - Cross/Circle/Triangle/Square: Actuator 1 preset positions
-     * - D-Pad: Actuator 2 preset positions
-     * - L1/R1: Ball Intake control
-     * - L2/R2: Actuator 2 manual control
-     * - Create/Options: Special functions
+     * PS5 Controller Layout (Active):
+     * - Left Stick: Drive control
+     * - Square: Navigate to AprilTag 12 (autonomous positioning)
+     * - Options: Vision alignment to AprilTag 4
+     * 
+     * PS5 Controller Layout (Disabled - Example Code):
+     * - Right Stick: Actuator 1 manual control (DISABLED)
+     * - Cross/Circle/Triangle: Actuator 1 preset positions (DISABLED)
+     * - D-Pad: Actuator 2 preset positions (DISABLED)
+     * - L1/R1: Ball Intake control (DISABLED)
+     * - L2/R2: Actuator 2 manual control (DISABLED)
+     * - Create: Reset actuator encoder (DISABLED)
      */
     private void configureBindings() {
+        /* DISABLED: Actuator 1 and Actuator 2 controls - Hardware does not exist
+         * Kept as example code for future development
+         * 
         // ========== Actuator 1 Default Command: Manual Control ==========
         // Right stick Y-axis controls actuator with deadband and scaling
         m_actuator.setDefaultCommand(
@@ -160,17 +170,20 @@ public class RobotContainer {
             Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kMaxPosition), m_actuator)
                     .withName("Actuator Max")
         );
+        */
         
-        // // Square button (PS5): Reset encoder to zero (run when at known home position)
-        // driverController.square().onTrue(
-        //     Commands.runOnce(() -> m_actuator.resetPosition(), m_actuator)
-        //             .withName("Reset Actuator Encoder")
-        // );
-                // Square button (PS5): Navigate to 1 meter in front of AprilTag 9
+        // ========== Vision-Based Navigation Commands ==========
+        
+        // Square button (PS5): Navigate to 1 meter in front of AprilTag 12
+        // Uses vision-based autonomous navigation to position the robot
+        // Runs while button is held, cancels when released
         driverController.square().whileTrue(
             new GoToAprilTagCommand(m_vision, m_robotDrive, 12, 1.0)
                     .withTimeout(10.0) // Safety timeout
         );
+        
+        /* DISABLED: Actuator 2 controls - Hardware does not exist
+         * 
         // ========== Actuator 2 Manual Control ==========
         // L2 and R2 triggers for manual control
         m_actuator2.setDefaultCommand(
@@ -218,6 +231,7 @@ public class RobotContainer {
             Commands.runOnce(() -> m_actuator2.resetPosition(), m_actuator2)
                     .withName("Reset Actuator2 Encoder")
         );
+        */
         
         // ========== Vision Alignment Commands ==========
         // Options button (PS5): Align to nearest AprilTag for autonomous scoring
