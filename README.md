@@ -22,7 +22,7 @@ Official robot code for **FRC Team 2386** competing in the 2026 FIRST Robotics C
 - **Unscented Kalman Filter**: Optimal fusion of wheel odometry and vision measurements
 - **Dynamic Trust Adjustment**: Adapts confidence based on distance and tag count
 - **Parallel Pose Fusion**: Aggregates measurements from all cameras for maximum accuracy
-- **Vision Alignment Commands**: Automated AprilTag alignment and navigation for precise positioning
+- **Vision Alignment Commands**: Automated AprilTag alignment for precise positioning
 
 ### Actuator System
 - **Dual PID Examples**: SPARK MAX onboard PID (Actuator) and WPILib PID (Actuator2)
@@ -135,27 +135,22 @@ Official robot code for **FRC Team 2386** competing in the 2026 FIRST Robotics C
 
 #### Actuator 1 Controls (SPARK MAX PID)
 - **Right Stick Y**: Manual actuator control (scaled for precision)
-- **Cross Button (PS5)**: Move to home position (retracted)
-- **Circle Button (PS5)**: Move to mid position
-- **Triangle Button (PS5)**: Move to max extension
+- **A Button**: Move to home position (retracted)
+- **B Button**: Move to mid position
+- **Y Button**: Move to max extension
+- **X Button**: Reset encoder (when at known home position)
 
 #### Actuator 2 Controls (WPILib PID)
-- **L2 Trigger**: Manual retract
-- **R2 Trigger**: Manual extend
+- **Left Bumper**: Manual retract
+- **Right Bumper**: Manual extend
 - **D-Pad Down**: Move to home position
 - **D-Pad Left/Right**: Move to mid position
 - **D-Pad Up**: Move to max extension
-- **Create Button (PS5)**: Reset encoder
+- **Back Button**: Reset encoder
 
 #### Vision Controls
-- **Options Button (PS5)**: Align to AprilTag 4 (hold for continuous alignment)
-- **Square Button (PS5)**: Navigate to 1 meter in front of AprilTag 9 (hold, 10s timeout)
-
-#### Ball Intake Controls
-- **L1 Button**: Intake balls (while held)
-- **R1 Button**: Eject balls (while held)
-- **Touchpad Button**: Hold balls (while held)
-- **PS Button**: Emergency stop intake
+- **Start Button**: Align to AprilTag 4 (hold for continuous alignment
+- **X Button**: Reset encoder (when at known home position)
 
 ## 📊 Vision Setup
 

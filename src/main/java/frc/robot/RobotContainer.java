@@ -2,10 +2,9 @@ package frc.robot;
 
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
-import frc.robot.commands.vision.GoToAprilTagCommand;
 import frc.robot.subsystems.Actuator;
 import frc.robot.subsystems.Actuator2;
-import frc.robot.subsystems.BallIntake;
+// import frc.robot.subsystems.BallIntake;  // DISABLED: Motor CAN ID 22 does not exist
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.Constants.ActuatorConstants;
@@ -40,7 +39,7 @@ public class RobotContainer {
      * Provides closed-loop position control for mechanisms like elevators,
      * arms, or intakes using a NEO motor with SPARK MAX controller.
      */
-    //private final Actuator m_actuator = new Actuator();
+    private final Actuator m_actuator = new Actuator();
     
     /**
      * WPILib PID-controlled actuator subsystem (using RoboRIO-based PID).
@@ -48,15 +47,17 @@ public class RobotContainer {
      * Similar to Actuator but uses WPILib's PIDController for more flexibility
      * and easier real-time tuning via SmartDashboard.
      */
-    //private final Actuator2 m_actuator2 = new Actuator2();
+    private final Actuator2 m_actuator2 = new Actuator2();
     
+    /* DISABLED: Ball Intake subsystem (Motor CAN ID 22 does not physically exist)
     /**
      * Ball Intake subsystem for collecting and controlling game pieces.
      * 
      * Variable speed motor for intaking, ejecting, and holding balls.
      * Controlled via button inputs for different operating modes.
      */
-   // private final BallIntake m_ballIntake = new BallIntake();
+    // private final BallIntake m_ballIntake = new BallIntake();
+    // */
 
     // Controllers
     CommandPS5Controller driverController = new CommandPS5Controller(OIConstants.kMainControllerPort);
@@ -121,94 +122,94 @@ public class RobotContainer {
     private void configureBindings() {
         // ========== Actuator 1 Default Command: Manual Control ==========
         // Right stick Y-axis controls actuator with deadband and scaling
-        // m_actuator.setDefaultCommand(
-        //     Commands.run(
-        //         () -> {
-        //             double speed = -driverController.getRightY(); // Invert Y axis (up = positive)
-        //             // Apply deadband to prevent drift
-        //             speed = MathUtil.applyDeadband(speed, ActuatorConstants.kManualDeadband);
-        //             // Scale speed for finer control
-        //             speed *= ActuatorConstants.kManualSpeedScale;
-        //             // Send to actuator
-        //             m_actuator.setManualSpeed(speed);
-        //         },
-        //         m_actuator
-        //     ).withName("Manual Actuator Control")
-        // );
+        m_actuator.setDefaultCommand(
+            Commands.run(
+                () -> {
+                    double speed = -driverController.getRightY(); // Invert Y axis (up = positive)
+                    // Apply deadband to prevent drift
+                    speed = MathUtil.applyDeadband(speed, ActuatorConstants.kManualDeadband);
+                    // Scale speed for finer control
+                    speed *= ActuatorConstants.kManualSpeedScale;
+                    // Send to actuator
+                    m_actuator.setManualSpeed(speed);
+                },
+                m_actuator
+            ).withName("Manual Actuator Control")
+        );
         
         // ========== Actuator 1 Preset Position Buttons ==========
         
         // Cross button (PS5): Move to home position (retracted)
-        // driverController.cross().onTrue(
-        //     Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kHomePosition), m_actuator)
-        //             .withName("Actuator Home")
-        // );
+        driverController.cross().onTrue(
+            Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kHomePosition), m_actuator)
+                    .withName("Actuator Home")
+        );
         
-        // // Circle button (PS5): Move to mid position
-        // driverController.circle().onTrue(
-        //     Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kMidPosition), m_actuator)
-        //             .withName("Actuator Mid")
-        // );
+        // Circle button (PS5): Move to mid position
+        driverController.circle().onTrue(
+            Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kMidPosition), m_actuator)
+                    .withName("Actuator Mid")
+        );
         
-        // // Triangle button (PS5): Move to max extension position
-        // driverController.triangle().onTrue(
-        //     Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kMaxPosition), m_actuator)
-        //             .withName("Actuator Max")
-        // );
+        // Triangle button (PS5): Move to max extension position
+        driverController.triangle().onTrue(
+            Commands.runOnce(() -> m_actuator.setPosition(ActuatorConstants.kMaxPosition), m_actuator)
+                    .withName("Actuator Max")
+        );
         
-        // Square button (PS5): Navigate to 1 meter in front of AprilTag 9
-        driverController.square().whileTrue(
-            new GoToAprilTagCommand(m_vision, m_robotDrive, 7, 1.0)
-                    .withTimeout(10.0) // Safety timeout
+        // Square button (PS5): Reset encoder to zero (run when at known home position)
+        driverController.square().onTrue(
+            Commands.runOnce(() -> m_actuator.resetPosition(), m_actuator)
+                    .withName("Reset Actuator Encoder")
         );
         
         // ========== Actuator 2 Manual Control ==========
         // L2 and R2 triggers for manual control
-        // m_actuator2.setDefaultCommand(
-        //     Commands.run(
-        //         () -> {
-        //             double speed = 0;
+        m_actuator2.setDefaultCommand(
+            Commands.run(
+                () -> {
+                    double speed = 0;
                     
-        //             // R2 trigger = extend
-        //             if (driverController.R2().getAsBoolean()) {
-        //                 speed = Actuator2Constants.kManualSpeedScale;
-        //             }
-        //             // L2 trigger = retract
-        //             else if (driverController.L2().getAsBoolean()) {
-        //                 speed = -Actuator2Constants.kManualSpeedScale;
-        //             }
+                    // R2 trigger = extend
+                    if (driverController.R2().getAsBoolean()) {
+                        speed = Actuator2Constants.kManualSpeedScale;
+                    }
+                    // L2 trigger = retract
+                    else if (driverController.L2().getAsBoolean()) {
+                        speed = -Actuator2Constants.kManualSpeedScale;
+                    }
                     
-        //             m_actuator2.setManualSpeed(speed);
-        //         },
-        //         m_actuator2
-        //     ).withName("Manual Actuator2 Control")
-        // );
+                    m_actuator2.setManualSpeed(speed);
+                },
+                m_actuator2
+            ).withName("Manual Actuator2 Control")
+        );
         
         // ========== Actuator 2 Preset Position Buttons (D-pad) ==========
         
         // D-pad Down: Move to home position (retracted)
-        // driverController.povDown().onTrue(
-        //     Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kHomePosition), m_actuator2)
-        //             .withName("Actuator2 Home")
-        // );
+        driverController.povDown().onTrue(
+            Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kHomePosition), m_actuator2)
+                    .withName("Actuator2 Home")
+        );
         
-        // // D-pad Left/Right: Move to mid position
-        // driverController.povLeft().or(driverController.povRight()).onTrue(
-        //     Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kMidPosition), m_actuator2)
-        //             .withName("Actuator2 Mid")
-        // );
+        // D-pad Left/Right: Move to mid position
+        driverController.povLeft().or(driverController.povRight()).onTrue(
+            Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kMidPosition), m_actuator2)
+                    .withName("Actuator2 Mid")
+        );
         
-        // // D-pad Up: Move to max extension position
-        // driverController.povUp().onTrue(
-        //     Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kMaxPosition), m_actuator2)
-        //             .withName("Actuator2 Max")
-        // );
+        // D-pad Up: Move to max extension position
+        driverController.povUp().onTrue(
+            Commands.runOnce(() -> m_actuator2.setPosition(Actuator2Constants.kMaxPosition), m_actuator2)
+                    .withName("Actuator2 Max")
+        );
         
         // Create button (PS5): Reset encoder to zero (run when at known home position)
-        // driverController.create().onTrue(
-        //     Commands.runOnce(() -> m_actuator2.resetPosition(), m_actuator2)
-        //             .withName("Reset Actuator2 Encoder")
-        // );
+        driverController.create().onTrue(
+            Commands.runOnce(() -> m_actuator2.resetPosition(), m_actuator2)
+                    .withName("Reset Actuator2 Encoder")
+        );
         
         // ========== Vision Alignment Commands ==========
         // Options button (PS5): Align to nearest AprilTag for autonomous scoring
@@ -217,8 +218,6 @@ public class RobotContainer {
             new AlignToAprilTagCommand(m_vision, m_robotDrive, 4)
                     .withTimeout(5.0) // Safety timeout
         );
-
-    }
         
         // NOTE: You can add more vision alignment commands here:
         // - Align to different tags for different scoring positions
@@ -228,27 +227,29 @@ public class RobotContainer {
         //     new AlignToAprilTagCommand(m_vision, m_robotDrive, 7)
         // );
         
+        /* DISABLED: Ball Intake Control Buttons (Motor CAN ID 22 does not physically exist)
         // ========== Ball Intake Control Buttons ==========
         // L1 button: Intake balls (while held)
-        // driverController.L1().whileTrue(
-        //     new frc.robot.commands.ballintake.IntakeCommand(m_ballIntake)
-        // );
+        driverController.L1().whileTrue(
+            new frc.robot.commands.ballintake.IntakeCommand(m_ballIntake)
+        );
         
-        // // R1 button: Eject balls (while held)
-        // driverController.R1().whileTrue(
-        //     new frc.robot.commands.ballintake.EjectCommand(m_ballIntake)
-        // );
+        // R1 button: Eject balls (while held)
+        driverController.R1().whileTrue(
+            new frc.robot.commands.ballintake.EjectCommand(m_ballIntake)
+        );
         
-        // // Touchpad button: Hold balls (while held) - prevents balls from falling out
-        // driverController.touchpad().whileTrue(
-        //     new frc.robot.commands.ballintake.HoldCommand(m_ballIntake)
-        // );
+        // Touchpad button: Hold balls (while held) - prevents balls from falling out
+        driverController.touchpad().whileTrue(
+            new frc.robot.commands.ballintake.HoldCommand(m_ballIntake)
+        );
         
-        // // PS button: Stop intake (momentary) - emergency stop
-        // driverController.PS().onTrue(
-        //     new frc.robot.commands.ballintake.StopCommand(m_ballIntake)
-        // );
-    //}
+        // PS button: Stop intake (momentary) - emergency stop
+        driverController.PS().onTrue(
+            new frc.robot.commands.ballintake.StopCommand(m_ballIntake)
+        );
+        */
+    }
     
     /**
      * Configures the autonomous command chooser.

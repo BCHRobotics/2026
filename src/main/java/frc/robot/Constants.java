@@ -722,76 +722,21 @@ public final class Constants {
   }
 
   /**
-   * Constants for Ball Intake subsystem.
+   * DISABLED: Ball Intake Subsystem Constants
    * 
-   * Variable speed motor for collecting game pieces (balls).
-   * Operated via button control with configurable speed settings.
+   * Motor CAN ID 22 does not physically exist on this robot.
+   * These stub constants prevent compile errors in BallIntake.java.
+   * The subsystem is disabled in RobotContainer.java and will not be instantiated.
    */
   public static final class BallIntakeConstants {
-    // ========== Hardware Configuration ==========
-    
-    /**
-     * CAN ID of the SPARK MAX motor controller for the ball intake.
-     * PLACEHOLDER: Set to match your wiring (must be unique).
-     */
-    public static final int kMotorCanId = 22;
-    
-    /**
-     * Motor inversion.
-     * PLACEHOLDER: Test and set based on desired intake direction.
-     * true = inverted, false = not inverted
-     */
+    // Stub constants to prevent compile errors (subsystem disabled)
+    public static final int kMotorCanId = 99;  // Invalid CAN ID - DO NOT USE
     public static final boolean kMotorInverted = false;
-    
-    /**
-     * Current limit in amps.
-     * 
-     * Protects motor from overcurrent during ball jams or high load.
-     * PLACEHOLDER: Tune based on motor and mechanism.
-     * Recommended: 20-40A depending on motor size and load.
-     */
     public static final int kCurrentLimit = 25;
-    
-    // ========== Speed Configuration ==========
-    
-    /**
-     * Intake speed for collecting balls.
-     * 
-     * Full speed for active ball collection.
-     * PLACEHOLDER: Test and adjust for optimal ball intake without damage.
-     * Range: 0.0 to 1.0 (as fraction of full motor speed)
-     * Typical: 0.7-0.9 for good intake power
-     */
-    public static final double kIntakeSpeed = 0.8;
-    
-    /**
-     * Eject speed for expelling balls.
-     * 
-     * Reverse speed for shooting balls out.
-     * PLACEHOLDER: Test and adjust for reliable ejection.
-     * Range: -1.0 to 0.0 (negative for reverse direction)
-     * Typical: -0.5 to -0.8 for controlled ejection
-     */
-    public static final double kEjectSpeed = -0.6;
-    
-    /**
-     * Hold speed for retaining balls.
-     * 
-     * Low speed to keep balls in intake without collecting more.
-     * PLACEHOLDER: Set low enough to hold but not collect additional balls.
-     * Range: 0.0 to 0.3 (very low speed)
-     * Typical: 0.1-0.2 for gentle holding
-     */
-    public static final double kHoldSpeed = 0.15;
-    
-    // ========== Control Configuration ==========
-    
-    /**
-     * Deadband for speed control.
-     * 
-     * Minimum speed threshold to prevent motor creep.
-     * PLACEHOLDER: Tune to prevent unwanted movement at low speeds.
-     */
+    public static final double kIntakeSpeed = 0.0;  // Disabled
+    public static final double kEjectSpeed = 0.0;   // Disabled
+    public static final double kHoldSpeed = 0.0;    // Disabled
     public static final double kSpeedDeadband = 0.05;
   }
 }
+

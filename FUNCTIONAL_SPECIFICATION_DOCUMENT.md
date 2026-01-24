@@ -50,9 +50,6 @@ src/main/java/frc/
 │   │   ├── drive/                   # Drive control commands
 │   │   ├── drivetrain/              # Drivetrain commands
 │   │   └── vision/                  # Vision commands
-│   │       ├── AlignToAprilTagCommand.java
-│   │       ├── GoToAprilTagCommand.java
-│   │       └── package-info.java
 │   └── subsystems/                  # Hardware subsystems
 │       ├── Actuator.java            # SPARK MAX PID actuator
 │       ├── Actuator2.java           # WPILib PID actuator
@@ -189,20 +186,14 @@ src/main/java/frc/
 
 ### 4.1 Drive Commands
 **TeleopDriveCommand**: Main teleop driving
-- Processes PS5 controller input
+- Processes Xbox controller input
 - Applies deadbands and slew rate limiting
 - Field-oriented control with optional rate limiting
 
 **AlignToAprilTagCommand**: Vision-assisted alignment
-- Uses vision system to align robot directly to AprilTag position
+- Uses vision system to align to AprilTags
 - PID control for precise positioning
 - Distance and angle correction
-
-**GoToAprilTagCommand**: Vision-assisted navigation
-- Navigates robot to a specified distance in front of an AprilTag
-- Calculates target position based on AprilTag pose and desired offset
-- PID control for smooth approach and final positioning
-- Configurable standoff distance for game piece manipulation
 
 ### 4.2 Actuator Commands
 **Position Commands**: Move to preset positions
@@ -305,34 +296,33 @@ src/main/java/frc/
 
 ## 8. Control Interface
 
-### 8.1 Driver Controls (PS5 Controller - Port 0)
+### 8.1 Driver Controls (Xbox Controller - Port 0)
 **Drive**:
 - Left Stick: Translation (X/Y) - Forward/backward and strafe
 - Right Stick X: Rotation (Z)
 - Field-oriented with slew rate limiting
 
 **Actuator 1 (SPARK MAX PID)**:
-- Right Stick Y: Manual actuator control
-- Cross Button: Home position (retracted)
-- Circle Button: Mid position
-- Triangle Button: Max position (extended)
+- A Button: Home position (retracted)
+- B Button: Mid position
+- Y Button: Max position (extended)
+- X Button: Reset encoder
 
 **Actuator 2 (WPILib PID)**:
-- L2/R2 Triggers: Manual control (retract/extend while held)
+- Left/Right Bumpers: Manual control (extend/retract while held)
 - D-Pad Down: Home position
 - D-Pad Left/Right: Mid position
 - D-Pad Up: Max position
-- Create Button: Reset encoder
+- Back Button: Reset encoder
 
 **Vision**:
-- Options Button: Align to AprilTag 4 (while held, 5s timeout)
-- Square Button: Navigate to 1m in front of AprilTag 9 (while held, 10s timeout)
+- Start Button: Align to AprilTag (while held, 5s timeout)
 
 **Ball Intake**:
-- L1 Button: Intake balls (while held)
-- R1 Button: Eject balls (while held)
-- Touchpad Button: Hold balls (while held)
-- PS Button: Emergency stop intake
+- Left Bumper: Intake balls (while held)
+- Right Bumper: Eject balls (while held)
+- Left Trigger: Hold balls (while held)
+- Right Trigger: Stop intake (momentary)
 
 ### 8.2 Autonomous Configuration
 - SendableChooser for autonomous selection

@@ -67,6 +67,9 @@ public class Drivetrain extends SubsystemBase {
   // boolean for keeping track of robot alliance (used for flipping auto path)
   public boolean isRedAlliance;
 
+  // Timer for pose output throttling (once per second)
+  private double m_lastPrintTime = 0.0;
+
   // Odometry class for tracking robot pose (basic wheel odometry)
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -139,7 +142,12 @@ public class Drivetrain extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-        System.out.println(getPose().getX() + "     " + getPose().getY());
+    // Print pose once per second
+    double currentTime = WPIUtilJNI.now() * 1e-6;
+    if (currentTime - m_lastPrintTime >= 1.0) {
+      System.out.println(getPose().getX() + "     " + getPose().getY());
+      m_lastPrintTime = currentTime;
+    }
   }
 
   /**
