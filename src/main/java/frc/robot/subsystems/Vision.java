@@ -68,6 +68,25 @@ import frc.robot.Constants.VisionConstants;
 public class Vision extends SubsystemBase {
     
     /**
+     * Detailed information about a visible AprilTag.
+     */
+    public static class AprilTagInfo {
+        public final int id;
+        public final double ambiguity;
+        public final boolean usedForPoseUpdate;
+        public final String cameraName;
+        public final double distance;
+        
+        public AprilTagInfo(int id, double ambiguity, boolean usedForPoseUpdate, String cameraName, double distance) {
+            this.id = id;
+            this.ambiguity = ambiguity;
+            this.usedForPoseUpdate = usedForPoseUpdate;
+            this.cameraName = cameraName;
+            this.distance = distance;
+        }
+    }
+    
+    /**
      * Container class for camera and its associated pose estimator.
      */
     private static class CameraModule {
@@ -431,6 +450,46 @@ public class Vision extends SubsystemBase {
         }
         
         return visibleTags;
+    }
+    
+    /**
+     * Gets detailed information about all currently visible AprilTags.
+     * 
+     * Includes ambiguity values and whether each tag is being used for pose updates.
+     * A tag is used for pose updates if its ambiguity is below kMaxAmbiguity threshold.
+     * 
+     * @return List of AprilTagInfo objects with detailed information
+     */
+    public List<AprilTagInfo> getDetailedAprilTagInfo() {
+        List<AprilTagInfo> tagInfoList = new ArrayList<>();
+        
+        for (CameraModule module : cameraModules) {
+            PhotonPipelineResult result = module.camera.getLatestResult();
+            if (result.hasTargets()) {
+                for (PhotonTrackedTarget target : result.getTargets()) {
+                    double ambiguity = target.getPoseAmbiguity();
+                    boolean usedForUpdate = ambiguity <= VisionConstants.kMaxAmbiguity;
+                    
+                    // Calculate distance to tag
+                    double distance = -1.0;
+                    Optional<Pose3d> targetPose = aprilTagFieldLayout.getTagPose(target.getFiducialId());
+                    if (targetPose.isPresent()) {
+                        distance = drivetrain.getPose().getTranslation()
+                            .getDistance(targetPose.get().toPose2d().getTranslation());
+                    }
+                    
+                    tagInfoList.add(new AprilTagInfo(
+                        target.getFiducialId(),
+                        ambiguity,
+                        usedForUpdate,
+                        module.name,
+                        distance
+                    ));
+                }
+            }
+        }
+        
+        return tagInfoList;
     }
     
     /**

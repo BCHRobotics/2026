@@ -175,19 +175,27 @@ public class Drivetrain extends SubsystemBase {
     diagnostics.append(String.format("Position: X=%.2fm, Y=%.2fm, Heading=%.1f°\n", 
         pose.getX(), pose.getY(), getHeading()));
     
-    // Vision - AprilTags
+    // Vision - AprilTags with detailed information
     if (m_vision != null) {
-      java.util.List<Integer> visibleTags = m_vision.getVisibleAprilTags();
-      diagnostics.append(String.format("AprilTags Visible: %d [", visibleTags.size()));
-      if (!visibleTags.isEmpty()) {
-        for (int i = 0; i < visibleTags.size(); i++) {
-          diagnostics.append(visibleTags.get(i));
-          if (i < visibleTags.size() - 1) diagnostics.append(", ");
+      java.util.List<Vision.AprilTagInfo> tagInfos = m_vision.getDetailedAprilTagInfo();
+      diagnostics.append(String.format("AprilTags Visible: %d\n", tagInfos.size()));
+      
+      if (!tagInfos.isEmpty()) {
+        int updatingCount = 0;
+        for (Vision.AprilTagInfo info : tagInfos) {
+          if (info.usedForPoseUpdate) updatingCount++;
+        }
+        diagnostics.append(String.format("  (%d updating pose, %d rejected due to high ambiguity)\n", 
+            updatingCount, tagInfos.size() - updatingCount));
+        
+        for (Vision.AprilTagInfo info : tagInfos) {
+          String updateStatus = info.usedForPoseUpdate ? "UPDATING" : "REJECTED";
+          diagnostics.append(String.format("  Tag %2d: Ambiguity=%.3f, Dist=%.2fm, Cam=%s [%s]\n",
+              info.id, info.ambiguity, info.distance, info.cameraName, updateStatus));
         }
       } else {
-        diagnostics.append("None");
+        diagnostics.append("  No tags detected\n");
       }
-      diagnostics.append("]\n");
     } else {
       diagnostics.append("AprilTags: Vision subsystem not initialized\n");
     }
