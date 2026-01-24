@@ -174,11 +174,11 @@ public class RobotContainer {
         
         // ========== Vision-Based Navigation Commands ==========
         
-        // Square button (PS5): Navigate to 1 meter in front of AprilTag 12
+        // Square button (PS5): Navigate to 1 meter in front of AprilTag 28
         // Uses vision-based autonomous navigation to position the robot
         // Runs while button is held, cancels when released
         driverController.square().whileTrue(
-            new GoToAprilTagCommand(m_vision, m_robotDrive, 17, 1.0)
+            new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
                     .withTimeout(10.0) // Safety timeout
         );
         

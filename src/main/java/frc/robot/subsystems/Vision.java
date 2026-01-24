@@ -29,12 +29,7 @@
  * - Calibrate and set robot-to-camera transforms in VisionConstants.kRobotToCams
  * - Tune vision standard deviations in VisionConstants for your specific setup
  * 
- * TODO: FIXME: Update AprilTagFieldLayout to 2026 Rebuilt once available in WPILib
- * 2026 Rebuilt AprilTag Layout:
- * - Blue Alliance: Tags 1-8
- * - Red Alliance: Tags 9-16
- * - See official 2026 game manual for exact positions
- * 
+ 
  * @see Drivetrain For odometry integration
  * @see VisionConstants For camera configuration.
  */

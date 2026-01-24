@@ -177,23 +177,23 @@ public class Drivetrain extends SubsystemBase {
     
     // Navigation to specific AprilTags
     if (m_vision != null) {
-      Vision.TagNavigationInfo tag12 = m_vision.getTagNavigationInfo(12);
-      Vision.TagNavigationInfo tag28 = m_vision.getTagNavigationInfo(28);
+      // Vision.TagNavigationInfo tag12 = m_vision.getTagNavigationInfo(12);
+      // Vision.TagNavigationInfo tag28 = m_vision.getTagNavigationInfo(28);
       
-      diagnostics.append("Target AprilTags:\n");
-      if (tag12.tagExists) {
-        diagnostics.append(String.format("  Tag 12: Distance=%.2fm, Heading=%.1f°\n",
-            tag12.distance, tag12.heading));
-      } else {
-        diagnostics.append("  Tag 12: NOT IN FIELD LAYOUT\n");
-      }
+      // diagnostics.append("Target AprilTags:\n");
+      // if (tag12.tagExists) {
+      //   diagnostics.append(String.format("  Tag 12: Distance=%.2fm, Heading=%.1f°\n",
+      //       tag12.distance, tag12.heading));
+      // } else {
+      //   diagnostics.append("  Tag 12: NOT IN FIELD LAYOUT\n");
+      // }
       
-      if (tag28.tagExists) {
-        diagnostics.append(String.format("  Tag 28: Distance=%.2fm, Heading=%.1f°\n",
-            tag28.distance, tag28.heading));
-      } else {
-        diagnostics.append("  Tag 28: NOT IN FIELD LAYOUT\n");
-      }
+      // if (tag28.tagExists) {
+      //   diagnostics.append(String.format("  Tag 28: Distance=%.2fm, Heading=%.1f°\n",
+      //       tag28.distance, tag28.heading));
+      // } else {
+      //   diagnostics.append("  Tag 28: NOT IN FIELD LAYOUT\n");
+      // }
     }
     
     // Vision - AprilTags with detailed information
@@ -221,16 +221,16 @@ public class Drivetrain extends SubsystemBase {
       diagnostics.append("AprilTags: Vision subsystem not initialized\n");
     }
     
-    // Motor Currents
-    diagnostics.append("Motor Currents:\n");
-    diagnostics.append(String.format("  Front Left:  Drive=%.1fA, Turn=%.1fA\n",
-        m_frontLeft.getDriveCurrent(), m_frontLeft.getTurnCurrent()));
-    diagnostics.append(String.format("  Front Right: Drive=%.1fA, Turn=%.1fA\n",
-        m_frontRight.getDriveCurrent(), m_frontRight.getTurnCurrent()));
-    diagnostics.append(String.format("  Rear Left:   Drive=%.1fA, Turn=%.1fA\n",
-        m_rearLeft.getDriveCurrent(), m_rearLeft.getTurnCurrent()));
-    diagnostics.append(String.format("  Rear Right:  Drive=%.1fA, Turn=%.1fA\n",
-        m_rearRight.getDriveCurrent(), m_rearRight.getTurnCurrent()));
+    // // Motor Currents
+    // diagnostics.append("Motor Currents:\n");
+    // diagnostics.append(String.format("  Front Left:  Drive=%.1fA, Turn=%.1fA\n",
+    //     m_frontLeft.getDriveCurrent(), m_frontLeft.getTurnCurrent()));
+    // diagnostics.append(String.format("  Front Right: Drive=%.1fA, Turn=%.1fA\n",
+    //     m_frontRight.getDriveCurrent(), m_frontRight.getTurnCurrent()));
+    // diagnostics.append(String.format("  Rear Left:   Drive=%.1fA, Turn=%.1fA\n",
+    //     m_rearLeft.getDriveCurrent(), m_rearLeft.getTurnCurrent()));
+    // diagnostics.append(String.format("  Rear Right:  Drive=%.1fA, Turn=%.1fA\n",
+    //     m_rearRight.getDriveCurrent(), m_rearRight.getTurnCurrent()));
     
     diagnostics.append("=======================================\n");
     
