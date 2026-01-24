@@ -74,11 +74,16 @@ public class GoToAprilTagCommand extends Command {
                 0                   // No lateral offset
             ).rotateBy(tagRotation);
             
-            // Calculate target pose: tag position + offset, facing toward the tag
-            m_targetPose = new Pose2d(
-                tagPose2d.getTranslation().plus(offsetFromTag),
-                tagRotation.plus(Rotation2d.fromDegrees(180)) // Face toward the tag (opposite of tag's rotation)
-            );
+            // Calculate target position
+            Translation2d targetPosition = tagPose2d.getTranslation().plus(offsetFromTag);
+            
+            // Calculate rotation to face the tag directly
+            // Get the angle from our target position to the tag
+            Translation2d toTag = tagPose2d.getTranslation().minus(targetPosition);
+            Rotation2d faceTagRotation = new Rotation2d(toTag.getX(), toTag.getY());
+            
+            // Calculate target pose: position + rotation facing the tag
+            m_targetPose = new Pose2d(targetPosition, faceTagRotation);
             
             // Set PID setpoints
             m_xController.setSetpoint(m_targetPose.getX());
