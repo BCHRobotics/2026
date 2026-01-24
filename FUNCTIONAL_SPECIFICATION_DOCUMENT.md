@@ -1,8 +1,8 @@
 # FRC Team 2386 Robot Control System - Functional Specification Document
 
 ## Document Information
-- **Document Version**: 1.1
-- **Date**: January 16, 2026
+- **Document Version**: 1.2
+- **Date**: January 24, 2026
 - **Project**: FRC Team 2386 Robot Code (2026 Season)
 - **Purpose**: Comprehensive specification for AI agents to understand and extend the robot control system
 
@@ -14,9 +14,11 @@ This is the robot control software for FRC Team 2386's competition robot, built 
 ### 1.2 Key Features
 - **Swerve Drive System**: 4-module MAXSwerve drive with field-oriented control
 - **Vision Processing**: Multi-camera AprilTag detection with pose estimation
-- **Actuator Control**: Dual PID-controlled mechanisms for game piece manipulation
+- **Vision-Based Navigation**: Autonomous positioning relative to AprilTags
+- **Diagnostic System**: Real-time robot position, AprilTag visibility, and motor current monitoring
 - **Autonomous Operation**: PathPlanner-based autonomous routines
 - **Real-time Telemetry**: SmartDashboard integration for monitoring and debugging
+- **Example Subsystems**: Actuator and BallIntake subsystems (disabled, kept as development examples)
 
 ### 1.3 Competition Context
 - **Season**: 2026 FRC Season
@@ -83,6 +85,8 @@ src/main/java/frc/
 - `resetOdometry(Pose2d pose)`: Reset position tracking
 - `getPose()`: Get current robot pose
 - `addVisionMeasurement(Pose2d visionPose, double timestamp, Matrix<N3,N1> stdDevs)`: Vision fusion
+- `setVision(Vision vision)`: Connect Vision subsystem for diagnostics
+- `printDiagnostics()`: Output robot position, AprilTag info, and motor currents (once per second)
 
 **Configuration Constants** (DriveConstants):
 - Wheelbase and track width dimensions
@@ -105,6 +109,9 @@ src/main/java/frc/
 - `getCameraModules()`: Get list of all camera modules
 - `getActiveCameraCount()`: Get number of active cameras
 - `getFieldLayout()`: Get AprilTag field layout
+- `getVisibleAprilTags()`: Get list of currently visible AprilTag IDs
+- `getDetailedAprilTagInfo()`: Get detailed info including ID, ambiguity, distance, camera, and pose update status
+- `AprilTagInfo` class: Contains tag ID, ambiguity, update status, camera name, and distance
 
 **Configuration Constants** (VisionConstants):
 - Camera names and enable/disable flags
@@ -112,9 +119,10 @@ src/main/java/frc/
 - Pose estimation standard deviations
 - Multi-tag tracking parameters
 
-### 3.3 Actuator Subsystem
+### 3.3 Actuator Subsystem (DISABLED - Example Code)
 **File**: `Actuator.java`
 **Purpose**: SPARK MAX onboard PID control for mechanisms
+**Status**: ⚠️ DISABLED - Hardware does not physically exist, kept as example code
 
 **Key Responsibilities**:
 - Closed-loop position control using NEO motor
@@ -137,9 +145,10 @@ src/main/java/frc/
 - Position limits and preset positions
 - Current limits and soft stops
 
-### 3.4 Actuator2 Subsystem
+### 3.4 Actuator2 Subsystem (DISABLED - Example Code)
 **File**: `Actuator2.java`
 **Purpose**: WPILib PID control for mechanisms
+**Status**: ⚠️ DISABLED - Hardware does not physically exist, kept as example code
 
 **Key Responsibilities**:
 - RoboRIO-based PID control (alternative to SPARK MAX PID)
@@ -157,9 +166,10 @@ src/main/java/frc/
 - PID gains (tunable via dashboard)
 - Position limits and presets
 
-### 3.5 Ball Intake Subsystem
+### 3.5 Ball Intake Subsystem (DISABLED - Example Code)
 **File**: `BallIntake.java`
 **Purpose**: Variable speed motor control for collecting and managing game pieces
+**Status**: ⚠️ DISABLED - Hardware does not physically exist, kept as example code
 
 **Key Responsibilities**:
 - Variable speed motor control for ball intake/ejection
@@ -186,7 +196,7 @@ src/main/java/frc/
 
 ### 4.1 Drive Commands
 **TeleopDriveCommand**: Main teleop driving
-- Processes Xbox controller input
+- Processes PS5 controller input
 - Applies deadbands and slew rate limiting
 - Field-oriented control with optional rate limiting
 
@@ -195,7 +205,15 @@ src/main/java/frc/
 - PID control for precise positioning
 - Distance and angle correction
 
-### 4.2 Actuator Commands
+**GoToAprilTagCommand**: Autonomous navigation to AprilTag
+- Navigates robot to specified distance in front of AprilTag
+- Field-relative positioning with rotation control
+- Configurable target tag ID and distance
+- PID-based control with position and rotation tolerances
+
+### 4.2 Actuator Commands (DISABLED - Example Code)
+**Status**: ⚠️ All actuator commands disabled as hardware does not exist
+
 **Position Commands**: Move to preset positions
 - Home, mid, and max extension positions
 - Smooth transitions with PID control
@@ -210,7 +228,9 @@ src/main/java/frc/
 - Real-time path generation capability
 - Event markers for coordinated actions
 
-### 4.4 Ball Intake Commands
+### 4.4 Ball Intake Commands (DISABLED - Example Code)
+**Status**: ⚠️ All ball intake commands disabled as hardware does not exist
+
 **IntakeCommand**: Start ball collection
 - Runs intake motor at configured intake speed
 - Continues until interrupted or stopped
@@ -265,9 +285,9 @@ src/main/java/frc/
 | RL Turn | NEO (SPARK MAX) | 11 | MAXSwerve Module |
 | RR Drive | NEO (SPARK MAX) | 16 | MAXSwerve Module |
 | RR Turn | NEO (SPARK MAX) | 17 | MAXSwerve Module |
-| Actuator | NEO (SPARK MAX) | 20 | SPARK MAX PID |
-| Actuator2 | NEO (SPARK MAX) | 21 | WPILib PID |
-| Ball Intake | NEO (SPARK MAX) | 22 | Variable speed intake |
+| ~~Actuator~~ | ~~NEO (SPARK MAX)~~ | ~~20~~ | ⚠️ DISABLED - Example code only |
+| ~~Actuator2~~ | ~~NEO (SPARK MAX)~~ | ~~21~~ | ⚠️ DISABLED - Example code only |
+| ~~Ball Intake~~ | ~~NEO (SPARK MAX)~~ | ~~22~~ | ⚠️ DISABLED - Example code only |
 
 ### 6.2 Sensors
 | Component | Type | Interface | Notes |
@@ -296,33 +316,37 @@ src/main/java/frc/
 
 ## 8. Control Interface
 
-### 8.1 Driver Controls (Xbox Controller - Port 0)
+### 8.1 Driver Controls (PS5 Controller - Port 0)
 **Drive**:
 - Left Stick: Translation (X/Y) - Forward/backward and strafe
 - Right Stick X: Rotation (Z)
 - Field-oriented with slew rate limiting
 
-**Actuator 1 (SPARK MAX PID)**:
-- A Button: Home position (retracted)
-- B Button: Mid position
-- Y Button: Max position (extended)
-- X Button: Reset encoder
+**Active Vision Controls**:
+- **Square Button**: Navigate to AprilTag 12 at 1.0m distance (autonomous positioning)
+- **Options Button**: Align to AprilTag 4 (while held, 5s timeout)
 
-**Actuator 2 (WPILib PID)**:
-- Left/Right Bumpers: Manual control (extend/retract while held)
-- D-Pad Down: Home position
-- D-Pad Left/Right: Mid position
-- D-Pad Up: Max position
-- Back Button: Reset encoder
+**Disabled Controls (Example Code)**:
+⚠️ The following controls are disabled as the hardware does not exist:
 
-**Vision**:
-- Start Button: Align to AprilTag (while held, 5s timeout)
+~~**Actuator 1 (SPARK MAX PID)**~~:
+- ~~Cross Button: Home position (retracted)~~
+- ~~Circle Button: Mid position~~
+- ~~Triangle Button: Max position (extended)~~
+- ~~Right Stick Y: Manual control~~
 
-**Ball Intake**:
-- Left Bumper: Intake balls (while held)
-- Right Bumper: Eject balls (while held)
-- Left Trigger: Hold balls (while held)
-- Right Trigger: Stop intake (momentary)
+~~**Actuator 2 (WPILib PID)**~~:
+- ~~L2/R2 Triggers: Manual control (extend/retract while held)~~
+- ~~D-Pad Down: Home position~~
+- ~~D-Pad Left/Right: Mid position~~
+- ~~D-Pad Up: Max position~~
+- ~~Create Button: Reset encoder~~
+
+~~**Ball Intake**~~:
+- ~~L1 Button: Intake balls (while held)~~
+- ~~R1 Button: Eject balls (while held)~~
+- ~~Touchpad: Hold balls (while held)~~
+- ~~PS Button: Stop intake (momentary)~~
 
 ### 8.2 Autonomous Configuration
 - SendableChooser for autonomous selection
