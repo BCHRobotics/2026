@@ -156,7 +156,10 @@ public class Vision extends SubsystemBase {
             try {
                 // Initialize PhotonVision camera
                 PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
-                
+ 
+                // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
+                //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
+
                 // Initialize pose estimator with multi-tag strategy for best accuracy
                 PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
                     aprilTagFieldLayout,
