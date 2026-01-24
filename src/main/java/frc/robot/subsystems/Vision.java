@@ -29,14 +29,9 @@
  * - Calibrate and set robot-to-camera transforms in VisionConstants.kRobotToCams
  * - Tune vision standard deviations in VisionConstants for your specific setup
  * 
- * TODO: FIXME: Update AprilTagFieldLayout to 2026 Rebuilt once available in WPILib
- * 2026 Rebuilt AprilTag Layout:
- * - Blue Alliance: Tags 1-8
- * - Red Alliance: Tags 9-16
- * - See official 2026 game manual for exact positions
- * 
+ 
  * @see Drivetrain For odometry integration
- * @see VisionConstants For camera configuration
+ * @see VisionConstants For camera configuration.
  */
 
 package frc.robot.subsystems;
@@ -66,6 +61,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
+    
+    /**
+     * Detailed information about a visible AprilTag.
+     */
+    public static class AprilTagInfo {
+        public final int id;
+        public final double ambiguity;
+        public final boolean usedForPoseUpdate;
+        public final String cameraName;
+        public final double distance;
+        
+        public AprilTagInfo(int id, double ambiguity, boolean usedForPoseUpdate, String cameraName, double distance) {
+            this.id = id;
+            this.ambiguity = ambiguity;
+            this.usedForPoseUpdate = usedForPoseUpdate;
+            this.cameraName = cameraName;
+            this.distance = distance;
+        }
+    }
     
     /**
      * Container class for camera and its associated pose estimator.
@@ -142,7 +156,10 @@ public class Vision extends SubsystemBase {
             try {
                 // Initialize PhotonVision camera
                 PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
-                
+ 
+                // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
+                //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
+
                 // Initialize pose estimator with multi-tag strategy for best accuracy
                 PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
                     aprilTagFieldLayout,
@@ -411,5 +428,131 @@ public class Vision extends SubsystemBase {
      */
     public AprilTagFieldLayout getFieldLayout() {
         return aprilTagFieldLayout;
+    }
+    
+    /**
+     * Gets a list of all currently visible AprilTag IDs from all cameras.
+     * 
+     * @return List of visible AprilTag IDs (may contain duplicates if seen by multiple cameras)
+     */
+    public List<Integer> getVisibleAprilTags() {
+        List<Integer> visibleTags = new ArrayList<>();
+        
+        for (CameraModule module : cameraModules) {
+            PhotonPipelineResult result = module.camera.getLatestResult();
+            if (result.hasTargets()) {
+                for (PhotonTrackedTarget target : result.getTargets()) {
+                    visibleTags.add(target.getFiducialId());
+                }
+            }
+        }
+        
+        return visibleTags;
+    }
+    
+    /**
+     * Gets detailed information about all currently visible AprilTags.
+     * 
+     * Includes ambiguity values and whether each tag is being used for pose updates.
+     * A tag is used for pose updates if its ambiguity is below kMaxAmbiguity threshold.
+     * 
+     * @return List of AprilTagInfo objects with detailed information
+     */
+    public List<AprilTagInfo> getDetailedAprilTagInfo() {
+        List<AprilTagInfo> tagInfoList = new ArrayList<>();
+        
+        for (CameraModule module : cameraModules) {
+            PhotonPipelineResult result = module.camera.getLatestResult();
+            if (result.hasTargets()) {
+                for (PhotonTrackedTarget target : result.getTargets()) {
+                    double ambiguity = target.getPoseAmbiguity();
+                    boolean usedForUpdate = ambiguity <= VisionConstants.kMaxAmbiguity;
+                    
+                    // Calculate distance to tag
+                    double distance = -1.0;
+                    Optional<Pose3d> targetPose = aprilTagFieldLayout.getTagPose(target.getFiducialId());
+                    if (targetPose.isPresent()) {
+                        distance = drivetrain.getPose().getTranslation()
+                            .getDistance(targetPose.get().toPose2d().getTranslation());
+                    }
+                    
+                    tagInfoList.add(new AprilTagInfo(
+                        target.getFiducialId(),
+                        ambiguity,
+                        usedForUpdate,
+                        module.name,
+                        distance
+                    ));
+                }
+            }
+        }
+        
+        return tagInfoList;
+    }
+    
+    /**
+     * Gets the total number of AprilTags currently visible across all cameras.
+     * 
+     * @return Total count of visible targets (may count same tag multiple times if seen by multiple cameras)
+     */
+    public int getVisibleTagCount() {
+        int count = 0;
+        
+        for (CameraModule module : cameraModules) {
+            PhotonPipelineResult result = module.camera.getLatestResult();
+            if (result.hasTargets()) {
+                count += result.getTargets().size();
+            }
+        }
+        
+        return count;
+    }
+    
+    /**
+     * Information about heading and distance to a specific AprilTag.
+     */
+    public static class TagNavigationInfo {
+        public final int tagId;
+        public final boolean tagExists;
+        public final double distance;  // meters
+        public final double heading;   // degrees, field-relative angle to tag
+        
+        public TagNavigationInfo(int tagId, boolean tagExists, double distance, double heading) {
+            this.tagId = tagId;
+            this.tagExists = tagExists;
+            this.distance = distance;
+            this.heading = heading;
+        }
+    }
+    
+    /**
+     * Gets heading and distance to a specific AprilTag.
+     * 
+     * Calculates the field-relative heading (angle) from the robot's current position
+     * to the specified AprilTag, along with the distance.
+     * 
+     * @param tagId The AprilTag ID to get navigation info for
+     * @return TagNavigationInfo with distance and heading, or invalid info if tag doesn't exist
+     */
+    public TagNavigationInfo getTagNavigationInfo(int tagId) {
+        Optional<Pose3d> tagPoseOptional = aprilTagFieldLayout.getTagPose(tagId);
+        
+        if (!tagPoseOptional.isPresent()) {
+            // Tag doesn't exist in field layout
+            return new TagNavigationInfo(tagId, false, 0.0, 0.0);
+        }
+        
+        Pose2d tagPose = tagPoseOptional.get().toPose2d();
+        Pose2d robotPose = drivetrain.getPose();
+        
+        // Calculate distance
+        double distance = robotPose.getTranslation().getDistance(tagPose.getTranslation());
+        
+        // Calculate heading (field-relative angle from robot to tag)
+        double deltaX = tagPose.getX() - robotPose.getX();
+        double deltaY = tagPose.getY() - robotPose.getY();
+        double heading = Math.toDegrees(Math.atan2(deltaY, deltaX));
+        
+        return new TagNavigationInfo(tagId, true, distance, heading);
     }
 }
