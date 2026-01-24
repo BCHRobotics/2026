@@ -119,9 +119,9 @@ public final class Constants {
      */
     public static final boolean[] kCamerasEnabled = {
       true,  // Camera 0
-      true,  // Camera 1
-      true,  // Camera 2
-      true   // Camera 3
+      false,  // Camera 1
+      false,  // Camera 2
+      false,   // Camera 3
     };
     
     /**
@@ -167,8 +167,8 @@ public final class Constants {
     public static final Transform3d[] kRobotToCams = {
       // Camera 0 - Front
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
-        new Rotation3d(0, 0, 0)
+        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34)),
+        new Rotation3d(0, 0, 180)
       ),
       // Camera 1 - Back
       new Transform3d(
