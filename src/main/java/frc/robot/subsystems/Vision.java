@@ -509,4 +509,52 @@ public class Vision extends SubsystemBase {
         
         return count;
     }
+    
+    /**
+     * Information about heading and distance to a specific AprilTag.
+     */
+    public static class TagNavigationInfo {
+        public final int tagId;
+        public final boolean tagExists;
+        public final double distance;  // meters
+        public final double heading;   // degrees, field-relative angle to tag
+        
+        public TagNavigationInfo(int tagId, boolean tagExists, double distance, double heading) {
+            this.tagId = tagId;
+            this.tagExists = tagExists;
+            this.distance = distance;
+            this.heading = heading;
+        }
+    }
+    
+    /**
+     * Gets heading and distance to a specific AprilTag.
+     * 
+     * Calculates the field-relative heading (angle) from the robot's current position
+     * to the specified AprilTag, along with the distance.
+     * 
+     * @param tagId The AprilTag ID to get navigation info for
+     * @return TagNavigationInfo with distance and heading, or invalid info if tag doesn't exist
+     */
+    public TagNavigationInfo getTagNavigationInfo(int tagId) {
+        Optional<Pose3d> tagPoseOptional = aprilTagFieldLayout.getTagPose(tagId);
+        
+        if (!tagPoseOptional.isPresent()) {
+            // Tag doesn't exist in field layout
+            return new TagNavigationInfo(tagId, false, 0.0, 0.0);
+        }
+        
+        Pose2d tagPose = tagPoseOptional.get().toPose2d();
+        Pose2d robotPose = drivetrain.getPose();
+        
+        // Calculate distance
+        double distance = robotPose.getTranslation().getDistance(tagPose.getTranslation());
+        
+        // Calculate heading (field-relative angle from robot to tag)
+        double deltaX = tagPose.getX() - robotPose.getX();
+        double deltaY = tagPose.getY() - robotPose.getY();
+        double heading = Math.toDegrees(Math.atan2(deltaY, deltaX));
+        
+        return new TagNavigationInfo(tagId, true, distance, heading);
+    }
 }

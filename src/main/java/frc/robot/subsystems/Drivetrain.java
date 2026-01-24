@@ -175,6 +175,27 @@ public class Drivetrain extends SubsystemBase {
     diagnostics.append(String.format("Position: X=%.2fm, Y=%.2fm, Heading=%.1f°\n", 
         pose.getX(), pose.getY(), getHeading()));
     
+    // Navigation to specific AprilTags
+    if (m_vision != null) {
+      Vision.TagNavigationInfo tag12 = m_vision.getTagNavigationInfo(12);
+      Vision.TagNavigationInfo tag28 = m_vision.getTagNavigationInfo(28);
+      
+      diagnostics.append("Target AprilTags:\n");
+      if (tag12.tagExists) {
+        diagnostics.append(String.format("  Tag 12: Distance=%.2fm, Heading=%.1f°\n",
+            tag12.distance, tag12.heading));
+      } else {
+        diagnostics.append("  Tag 12: NOT IN FIELD LAYOUT\n");
+      }
+      
+      if (tag28.tagExists) {
+        diagnostics.append(String.format("  Tag 28: Distance=%.2fm, Heading=%.1f°\n",
+            tag28.distance, tag28.heading));
+      } else {
+        diagnostics.append("  Tag 28: NOT IN FIELD LAYOUT\n");
+      }
+    }
+    
     // Vision - AprilTags with detailed information
     if (m_vision != null) {
       java.util.List<Vision.AprilTagInfo> tagInfos = m_vision.getDetailedAprilTagInfo();
