@@ -251,12 +251,10 @@ Select autonomous mode from the "Autonomous Mode" dropdown on the Driver Station
 │   │   │   ├── auto/           # Autonomous commands
 │   │   │   │   ├── DriveForwardCommand.java
 │   │   │   │   └── package-info.java
-│   │   │   ├── drive/          # General drive commands
+│   │   │   ├── drivetrain/     # Drivetrain control commands
+│   │   │   │   ├── TeleopDriveCommand.java
 │   │   │   │   ├── GoToPositionCommand.java
 │   │   │   │   ├── GoToPositionRelativeCommand.java
-│   │   │   │   └── package-info.java
-│   │   │   ├── drivetrain/     # Drive commands
-│   │   │   │   ├── TeleopDriveCommand.java
 │   │   │   │   └── package-info.java
 │   │   │   ├── vision/         # Vision alignment commands
 │   │   │   │   ├── AlignToAprilTagCommand.java

@@ -49,10 +49,10 @@ src/main/java/frc/
 │   │   ├── actuator/                # Actuator control commands
 │   │   ├── auto/                    # Autonomous commands
 │   │   ├── ballintake/              # Ball intake control commands
-│   │   ├── drive/                   # General drive commands
+│   │   ├── drivetrain/              # Drivetrain control commands
+│   │   │   ├── TeleopDriveCommand.java
 │   │   │   ├── GoToPositionCommand.java
 │   │   │   └── GoToPositionRelativeCommand.java
-│   │   ├── drivetrain/              # Drivetrain commands
 │   │   └── vision/                  # Vision commands
 │   │       ├── AlignToAprilTagCommand.java
 │   │       └── GoToAprilTagCommand.java
