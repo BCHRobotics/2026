@@ -26,6 +26,7 @@ Official robot code for **FRC Team 2386** competing in the 2026 FIRST Robotics C
 - **Vision Alignment Commands**: Automated AprilTag alignment for precise positioning
 - **Vision-Based Navigation**: GoToAprilTagCommand for autonomous positioning relative to AprilTags
 - **Field Position Navigation**: GoToPositionCommand for autonomous navigation to any field location
+- **Alliance-Relative Navigation**: GoToPositionRelativeCommand with automatic coordinate mirroring for red/blue alliances
 - **Ambiguity Filtering**: Rejects low-quality pose estimates (>0.2 ambiguity) to ensure accuracy
 - **Detailed Diagnostics**: Real-time reporting of visible tags with confidence, distance, and update status
 
@@ -252,6 +253,7 @@ Select autonomous mode from the "Autonomous Mode" dropdown on the Driver Station
 │   │   │   │   └── package-info.java
 │   │   │   ├── drive/          # General drive commands
 │   │   │   │   ├── GoToPositionCommand.java
+│   │   │   │   ├── GoToPositionRelativeCommand.java
 │   │   │   │   └── package-info.java
 │   │   │   ├── drivetrain/     # Drive commands
 │   │   │   │   ├── TeleopDriveCommand.java

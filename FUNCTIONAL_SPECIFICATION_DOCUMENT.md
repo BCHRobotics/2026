@@ -50,7 +50,8 @@ src/main/java/frc/
 │   │   ├── auto/                    # Autonomous commands
 │   │   ├── ballintake/              # Ball intake control commands
 │   │   ├── drive/                   # General drive commands
-│   │   │   └── GoToPositionCommand.java
+│   │   │   ├── GoToPositionCommand.java
+│   │   │   └── GoToPositionRelativeCommand.java
 │   │   ├── drivetrain/              # Drivetrain commands
 │   │   └── vision/                  # Vision commands
 │   │       ├── AlignToAprilTagCommand.java
@@ -222,6 +223,19 @@ src/main/java/frc/
 - PID-based control with position and rotation tolerances
 - Uses odometry for field-relative navigation
 - Can be constructed with individual parameters or a Pose2d object
+
+**GoToPositionRelativeCommand**: Alliance-relative autonomous navigation
+- Navigates robot using alliance-relative coordinates
+- Automatically mirrors coordinates for red alliance (opposite diagonal corner)
+- Inputs: X (meters), Y (meters), Rotation (degrees), Alliance (Red/Blue)
+- For Blue Alliance: (0,0) is at blue corner (standard FRC coordinates)
+- For Red Alliance: (0,0) is mirrored to opposite diagonal corner
+  - X coordinates: red_x = FIELD_LENGTH - blue_x (16.54m field)
+  - Y coordinates: red_y = FIELD_WIDTH - blue_y (8.21m field)
+  - Rotation: red_rotation = 180° - blue_rotation
+- Enables reusable autonomous routines regardless of alliance color
+- Can auto-detect alliance from DriverStation or accept explicit Alliance parameter
+- PID-based control with position and rotation tolerances
 
 ### 4.2 Actuator Commands (DISABLED - Example Code)
 **Status**: ⚠️ All actuator commands disabled as hardware does not exist
