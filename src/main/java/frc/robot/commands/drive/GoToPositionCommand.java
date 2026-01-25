@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.NavigationConstants;
 import frc.robot.subsystems.Drivetrain;
 
 /**
@@ -17,14 +18,21 @@ public class GoToPositionCommand extends Command {
     private final Pose2d m_targetPose;
     
     // PID controllers for position and rotation control
-    private final PIDController m_xController = new PIDController(0.3, 0, 0);
-    private final PIDController m_yController = new PIDController(0.3, 0, 0);
-    private final PIDController m_rotController = new PIDController(0.05, 0, 0);
-    
-    private static final double kPositionTolerance = 0.1; // meters
-    private static final double kRotationTolerance = 5.0; // degrees
-    private static final double kMaxLinearSpeed = 0.5; // m/s
-    private static final double kMaxAngularSpeed = 0.3; // rad/s
+    private final PIDController m_xController = new PIDController(
+        NavigationConstants.kPositionP,
+        NavigationConstants.kPositionI,
+        NavigationConstants.kPositionD
+    );
+    private final PIDController m_yController = new PIDController(
+        NavigationConstants.kPositionP,
+        NavigationConstants.kPositionI,
+        NavigationConstants.kPositionD
+    );
+    private final PIDController m_rotController = new PIDController(
+        NavigationConstants.kRotationP,
+        NavigationConstants.kRotationI,
+        NavigationConstants.kRotationD
+    );
 
     /**
      * Creates a new GoToPositionCommand.
@@ -49,9 +57,9 @@ public class GoToPositionCommand extends Command {
         m_targetPose = targetPose;
 
         // Set tolerances
-        m_xController.setTolerance(kPositionTolerance);
-        m_yController.setTolerance(kPositionTolerance);
-        m_rotController.setTolerance(kRotationTolerance);
+        m_xController.setTolerance(NavigationConstants.kPositionTolerance);
+        m_yController.setTolerance(NavigationConstants.kPositionTolerance);
+        m_rotController.setTolerance(NavigationConstants.kRotationTolerance);
         m_rotController.enableContinuousInput(-180, 180);
 
         addRequirements(drivetrain);
@@ -78,9 +86,9 @@ public class GoToPositionCommand extends Command {
         double rotation = m_rotController.calculate(currentPose.getRotation().getDegrees());
         
         // Limit speeds for safety
-        xSpeed = Math.max(-kMaxLinearSpeed, Math.min(kMaxLinearSpeed, xSpeed));
-        ySpeed = Math.max(-kMaxLinearSpeed, Math.min(kMaxLinearSpeed, ySpeed));
-        rotation = Math.max(-kMaxAngularSpeed, Math.min(kMaxAngularSpeed, rotation));
+        xSpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, xSpeed));
+        ySpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, ySpeed));
+        rotation = Math.max(-NavigationConstants.kMaxAngularSpeed, Math.min(NavigationConstants.kMaxAngularSpeed, rotation));
         
         // Drive field-relative
         m_drivetrain.drive(xSpeed, ySpeed, rotation, true, false);

@@ -338,6 +338,81 @@ public final class Constants {
   }
 
   /**
+   * Constants for autonomous navigation commands (GoToPosition, GoToPositionRelative, etc.).
+   * 
+   * These PID values control the robot's behavior when navigating to specific field positions.
+   * Higher P values = more aggressive, faster response but may overshoot
+   * Lower P values = smoother, more stable but slower response
+   * 
+   * Tune these values through testing:
+   * 1. Start with low P values and gradually increase
+   * 2. Add D if oscillation occurs
+   * 3. Only add I if there's persistent steady-state error
+   */
+  public static final class NavigationConstants {
+    // ========== PID Gains ==========
+    
+    /**
+     * PID gains for X position control (field-relative).
+     * Controls forward/backward movement accuracy.
+     */
+    public static final double kPositionP = 0.3;
+    public static final double kPositionI = 0.0;
+    public static final double kPositionD = 0.0;
+    
+    /**
+     * PID gains for rotation control.
+     * Controls turning accuracy to target heading.
+     * Note: Lower P value than position because rotation is more sensitive.
+     */
+    public static final double kRotationP = 0.05;
+    public static final double kRotationI = 0.0;
+    public static final double kRotationD = 0.0;
+    
+    // ========== Tolerances ==========
+    
+    /**
+     * Position tolerance in meters.
+     * Command finishes when robot is within this distance of target.
+     */
+    public static final double kPositionTolerance = 0.1; // meters
+    
+    /**
+     * Rotation tolerance in degrees.
+     * Command finishes when robot heading is within this angle of target.
+     */
+    public static final double kRotationTolerance = 5.0; // degrees
+    
+    // ========== Speed Limits ==========
+    
+    /**
+     * Maximum linear speed during autonomous navigation.
+     * Limits how fast the robot can translate to target position.
+     */
+    public static final double kMaxLinearSpeed = 0.5; // m/s
+    
+    /**
+     * Maximum angular speed during autonomous navigation.
+     * Limits how fast the robot can rotate to target heading.
+     */
+    public static final double kMaxAngularSpeed = 0.3; // rad/s
+    
+    // ========== Field Dimensions ==========
+    
+    /**
+     * FRC 2026 Rebuilt field length in meters.
+     * Used for alliance-relative coordinate mirroring.
+     */
+    public static final double kFieldLength = 16.54; // meters (54.27 feet)
+    
+    /**
+     * FRC 2026 Rebuilt field width in meters.
+     * Used for alliance-relative coordinate mirroring.
+     */
+    public static final double kFieldWidth = 8.21; // meters (26.94 feet)
+  }
+
+  /**
    * Constants for PID-controlled Actuator subsystem.
    * 
    * Configure these values for your specific mechanism:
