@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.commands.vision.GoToAprilTagCommand;
@@ -177,10 +178,20 @@ public class RobotContainer {
         // Square button (PS5): Navigate to 1 meter in front of AprilTag 28
         // Uses vision-based autonomous navigation to position the robot
         // Runs while button is held, cancels when released
-        driverController.square().whileTrue(
+        /*driverController.square().whileTrue(
             new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
                     .withTimeout(10.0) // Safety timeout
+        );*/
+        driverController.square().whileTrue(
+            new GoToPositionCommand(m_robotDrive,2.70, 0.0,0.0)
+                    .withTimeout(10.0) // Safety timeout
         );
+
+        driverController.cross().whileTrue(
+            new GoToPositionCommand(m_robotDrive,1.20, 1.0,0.0)
+                    .withTimeout(10.0) // Safety timeout
+        );
+
         
         /* DISABLED: Actuator 2 controls - Hardware does not exist
          * 

@@ -48,7 +48,7 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
-    public static final double maxSpeedNormal = 2; // 3.3
+    public static final double maxSpeedNormal = 3.3; // 3.3
     public static final double maxAngularSpeed = 2 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 3; // radians per second
@@ -198,7 +198,7 @@ public final class Constants {
      * Recommended: 0.2 for competition, 0.3 for testing
      * If you get too many rejected poses, increase this value.
      */
-    public static final double kMaxAmbiguity = 0.2;
+    public static final double kMaxAmbiguity = 0.3;
     
     /**
      * Standard deviations for single-tag pose estimates.
@@ -251,8 +251,8 @@ public final class Constants {
      * These define when the robot is "close enough" to the target position.
      * Cannot be zero or commands will never complete (robot can't be perfect).
      */
-    public static final double allowedXError = 0.05; // 5cm tolerance
-    public static final double allowedYError = 0.05; // 5cm tolerance
+    public static final double allowedXError = 0.025; // 5cm tolerance
+    public static final double allowedYError = 0.025; // 5cm tolerance
     
     /**
      * PID constants for X-axis alignment to AprilTags.
@@ -356,8 +356,8 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 0.3;
-    public static final double kPositionI = 0.0;
+    public static final double kPositionP = 0.4;
+    public static final double kPositionI = 0.05;
     public static final double kPositionD = 0.0;
     
     /**
@@ -365,8 +365,8 @@ public final class Constants {
      * Controls turning accuracy to target heading.
      * Note: Lower P value than position because rotation is more sensitive.
      */
-    public static final double kRotationP = 0.05;
-    public static final double kRotationI = 0.0;
+    public static final double kRotationP = 0.025;
+    public static final double kRotationI = 0.005;
     public static final double kRotationD = 0.0;
     
     // ========== Tolerances ==========
@@ -389,13 +389,13 @@ public final class Constants {
      * Maximum linear speed during autonomous navigation.
      * Limits how fast the robot can translate to target position.
      */
-    public static final double kMaxLinearSpeed = 0.5; // m/s
+    public static final double kMaxLinearSpeed = 5.0; // m/s
     
     /**
      * Maximum angular speed during autonomous navigation.
      * Limits how fast the robot can rotate to target heading.
      */
-    public static final double kMaxAngularSpeed = 0.3; // rad/s
+    public static final double kMaxAngularSpeed = 1.0; // rad/s
     
     // ========== Field Dimensions ==========
     
