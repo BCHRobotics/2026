@@ -1,4 +1,4 @@
-package frc.robot.commands.drive;
+package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.NavigationConstants;
 import frc.robot.subsystems.Drivetrain;
 
 /**
@@ -31,18 +32,21 @@ public class GoToPositionRelativeCommand extends Command {
     private Pose2d m_targetPose;
     
     // PID controllers for position and rotation control
-    private final PIDController m_xController = new PIDController(0.3, 0, 0);
-    private final PIDController m_yController = new PIDController(0.3, 0, 0);
-    private final PIDController m_rotController = new PIDController(0.05, 0, 0);
-    
-    private static final double kPositionTolerance = 0.1; // meters
-    private static final double kRotationTolerance = 5.0; // degrees
-    private static final double kMaxLinearSpeed = 0.5; // m/s
-    private static final double kMaxAngularSpeed = 0.3; // rad/s
-    
-    // FRC 2026 Rebuilt field dimensions (meters)
-    private static final double FIELD_LENGTH = 16.54; // 54.27 feet
-    private static final double FIELD_WIDTH = 8.21;   // 26.94 feet
+    private final PIDController m_xController = new PIDController(
+        NavigationConstants.kPositionP,
+        NavigationConstants.kPositionI,
+        NavigationConstants.kPositionD
+    );
+    private final PIDController m_yController = new PIDController(
+        NavigationConstants.kPositionP,
+        NavigationConstants.kPositionI,
+        NavigationConstants.kPositionD
+    );
+    private final PIDController m_rotController = new PIDController(
+        NavigationConstants.kRotationP,
+        NavigationConstants.kRotationI,
+        NavigationConstants.kRotationD
+    );
 
     /**
      * Creates a new GoToPositionRelativeCommand with alliance-relative coordinates.
@@ -62,9 +66,9 @@ public class GoToPositionRelativeCommand extends Command {
         m_alliance = alliance;
 
         // Set tolerances
-        m_xController.setTolerance(kPositionTolerance);
-        m_yController.setTolerance(kPositionTolerance);
-        m_rotController.setTolerance(kRotationTolerance);
+        m_xController.setTolerance(NavigationConstants.kPositionTolerance);
+        m_yController.setTolerance(NavigationConstants.kPositionTolerance);
+        m_rotController.setTolerance(NavigationConstants.kRotationTolerance);
         m_rotController.enableContinuousInput(-180, 180);
 
         addRequirements(drivetrain);
@@ -103,8 +107,8 @@ public class GoToPositionRelativeCommand extends Command {
         
         if (m_alliance == Alliance.Red) {
             // Mirror for red alliance
-            fieldX = FIELD_LENGTH - m_relativeX;
-            fieldY = FIELD_WIDTH - m_relativeY;
+            fieldX = NavigationConstants.kFieldLength - m_relativeX;
+            fieldY = NavigationConstants.kFieldWidth - m_relativeY;
             fieldRotation = 180.0 - m_relativeRotation;
         } else {
             // Blue alliance uses coordinates as-is
@@ -142,9 +146,9 @@ public class GoToPositionRelativeCommand extends Command {
         double rotation = m_rotController.calculate(currentPose.getRotation().getDegrees());
         
         // Limit speeds for safety
-        xSpeed = Math.max(-kMaxLinearSpeed, Math.min(kMaxLinearSpeed, xSpeed));
-        ySpeed = Math.max(-kMaxLinearSpeed, Math.min(kMaxLinearSpeed, ySpeed));
-        rotation = Math.max(-kMaxAngularSpeed, Math.min(kMaxAngularSpeed, rotation));
+        xSpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, xSpeed));
+        ySpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, ySpeed));
+        rotation = Math.max(-NavigationConstants.kMaxAngularSpeed, Math.min(NavigationConstants.kMaxAngularSpeed, rotation));
         
         // Drive field-relative
         m_drivetrain.drive(xSpeed, ySpeed, rotation, true, false);
