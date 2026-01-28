@@ -5,11 +5,7 @@
   "pathFolders": [
     "Opening Paths"
   ],
-  "autoFolders": [
-    "C",
-    "L",
-    "R"
-  ],
+  "autoFolders": [],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 1.5,
   "defaultMaxAngVel": 720.0,
