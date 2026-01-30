@@ -37,6 +37,7 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -128,6 +129,9 @@ public class Vision extends SubsystemBase {
      * for debugging and verification.
      */
     private final Field2d field2d = new Field2d();
+
+    private final PhotonCamera ballCamera = new PhotonCamera("banana_1");
+    private List<PhotonTrackedTarget> visibleGamePieces;
     
     /**
      * Creates a new Vision subsystem with multi-camera support.
@@ -141,6 +145,7 @@ public class Vision extends SubsystemBase {
      */
     public Vision(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
+        this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
         
         // Load 2026 Rebuilt AprilTag field layout
         aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
@@ -185,9 +190,23 @@ public class Vision extends SubsystemBase {
         // Add field visualization to SmartDashboard
         SmartDashboard.putData("Vision Field", field2d);
     }
+
+    public PhotonTrackedTarget getBallPosition() {
+        if (visibleGamePieces.size() > 0) {
+            return visibleGamePieces.get(0);
+        } else {
+            return null;
+        }
+    }
     
     @Override
     public void periodic() {
+        List<PhotonPipelineResult> res = ballCamera.getAllUnreadResults();
+        // updating the ball list
+        if (res.size() > 0) {
+            visibleGamePieces = res.get(0).getTargets();
+        }
+        
         // Update all pose estimators with current odometry
         for (CameraModule module : cameraModules) {
             module.poseEstimator.setReferencePose(drivetrain.getPose());
@@ -218,7 +237,7 @@ public class Vision extends SubsystemBase {
         }
         
         // Update dashboard with vision status from all cameras
-        updateTelemetry();
+        //updateTelemetry();
     }
     
     /**

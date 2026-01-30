@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.commands.ball.PointToBallCommand;
 import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
@@ -38,7 +39,7 @@ public class RobotContainer {
     /* DISABLED: Example subsystems - Hardware does not physically exist on this robot
      * Kept in code as examples for future development
      * 
-    /**
+    /** 
      * PID-controlled actuator subsystem (using SPARK MAX onboard PID).
      * 
      * Provides closed-loop position control for mechanisms like elevators,
@@ -190,6 +191,10 @@ public class RobotContainer {
         driverController.cross().whileTrue(
             new GoToPositionCommand(m_robotDrive,1.20, 1.0,0.0)
                     .withTimeout(10.0) // Safety timeout
+        );
+
+        driverController.triangle().whileTrue(
+            new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
         );
 
         

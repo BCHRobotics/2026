@@ -157,7 +157,7 @@ public class Drivetrain extends SubsystemBase {
     // Print comprehensive diagnostics once per second
     double currentTime = WPIUtilJNI.now() * 1e-6;
     if (currentTime - m_lastPrintTime >= 1.0) {
-      printDiagnostics();
+      //printDiagnostics();
       m_lastPrintTime = currentTime;
     }
   }
