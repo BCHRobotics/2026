@@ -193,6 +193,11 @@ public class RobotContainer {
         //             .withTimeout(10.0) // Safety timeout
         // );
 
+        // Reset gyro heading to zero (forward)
+        driverController.triangle().onTrue(
+            Commands.runOnce(() -> m_robotDrive.zeroHeading())
+        );
+
         // driverController.triangle().whileTrue(
         //     new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
         // );
