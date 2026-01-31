@@ -183,19 +183,19 @@ public class RobotContainer {
             new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
                     .withTimeout(10.0) // Safety timeout
         );*/
-        driverController.square().whileTrue(
-            new GoToPositionCommand(m_robotDrive,2.70, 0.0,0.0)
-                    .withTimeout(10.0) // Safety timeout
-        );
+        // driverController.square().whileTrue(
+        //     new GoToPositionCommand(m_robotDrive,2.70, 0.0,0.0)
+        //             .withTimeout(10.0) // Safety timeout
+        // );
 
-        driverController.cross().whileTrue(
-            new GoToPositionCommand(m_robotDrive,1.20, 1.0,0.0)
-                    .withTimeout(10.0) // Safety timeout
-        );
+        // driverController.cross().whileTrue(
+        //     new GoToPositionCommand(m_robotDrive,1.20, 1.0,0.0)
+        //             .withTimeout(10.0) // Safety timeout
+        // );
 
-        driverController.triangle().whileTrue(
-            new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
-        );
+        // driverController.triangle().whileTrue(
+        //     new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
+        // );
 
         
         /* DISABLED: Actuator 2 controls - Hardware does not exist
