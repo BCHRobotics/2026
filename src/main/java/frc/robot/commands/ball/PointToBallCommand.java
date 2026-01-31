@@ -87,7 +87,7 @@ public class PointToBallCommand extends Command {
         // Drive with manual translation control and automatic rotation
 
         //TEMPORRARY DISABLED DRIVE
-        //drive.drive(xSpeed.getAsDouble(), ySpeed.getAsDouble(), turnSpeedLimited, true, true);
+        drive.drive(xSpeed.getAsDouble(), ySpeed.getAsDouble(), turnSpeedLimited, true, true);
     }
     
     @Override

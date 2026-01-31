@@ -173,7 +173,7 @@ public final class Constants {
       // Camera 1 - banana_1 (Ball detection)
       // PLACEHOLDER: Measure and set actual position/orientation
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34)),
+        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(0.75), Units.inchesToMeters(6)),
         new Rotation3d(0, 0, 0)
       ),
       // Camera 2 - Left
@@ -427,7 +427,7 @@ public final class Constants {
      * Higher values = faster response to yaw error.
      * Tune this first - start low and increase until responsive.
      */
-    public static final double kRotationP = 0.5;
+    public static final double kRotationP = 0.2;
     
     /**
      * Integral gain for ball alignment rotation control.
@@ -449,7 +449,7 @@ public final class Constants {
      * Yaw tolerance in degrees.
      * Robot is considered aligned when ball yaw is within this tolerance.
      */
-    public static final double kYawTolerance = 2.0; // degrees
+    public static final double kYawTolerance = 10.0; // degrees
     
     // ========== Speed Limits ==========
     
@@ -457,7 +457,7 @@ public final class Constants {
      * Maximum rotation speed during ball tracking.
      * Limits how fast the robot can turn while aligning to ball.
      */
-    public static final double kMaxRotationSpeed = 0.4; // rad/s
+    public static final double kMaxRotationSpeed = 0.1; // rad/s
   }
 
   /**
