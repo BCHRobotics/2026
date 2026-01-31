@@ -62,7 +62,7 @@ public class PointToBallCommand extends Command {
         
         // Calculate rotation speed using PID
         // PID output is based on error (ball yaw - setpoint of 0)
-        double turnSpeed = rotationController.calculate(ballYaw);
+        double turnSpeed = -rotationController.calculate(ballYaw);
         
         // Limit rotation speed for safety
         turnSpeed = Math.max(-BallTrackingConstants.kMaxRotationSpeed, 

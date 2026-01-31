@@ -426,7 +426,7 @@ public final class Constants {
      * Higher values = faster response to yaw error.
      * Tune this first - start low and increase until responsive.
      */
-    public static final double kRotationP = 0.02;
+    public static final double kRotationP = 0.5;
     
     /**
      * Integral gain for ball alignment rotation control.
