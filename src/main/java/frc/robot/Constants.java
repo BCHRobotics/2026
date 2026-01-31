@@ -199,6 +199,7 @@ public final class Constants {
      * Recommended: 0.2 for competition, 0.3 for testing
      * If you get too many rejected poses, increase this value.
      */
+    
     public static final double kMaxAmbiguity = 0.3;
     
     /**
