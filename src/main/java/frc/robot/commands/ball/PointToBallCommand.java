@@ -59,21 +59,35 @@ public class PointToBallCommand extends Command {
 
         // Get ball yaw angle (negative = left, positive = right)
         double ballYaw = vision.getBallPosition().yaw;
+        double ballPitch = vision.getBallPosition().pitch;
+        double ballArea = vision.getBallPosition().area;
         
         // Calculate rotation speed using PID
         // PID output is based on error (ball yaw - setpoint of 0)
-        double turnSpeed = -rotationController.calculate(ballYaw);
+        double pidOutput = rotationController.calculate(ballYaw);
+        double turnSpeed = pidOutput;
         
         // Limit rotation speed for safety
-        turnSpeed = Math.max(-BallTrackingConstants.kMaxRotationSpeed, 
+        double turnSpeedLimited = Math.max(-BallTrackingConstants.kMaxRotationSpeed, 
                            Math.min(BallTrackingConstants.kMaxRotationSpeed, turnSpeed));
         
-        // Optional: Debug output
-        // System.out.printf("Ball Yaw: %.2f°, Turn Speed: %.3f, At Setpoint: %b\n", 
-        //                   ballYaw, turnSpeed, rotationController.atSetpoint());
+        // Debug output - detailed tracking information
+        System.out.printf("=== BALL TRACKING DEBUG ===\n");
+        System.out.printf("Ball Yaw: %.2f° (negative=left, positive=right)\n", ballYaw);
+        System.out.printf("Ball Pitch: %.2f° (negative=down, positive=up)\n", ballPitch);
+        System.out.printf("Ball Area: %.2f%% of camera view\n", ballArea);
+        System.out.printf("PID Setpoint: %.2f°\n", rotationController.getSetpoint());
+        System.out.printf("PID Error: %.2f°\n", ballYaw - rotationController.getSetpoint());
+        System.out.printf("PID Output (raw): %.4f\n", pidOutput);
+        System.out.printf("Turn Speed (limited): %.4f (negative=CW/right, positive=CCW/left)\n", turnSpeedLimited);
+        System.out.printf("At Setpoint: %b (tolerance: %.2f°)\n", 
+                         rotationController.atSetpoint(), BallTrackingConstants.kYawTolerance);
+        System.out.printf("==========================\n\n");
 
         // Drive with manual translation control and automatic rotation
-        drive.drive(xSpeed.getAsDouble(), ySpeed.getAsDouble(), turnSpeed, true, true);
+
+        //TEMPORRARY DISABLED DRIVE
+        //drive.drive(xSpeed.getAsDouble(), ySpeed.getAsDouble(), turnSpeedLimited, true, true);
     }
     
     @Override
