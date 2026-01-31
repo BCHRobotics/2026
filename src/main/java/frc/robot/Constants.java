@@ -413,6 +413,53 @@ public final class Constants {
   }
 
   /**
+   * Constants for Ball Tracking and Alignment.
+   * 
+   * PID control for rotating the robot to align with detected balls
+   * using vision-based yaw angle feedback.
+   */
+  public static final class BallTrackingConstants {
+    // ========== PID Gains ==========
+    
+    /**
+     * Proportional gain for ball alignment rotation control.
+     * Higher values = faster response to yaw error.
+     * Tune this first - start low and increase until responsive.
+     */
+    public static final double kRotationP = 0.02;
+    
+    /**
+     * Integral gain for ball alignment rotation control.
+     * Helps eliminate steady-state error.
+     * Usually keep low to avoid oscillation.
+     */
+    public static final double kRotationI = 0.0;
+    
+    /**
+     * Derivative gain for ball alignment rotation control.
+     * Reduces overshoot and oscillation.
+     * Add if system oscillates with just P.
+     */
+    public static final double kRotationD = 0.002;
+    
+    // ========== Tolerances ==========
+    
+    /**
+     * Yaw tolerance in degrees.
+     * Robot is considered aligned when ball yaw is within this tolerance.
+     */
+    public static final double kYawTolerance = 2.0; // degrees
+    
+    // ========== Speed Limits ==========
+    
+    /**
+     * Maximum rotation speed during ball tracking.
+     * Limits how fast the robot can turn while aligning to ball.
+     */
+    public static final double kMaxRotationSpeed = 0.4; // rad/s
+  }
+
+  /**
    * Constants for PID-controlled Actuator subsystem.
    * 
    * Configure these values for your specific mechanism:
