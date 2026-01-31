@@ -357,9 +357,9 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 0.4;
-    public static final double kPositionI = 0.05;
-    public static final double kPositionD = 0.0;
+    public static final double kPositionP = 2.8;
+    public static final double kPositionI = 0.00;
+    public static final double kPositionD = 0.03;
     
     /**
      * PID gains for rotation control.
@@ -376,7 +376,7 @@ public final class Constants {
      * Position tolerance in meters.
      * Command finishes when robot is within this distance of target.
      */
-    public static final double kPositionTolerance = 0.1; // meters
+    public static final double kPositionTolerance = 0.05; // meters
     
     /**
      * Rotation tolerance in degrees.
@@ -450,7 +450,7 @@ public final class Constants {
      * Yaw tolerance in degrees.
      * Robot is considered aligned when ball yaw is within this tolerance.
      */
-    public static final double kYawTolerance = 10.0; // degrees
+    public static final double kYawTolerance = 3.0; // degrees
     
     // ========== Speed Limits ==========
     
@@ -458,7 +458,7 @@ public final class Constants {
      * Maximum rotation speed during ball tracking.
      * Limits how fast the robot can turn while aligning to ball.
      */
-    public static final double kMaxRotationSpeed = 0.1; // rad/s
+    public static final double kMaxRotationSpeed = 0.3; // rad/s
   }
 
   /**

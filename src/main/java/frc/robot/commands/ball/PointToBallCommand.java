@@ -77,18 +77,18 @@ public class PointToBallCommand extends Command {
         }
         
         // Debug output - detailed tracking information
-        System.out.printf("=== BALL TRACKING DEBUG ===\n");
-        System.out.printf("Ball Yaw: %.2f° (negative=left, positive=right)\n", ballYaw);
-        System.out.printf("Ball Pitch: %.2f° (negative=down, positive=up)\n", ballPitch);
-        System.out.printf("Ball Area: %.2f%% of camera view\n", ballArea);
-        System.out.printf("PID Setpoint: %.2f°\n", rotationController.getSetpoint());
-        System.out.printf("PID Error: %.2f°\n", ballYaw - rotationController.getSetpoint());
-        System.out.printf("PID Output (raw): %.4f\n", pidOutput);
-        System.out.printf("Turn Speed (limited): %.4f (negative=CW/right, positive=CCW/left)\n", turnSpeedLimited);
-        System.out.printf("At Setpoint: %b (tolerance: %.2f°)\n", 
-                         rotationController.atSetpoint(), BallTrackingConstants.kYawTolerance);
-        System.out.printf("Deadband Active: %b\n", rotationController.atSetpoint());
-        System.out.printf("==========================\n\n");
+        // System.out.printf("=== BALL TRACKING DEBUG ===\n");
+        // System.out.printf("Ball Yaw: %.2f° (negative=left, positive=right)\n", ballYaw);
+        // System.out.printf("Ball Pitch: %.2f° (negative=down, positive=up)\n", ballPitch);
+        // System.out.printf("Ball Area: %.2f%% of camera view\n", ballArea);
+        // System.out.printf("PID Setpoint: %.2f°\n", rotationController.getSetpoint());
+        // System.out.printf("PID Error: %.2f°\n", ballYaw - rotationController.getSetpoint());
+        // System.out.printf("PID Output (raw): %.4f\n", pidOutput);
+        // System.out.printf("Turn Speed (limited): %.4f (negative=CW/right, positive=CCW/left)\n", turnSpeedLimited);
+        // System.out.printf("At Setpoint: %b (tolerance: %.2f°)\n", 
+        //                  rotationController.atSetpoint(), BallTrackingConstants.kYawTolerance);
+        // System.out.printf("Deadband Active: %b\n", rotationController.atSetpoint());
+        // System.out.printf("==========================\n\n");
 
         // Drive with manual translation control and automatic rotation
 

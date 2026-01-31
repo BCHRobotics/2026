@@ -106,11 +106,11 @@ public class GoToPositionCommand extends Command {
         }
     }
 
-    @Override
+    /*@Override
     public boolean isFinished() {
         // Finish when all controllers are at setpoint
         return m_xController.atSetpoint() && 
                m_yController.atSetpoint() && 
                m_rotController.atSetpoint();
-    }
+    }*/
 }

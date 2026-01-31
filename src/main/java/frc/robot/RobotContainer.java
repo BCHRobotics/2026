@@ -7,7 +7,7 @@ import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.commands.vision.GoToAprilTagCommand;
 // import frc.robot.subsystems.Actuator;  // DISABLED: Example subsystem - hardware does not exist
 // import frc.robot.subsystems.Actuator2;  // DISABLED: Example subsystem - hardware does not exist
-// import frc.robot.subsystems.BallIntake;  // DISABLED: Example subsystem - hardware does not exist
+// import frc.robot.subsysems.BallIntake;  // DISABLED: Example subsystem - hardware does not exist
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 // import frc.robot.Constants.ActuatorConstants;  // DISABLED: Not needed when actuators disabled
@@ -183,24 +183,24 @@ public class RobotContainer {
             new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
                     .withTimeout(10.0) // Safety timeout
         );*/
-        // driverController.square().whileTrue(
-        //     new GoToPositionCommand(m_robotDrive,2.70, 0.0,0.0)
-        //             .withTimeout(10.0) // Safety timeout
-        // );
+         driverController.circle().whileTrue(
+             new GoToPositionCommand(m_robotDrive,10.0, 4.0,0.0)
+                     .withTimeout(10.0) // Safety timeout
+         );
 
-        // driverController.cross().whileTrue(
-        //     new GoToPositionCommand(m_robotDrive,1.20, 1.0,0.0)
-        //             .withTimeout(10.0) // Safety timeout
-        // );
+        driverController.cross().whileTrue(
+            new GoToPositionCommand(m_robotDrive,10.0, 1.0,0.0)
+                    .withTimeout(10.0) // Safety timeout
+        );
 
         // Reset gyro heading to zero (forward)
         driverController.triangle().onTrue(
             Commands.runOnce(() -> m_robotDrive.zeroHeading())
         );
 
-        // driverController.triangle().whileTrue(
-        //     new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
-        // );
+        driverController.square().whileTrue(
+            new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
+        );
 
         
         /* DISABLED: Actuator 2 controls - Hardware does not exist

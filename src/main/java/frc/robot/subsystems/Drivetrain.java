@@ -157,7 +157,7 @@ public class Drivetrain extends SubsystemBase {
     // Print comprehensive diagnostics once per second
     double currentTime = WPIUtilJNI.now() * 1e-6;
     if (currentTime - m_lastPrintTime >= 1.0) {
-      //printDiagnostics();
+      printDiagnostics();
       m_lastPrintTime = currentTime;
     }
   }
@@ -177,23 +177,23 @@ public class Drivetrain extends SubsystemBase {
     
     // Navigation to specific AprilTags
     if (m_vision != null) {
-      // Vision.TagNavigationInfo tag12 = m_vision.getTagNavigationInfo(12);
-      // Vision.TagNavigationInfo tag28 = m_vision.getTagNavigationInfo(28);
+      Vision.TagNavigationInfo tag3 = m_vision.getTagNavigationInfo(3);
+      Vision.TagNavigationInfo tag4 = m_vision.getTagNavigationInfo(4);
       
-      // diagnostics.append("Target AprilTags:\n");
-      // if (tag12.tagExists) {
-      //   diagnostics.append(String.format("  Tag 12: Distance=%.2fm, Heading=%.1f°\n",
-      //       tag12.distance, tag12.heading));
-      // } else {
-      //   diagnostics.append("  Tag 12: NOT IN FIELD LAYOUT\n");
-      // }
+      diagnostics.append("Target AprilTags:\n");
+      if (tag3.tagExists) {
+        diagnostics.append(String.format("  Tag 3: Distance=%.2fm, Heading=%.1f°\n",
+            tag3.distance, tag3.heading));
+      } else {
+        diagnostics.append("  Tag 3: NOT IN FIELD LAYOUT\n");
+      }
       
-      // if (tag28.tagExists) {
-      //   diagnostics.append(String.format("  Tag 28: Distance=%.2fm, Heading=%.1f°\n",
-      //       tag28.distance, tag28.heading));
-      // } else {
-      //   diagnostics.append("  Tag 28: NOT IN FIELD LAYOUT\n");
-      // }
+      if (tag4.tagExists) {
+        diagnostics.append(String.format("  Tag 4: Distance=%.2fm, Heading=%.1f°\n",
+            tag4.distance, tag4.heading));
+      } else {
+        diagnostics.append("  Tag 4: NOT IN FIELD LAYOUT\n");
+      }
     }
     
     // Vision - AprilTags with detailed information
