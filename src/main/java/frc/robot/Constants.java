@@ -119,7 +119,7 @@ public final class Constants {
      */
     public static final boolean[] kCamerasEnabled = {
       true,  // Camera 0
-      false,  // Camera 1
+      true,  // Camera 1 - banana_1 (ball detection)
       false,  // Camera 2
       false,   // Camera 3
     };
@@ -131,8 +131,8 @@ public final class Constants {
      *               "OV9281_Front", "LifeCam_Left", etc.
      */
     public static final String[] kCameraNames = {
-      "Camera_0",  // Front camera
-      "Camera_1",  // Back camera
+      "Camera_0",  // Front camera (AprilTag detection)
+      "banana_1",  // Ball detection camera
       "Camera_2",  // Left camera
       "Camera_3"   // Right camera
     };
@@ -170,10 +170,11 @@ public final class Constants {
         new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34)),
         new Rotation3d(0, 0, 0)
       ),
-      // Camera 1 - Back
+      // Camera 1 - banana_1 (Ball detection)
+      // PLACEHOLDER: Measure and set actual position/orientation
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
-        new Rotation3d(0, 0, Math.toRadians(180))
+        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34)),
+        new Rotation3d(0, 0, 0)
       ),
       // Camera 2 - Left
       new Transform3d(
