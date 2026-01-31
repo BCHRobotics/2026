@@ -426,8 +426,9 @@ public final class Constants {
      * Proportional gain for ball alignment rotation control.
      * Higher values = faster response to yaw error.
      * Tune this first - start low and increase until responsive.
+     * Lowered to 0.02 to prevent saturation and match max speed limit.
      */
-    public static final double kRotationP = 0.2;
+    public static final double kRotationP = 0.02;
     
     /**
      * Integral gain for ball alignment rotation control.
@@ -439,9 +440,9 @@ public final class Constants {
     /**
      * Derivative gain for ball alignment rotation control.
      * Reduces overshoot and oscillation.
-     * Add if system oscillates with just P.
+     * Increased to dampen oscillations and reduce hunting behavior.
      */
-    public static final double kRotationD = 0.002;
+    public static final double kRotationD = 0.02;
     
     // ========== Tolerances ==========
     

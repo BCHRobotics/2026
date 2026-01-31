@@ -71,6 +71,11 @@ public class PointToBallCommand extends Command {
         double turnSpeedLimited = Math.max(-BallTrackingConstants.kMaxRotationSpeed, 
                            Math.min(BallTrackingConstants.kMaxRotationSpeed, turnSpeed));
         
+        // Apply deadband - stop rotating when within tolerance to prevent oscillation
+        if (rotationController.atSetpoint()) {
+            turnSpeedLimited = 0.0;
+        }
+        
         // Debug output - detailed tracking information
         System.out.printf("=== BALL TRACKING DEBUG ===\n");
         System.out.printf("Ball Yaw: %.2f° (negative=left, positive=right)\n", ballYaw);
@@ -82,6 +87,7 @@ public class PointToBallCommand extends Command {
         System.out.printf("Turn Speed (limited): %.4f (negative=CW/right, positive=CCW/left)\n", turnSpeedLimited);
         System.out.printf("At Setpoint: %b (tolerance: %.2f°)\n", 
                          rotationController.atSetpoint(), BallTrackingConstants.kYawTolerance);
+        System.out.printf("Deadband Active: %b\n", rotationController.atSetpoint());
         System.out.printf("==========================\n\n");
 
         // Drive with manual translation control and automatic rotation
