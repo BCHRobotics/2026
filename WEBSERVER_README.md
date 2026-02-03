@@ -190,7 +190,7 @@ Update the `generateVisionJSON()` method to read additional SmartDashboard entri
 
 ## Credits
 
-Built for FRC Team 2026 using:
+Built for FRC Team 2386 using:
 - WPILib 2026 framework
 - PhotonVision for computer vision
 - Java's built-in HTTP server
