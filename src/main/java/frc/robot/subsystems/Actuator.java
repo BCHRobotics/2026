@@ -32,13 +32,15 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -111,7 +113,7 @@ public class Actuator extends SubsystemBase {
         // Configure PID controller (slot 0)
         config.closedLoop.pid(ActuatorConstants.kP, ActuatorConstants.kI, ActuatorConstants.kD)
                          .outputRange(ActuatorConstants.kMinOutput, ActuatorConstants.kMaxOutput)
-                         .maxMotion.maxVelocity(ActuatorConstants.kMaxVelocity)
+                         .maxMotion.cruiseVelocity(ActuatorConstants.kMaxVelocity)
                                    .maxAcceleration(ActuatorConstants.kMaxAcceleration);
         
         // Configure encoder
@@ -150,7 +152,7 @@ public class Actuator extends SubsystemBase {
         currentSetpoint = clampedPosition;
         
         // Command PID controller to target position
-        pidController.setReference(clampedPosition, SparkMax.ControlType.kPosition);
+        pidController.setSetpoint(clampedPosition, ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
     
     /**
