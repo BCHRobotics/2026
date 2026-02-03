@@ -255,6 +255,10 @@ public class Vision extends SubsystemBase {
         // Update dashboard with vision status from all cameras
         //updateTelemetry();
     }
+
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+        return getEstimatedGlobalPose(cameraModules.get(0));
+    }
     
     /**
      * Gets the latest estimated robot pose from a specific camera.
