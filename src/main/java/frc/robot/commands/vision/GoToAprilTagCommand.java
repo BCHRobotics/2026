@@ -70,7 +70,7 @@ public class GoToAprilTagCommand extends Command {
             // Create a translation that is distanceFromTag meters away from the tag
             // in the direction opposite to where the tag is facing
             Translation2d offsetFromTag = new Translation2d(
-                -m_distanceFromTag, // Negative to go in front (opposite of tag's facing direction)
+                m_distanceFromTag, // Negative to go in front (opposite of tag's facing direction)
                 0                   // No lateral offset
             ).rotateBy(tagRotation);
             

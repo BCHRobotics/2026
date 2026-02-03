@@ -176,31 +176,32 @@ public class RobotContainer {
         
         // ========== Vision-Based Navigation Commands ==========
         
-        // Square button (PS5): Navigate to 1 meter in front of AprilTag 28
+        // Square button (PS5): Navigate to 1 meter in front of an AprilTag
         // Uses vision-based autonomous navigation to position the robot
         // Runs while button is held, cancels when released
-        /*driverController.square().whileTrue(
-            new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
+        driverController.square().whileTrue(
+            new GoToAprilTagCommand(m_vision, m_robotDrive, 3, 1.0)
                     .withTimeout(10.0) // Safety timeout
-        );*/
+        );
+
          driverController.circle().whileTrue(
              new GoToPositionCommand(m_robotDrive,10.0, 4.0,0.0)
                      .withTimeout(10.0) // Safety timeout
          );
-
-        driverController.cross().whileTrue(
-            new GoToPositionCommand(m_robotDrive,10.0, 1.0,0.0)
-                    .withTimeout(10.0) // Safety timeout
-        );
+ 
+        // driverController.cross().whileTrue(
+        //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
+        //             .withTimeout(10.0) // Safety timeout
+        // );
 
         // Reset gyro heading to zero (forward)
         driverController.triangle().onTrue(
             Commands.runOnce(() -> m_robotDrive.zeroHeading())
         );
 
-        driverController.square().whileTrue(
-            new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
-        );
+        // driverController.square().whileTrue(
+        //     new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
+        // );
 
         
         /* DISABLED: Actuator 2 controls - Hardware does not exist
