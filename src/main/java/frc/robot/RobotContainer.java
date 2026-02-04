@@ -10,6 +10,7 @@ import frc.robot.commands.vision.AlignToAprilTagCommand;
 // import frc.robot.subsysems.BallIntake;  // DISABLED: Example subsystem - hardware does not exist
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
+import frc.robot.webserver.VisionWebServer;
 // import frc.robot.Constants.ActuatorConstants;  // DISABLED: Not needed when actuators disabled
 // import frc.robot.Constants.Actuator2Constants;  // DISABLED: Not needed when actuators disabled
 import frc.robot.Constants.OIConstants;
@@ -35,6 +36,16 @@ public class RobotContainer {
      * camera configuration to be completed in VisionConstants.
      */
     private final Vision m_vision = new Vision(m_robotDrive);
+    
+    /**
+     * Web server for vision diagnostics running on RoboRIO port 8082.
+     * 
+     * Provides a browser-based dashboard for monitoring PhotonVision cameras,
+     * AprilTag detection, object tracking, and pose estimation in real-time.
+     * 
+     * Access at: http://10.TE.AM.2:8082 or http://roborio-TEAM-frc.local:8082
+     */
+    private final VisionWebServer m_webServer = new VisionWebServer(m_vision);
     
     /* DISABLED: Example subsystems - Hardware does not physically exist on this robot
      * Kept in code as examples for future development
@@ -76,6 +87,9 @@ public class RobotContainer {
     public RobotContainer() {
         // Connect Vision subsystem to Drivetrain for diagnostics
         m_robotDrive.setVision(m_vision);
+        
+        // Start the web server for vision diagnostics
+        m_webServer.start();
         
         // Configure default commands
         configureDefaultCommands();
