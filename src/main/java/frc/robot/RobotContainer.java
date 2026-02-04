@@ -1,10 +1,10 @@
 package frc.robot;
 
 import frc.robot.commands.ball.PointToBallCommand;
+import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
-import frc.robot.commands.vision.GoToAprilTagCommand;
 // import frc.robot.subsystems.Actuator;  // DISABLED: Example subsystem - hardware does not exist
 // import frc.robot.subsystems.Actuator2;  // DISABLED: Example subsystem - hardware does not exist
 // import frc.robot.subsysems.BallIntake;  // DISABLED: Example subsystem - hardware does not exist
@@ -180,8 +180,8 @@ public class RobotContainer {
         // Uses vision-based autonomous navigation to position the robot
         // Runs while button is held, cancels when released
         driverController.square().whileTrue(
-            new GoToAprilTagCommand(m_vision, m_robotDrive, 3, 1.0)
-                    .withTimeout(10.0) // Safety timeout
+            new FacePointCommand(m_robotDrive, () -> -driverController.getLeftY(),    // Forward/backward (inverted)
+                () -> -driverController.getLeftX(), 11.945, 4.029, 2) // Safety timeout
         );
 
          driverController.circle().whileTrue(
