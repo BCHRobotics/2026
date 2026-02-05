@@ -78,11 +78,29 @@ public class RobotContainer {
         // Connect Vision subsystem to Drivetrain for diagnostics
         m_robotDrive.setVision(m_vision);
         
+        // Configure autonomous chooser with available auto paths
+        configureAutonomousChooser();
+        
         // Configure default commands
         configureDefaultCommands();
         
         // Configure button bindings
         configureBindings();
+    }
+    
+    /**
+     * Configures the autonomous command chooser with all available auto paths.
+     * Autos are loaded from the deploy/pathplanner/autos directory.
+     * The chooser is displayed on SmartDashboard for driver station selection.
+     */
+    private void configureAutonomousChooser() {
+        // Add all available auto paths (from deploy/pathplanner/autos/)
+        m_autoChooser.setDefaultOption("Auto 1 Left", new PathPlannerAuto("Auto 1 Left"));
+        m_autoChooser.addOption("Auto Right", new PathPlannerAuto("Auto Right"));
+        m_autoChooser.addOption("Auto Climber", new PathPlannerAuto("Auto Climber"));
+        
+        // Put the chooser on SmartDashboard for driver selection
+        SmartDashboard.putData("Auto Mode", m_autoChooser);
     }
     
     /**
@@ -276,9 +294,12 @@ public class RobotContainer {
     /**
      * Returns the command to run during autonomous period.
      * 
+     * Selects the autonomous command from the SmartDashboard chooser.
+     * Defaults to "Auto 1 Left" if no selection is made.
+     * 
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("Auto 1 Left");
+        return m_autoChooser.getSelected();
     }
 }
