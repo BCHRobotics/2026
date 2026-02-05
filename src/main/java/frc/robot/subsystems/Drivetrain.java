@@ -7,6 +7,11 @@ package frc.robot.subsystems;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -21,6 +26,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -119,7 +125,25 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
-    
+    // Configure PathPlanner AutoBuilder for holonomic swerve drive
+    AutoBuilder.configureHolonomic(
+        this::getPose,              // Pose supplier
+        this::resetOdometry,        // Pose resetter
+        this::getChassisSpeeds,     // Chassis speeds supplier
+        this::setChassisSpeeds,     // Chassis speeds consumer
+        new HolonomicPathFollowerConfig(
+            new PIDConstants(5.0, 0.0, 0.0),     // Translation PID
+            new PIDConstants(2.0, 0.0, 0.0),     // Rotation PID
+            4.5,                                  // Max drive velocity (m/s)
+            0.4,                                  // Drive base radius (distance from center to farthest module)
+            new ReplanningConfig()),
+        () -> {
+          // Mirror path based on alliance
+          var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
+          return alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
+        },
+        this
+    );
   }
   
   /**
@@ -492,11 +516,13 @@ public class Drivetrain extends SubsystemBase {
   }   
   
   /**
-   * Sets the speed of the robot chassis
-   * @param speed The new chassis speed
+   * Sets the speed of the robot chassis using ChassisSpeeds
+   * This is used by PathPlanner for autonomous movement
+   * @param speed The chassis speeds to apply
    */
-  public void setChassisSpeeds(ChassisSpeeds speed, DriveFeedforwards ff) {
-    this.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(speed));
+  public void setChassisSpeeds(ChassisSpeeds speed) {
+    SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speed);
+    setModuleStates(moduleStates);
   }
 
   /**
