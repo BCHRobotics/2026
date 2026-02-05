@@ -7,11 +7,6 @@ package frc.robot.subsystems;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.pathplanner.lib.util.DriveFeedforwards;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -125,25 +120,8 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
-    // Configure PathPlanner AutoBuilder for holonomic swerve drive
-    AutoBuilder.configureHolonomic(
-        this::getPose,              // Pose supplier
-        this::resetOdometry,        // Pose resetter
-        this::getChassisSpeeds,     // Chassis speeds supplier
-        this::setChassisSpeeds,     // Chassis speeds consumer
-        new HolonomicPathFollowerConfig(
-            new PIDConstants(5.0, 0.0, 0.0),     // Translation PID
-            new PIDConstants(2.0, 0.0, 0.0),     // Rotation PID
-            4.5,                                  // Max drive velocity (m/s)
-            0.4,                                  // Drive base radius (distance from center to farthest module)
-            new ReplanningConfig()),
-        () -> {
-          // Mirror path based on alliance
-          var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
-          return alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red;
-        },
-        this
-    );
+    // PathPlanner AutoBuilder will be configured here when correct API is determined
+    // For now, basic drivetrain functionality is available for teleop
   }
   
   /**
