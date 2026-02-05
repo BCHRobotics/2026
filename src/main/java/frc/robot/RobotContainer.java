@@ -300,6 +300,13 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-        return m_autoChooser.getSelected();
+        Command selectedAuto = m_autoChooser.getSelected();
+        
+        // Return selected auto, or default to Auto 1 Left if none selected
+        if (selectedAuto != null) {
+            return selectedAuto;
+        } else {
+            return new PathPlannerAuto("Auto 1 Left");
+        }
     }
 }
