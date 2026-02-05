@@ -54,11 +54,11 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Auto Left Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 177.63616858668044

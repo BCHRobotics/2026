@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.358,
-        "y": 2.035
+        "x": 4.0,
+        "y": 0.8197432239657632
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.358,
-        "y": 2.035
+        "x": 5.203537803145367,
+        "y": 0.4833380884511132
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.248144578313253,
-        "y": 3.455831325301205
+        "x": 2.1241369472182594,
+        "y": 2.993437945791726
       },
       "prevControl": {
-        "x": 8.11701204819277,
-        "y": 2.4941927710843377
+        "x": -0.9035092724679026,
+        "y": 0.28925820256775925
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,13 +34,7 @@
   "eventMarkers": [
     {
       "name": "shooter on",
-      "waypointRelativePos": 0.3586345381526061,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "shooter off",
-      "waypointRelativePos": 0.7763052208835339,
+      "waypointRelativePos": 0.809385863267663,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -54,14 +48,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": 14.381394591090624
+    "velocity": 0,
+    "rotation": -149.88626684901752
   },
   "reversed": false,
-  "folder": "Auto Left Paths",
+  "folder": "Climber Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.375619820304614
+    "rotation": -177.39633021218052
   },
   "useDefaultConstraints": true
 }

@@ -5,45 +5,69 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "1"
+            "name": "shooter on"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2"
+            "pathName": "111"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3"
+            "pathName": "112"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "4"
+            "pathName": "113"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5"
+            "pathName": "114"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "6"
+            "pathName": "115"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "7"
+            "pathName": "116"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "117"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "118"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake on"
           }
         }
       ]
