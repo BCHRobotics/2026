@@ -52,7 +52,7 @@
     "rotation": -178.23760897633946
   },
   "reversed": false,
-  "folder": "Auto Right Paths",
+  "folder": null,
   "idealStartingState": {
     "velocity": 3.0,
     "rotation": -119.16847854268899

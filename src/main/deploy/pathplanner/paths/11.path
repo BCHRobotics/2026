@@ -52,7 +52,7 @@
     "rotation": -149.88626684901752
   },
   "reversed": false,
-  "folder": "Climber Paths",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": -177.39633021218052
