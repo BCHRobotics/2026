@@ -23,7 +23,7 @@ public class RobotContainer {
     private final Vision vision = new Vision(robotDrive);
     
     // Web server for vision diagnostics running on RoboRIO port 8082.
-    private final VisionWebServer webServer = new VisionWebServer(m_vision);
+    private final VisionWebServer webServer = new VisionWebServer(vision);
 
     // Controllers
     CommandPS5Controller driverController = new CommandPS5Controller(OIConstants.kMainControllerPort);
