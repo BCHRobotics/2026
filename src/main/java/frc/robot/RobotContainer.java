@@ -307,7 +307,7 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-                    return new PathPlannerAuto("Test path");
+                    return new PathPlannerAuto("Test 4 Auto");
         // Command selectedAuto = m_autoChooser.getSelected();
         // System.out.println("Test run");
         // // Return selected auto, or default to Auto 1 Left if none selected
