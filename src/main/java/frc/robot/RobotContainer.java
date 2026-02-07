@@ -79,8 +79,6 @@ public class RobotContainer {
         // ========== Vision-Based Navigation Commands ==========
         
         // Square button (PS5): Navigate to 1 meter in front of an AprilTag
-        // Uses vision-based autonomous navigation to position the robot
-        // Runs while button is held, cancels when released
         driverController.square().whileTrue(
             new FacePointCommand(robotDrive, () -> -driverController.getLeftY(),    // Forward/backward (inverted)
                 () -> -driverController.getLeftX(), 11.945, 4.029, 2) // Safety timeout
@@ -136,14 +134,14 @@ public class RobotContainer {
         */
     }
     
-    /**
-     * Configures the autonomous command chooser.
-     * 
-     * Creates a dashboard selector for autonomous modes including:
-     * - Do Nothing (safe default)
-     * - Drive Forward (simple mobility)
-     * - Align to AprilTag 0 (vision-based positioning)
-     */
+    
+    //   Configures the autonomous command chooser.
+      
+    //   Creates a dashboard selector for autonomous modes including:
+    //   - Do Nothing (safe default)
+    //   - Drive Forward (simple mobility)
+    //   - Align to AprilTag 0 (vision-based positioning)
+     
     private void configureAutoChooser() {
         // Default option: Do nothing (safe for testing)
         autoChooser.setDefaultOption("Do Nothing", Commands.none());

@@ -222,10 +222,9 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the latest estimated robot pose from a specific camera.
-     * 
      * This method retrieves the most recent camera frame, checks for AprilTag targets,
      * and uses the PhotonPoseEstimator to calculate the robot's field position.
-     * 
+     *
      * Filtering:
      * - Rejects estimates with high ambiguity (> threshold)
      * - Requires at least one valid target
@@ -323,11 +322,10 @@ public class Vision extends SubsystemBase {
      * - Best target ID and distance
      * - Pose ambiguity
      * - Pipeline timestamp
-     * 
-     * Also displays aggregate statistics:
      * - Total cameras active
      * - Total cameras seeing targets
      */
+
     private void updateTelemetry() {
         int totalTargets = 0;
         int camerasWithTargets = 0;
@@ -376,7 +374,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets a specific PhotonCamera instance by index.
-     * 
      * @param index Camera index (0-3)
      * @return The PhotonCamera object, or null if index is invalid or camera not enabled
      */
@@ -391,7 +388,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets all active camera modules.
-     * 
      * @return List of active camera modules
      */
     public List<CameraModule> getCameraModules() {
@@ -400,7 +396,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the number of active cameras.
-     * 
      * @return Number of enabled and initialized cameras
      */
     public int getActiveCameraCount() {
@@ -409,9 +404,7 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the AprilTag field layout.
-     * 
      * Useful for calculating distances to specific tags or getting tag poses.
-     * 
      * @return The 2026 Rebuilt AprilTag field layout
      */
     public AprilTagFieldLayout getFieldLayout() {
@@ -420,7 +413,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets a list of all currently visible AprilTag IDs from all cameras.
-     * 
      * @return List of visible AprilTag IDs (may contain duplicates if seen by multiple cameras)
      */
     public List<Integer> getVisibleAprilTags() {
@@ -440,10 +432,8 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets detailed information about all currently visible AprilTags.
-     * 
      * Includes ambiguity values and whether each tag is being used for pose updates.
      * A tag is used for pose updates if its ambiguity is below kMaxAmbiguity threshold.
-     * 
      * @return List of AprilTagInfo objects with detailed information
      */
     public List<AprilTagInfo> getDetailedAprilTagInfo() {
@@ -480,7 +470,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the total number of AprilTags currently visible across all cameras.
-     * 
      * @return Total count of visible targets (may count same tag multiple times if seen by multiple cameras)
      */
     public int getVisibleTagCount() {
@@ -498,10 +487,8 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets heading and distance to a specific AprilTag.
-     * 
      * Calculates the field-relative heading (angle) from the robot's current position
      * to the specified AprilTag, along with the distance.
-     * 
      * @param tagId The AprilTag ID to get navigation info for
      * @return TagNavigationInfo with distance and heading, or invalid info if tag doesn't exist
      */
