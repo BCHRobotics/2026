@@ -1,11 +1,14 @@
 package frc.robot.commands.drivetrain;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.NavigationConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.utils.M.Vector2;
 
 /**
  * Command to drive the robot to a specified position on the field.
@@ -13,9 +16,14 @@ import frc.robot.subsystems.Drivetrain;
  * 
  * This command is field-relative and uses the robot's odometry to determine position.
  */
-public class GoToPositionCommand extends Command {
+public class FacePointCommand extends Command {
     private final Drivetrain m_drivetrain;
-    private final Pose2d m_targetPose;
+    private final double x;
+    private final double y;
+    private final double distance;
+
+    private final DoubleSupplier joystickX;
+    private final DoubleSupplier joystickY;
     
     // PID controllers for position and rotation control
     private final PIDController m_xController = new PIDController(
@@ -35,63 +43,72 @@ public class GoToPositionCommand extends Command {
     );
 
     /**
-     * Creates a new GoToPositionCommand.
+     * Creates a new FacePointCommand.
      *
      * @param drivetrain The drivetrain subsystem
      * @param x Target X coordinate in meters (field-relative)
      * @param y Target Y coordinate in meters (field-relative)
-     * @param rotation Target rotation in degrees (field-relative)
+     * @param distance Target rotation in degrees (field-relative)
      */
-    public GoToPositionCommand(Drivetrain drivetrain, double x, double y, double rotation) {
-        this(drivetrain, new Pose2d(x, y, Rotation2d.fromDegrees(rotation)));
-    }
-
-    /**
-     * Creates a new GoToPositionCommand.
-     *
-     * @param drivetrain The drivetrain subsystem
-     * @param targetPose Target pose on the field
-     */
-    public GoToPositionCommand(Drivetrain drivetrain, Pose2d targetPose) {
+    public FacePointCommand(Drivetrain drivetrain, DoubleSupplier joystickX, DoubleSupplier joystickY, double x, double y, double distance) {
         m_drivetrain = drivetrain;
-        m_targetPose = targetPose;
 
-        // Set tolerances
-        m_xController.setTolerance(NavigationConstants.kPositionTolerance);
-        m_yController.setTolerance(NavigationConstants.kPositionTolerance);
-        m_rotController.setTolerance(NavigationConstants.kRotationTolerance);
-        m_rotController.enableContinuousInput(-180, 180);
+        this.x = x;
+        this.y = y;
+        this.distance = distance;
+
+        this.joystickX = joystickX;
+        this.joystickY = joystickY;
 
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
-        // Set PID setpoints
-        m_xController.setSetpoint(m_targetPose.getX());
-        m_yController.setSetpoint(m_targetPose.getY());
-        m_rotController.setSetpoint(m_targetPose.getRotation().getDegrees());
         
-        System.out.println("GoToPosition: Navigating to position " + m_targetPose);
-        System.out.println("  Current pose: " + m_drivetrain.getPose());
+        // System.out.println("GoToPosition: Navigating to position " + m_targetPose);
+        // System.out.println("  Current pose: " + m_drivetrain.getPose());
     }
 
     @Override
     public void execute() {
-        var currentPose = m_drivetrain.getPose();
+        Pose2d robotPose = m_drivetrain.getPose();
+
+        Vector2 pointToRobot = new Vector2(robotPose.getX() - x, robotPose.getY() - y);
+        pointToRobot = Vector2.normalize(pointToRobot);
+        pointToRobot = new Vector2(pointToRobot.x * distance, pointToRobot.y * distance);
+
+        Vector2 closestPoint = new Vector2(x + pointToRobot.x, y + pointToRobot.y);
+
+        // Set PID setpoints
+        m_xController.setSetpoint(closestPoint.x);
+        m_yController.setSetpoint(closestPoint.y);
+        double desiredAngle = Math.atan2(-pointToRobot.y, -pointToRobot.x) / Math.PI * 180;
+        double otherAngle = desiredAngle > 0 ? desiredAngle - 360 : desiredAngle + 360;
+
+        double currentAngle = robotPose.getRotation().getDegrees();
+        
+        double angle = Math.abs(currentAngle - desiredAngle) < Math.abs(currentAngle - otherAngle) ? desiredAngle : otherAngle;
+
+        m_rotController.setSetpoint(angle);
         
         // Calculate drive commands using PID
-        double xSpeed = m_xController.calculate(currentPose.getX());
-        double ySpeed = m_yController.calculate(currentPose.getY());
-        double rotation = m_rotController.calculate(currentPose.getRotation().getDegrees());
+        double xSpeed = m_xController.calculate(robotPose.getX());
+        double ySpeed = m_yController.calculate(robotPose.getY());
+        double rotation = m_rotController.calculate(robotPose.getRotation().getDegrees());
         
         // Limit speeds for safety
         xSpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, xSpeed));
         ySpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, ySpeed));
         rotation = Math.max(-NavigationConstants.kMaxAngularSpeed, Math.min(NavigationConstants.kMaxAngularSpeed, rotation));
+
+        Vector2 joystickInput = new Vector2(joystickX.getAsDouble(), joystickY.getAsDouble());
+        Vector2 projectedJoystickInput = Vector2.project(joystickInput, new Vector2(x - robotPose.getX(), y - robotPose.getY()));
+
+        joystickInput = Vector2.add(joystickInput, new Vector2(projectedJoystickInput.x * -1, projectedJoystickInput.y * -1));
         
         // Drive field-relative
-        m_drivetrain.drive(xSpeed, ySpeed, rotation, true, false);
+        m_drivetrain.drive(xSpeed + joystickInput.x, ySpeed + joystickInput.y, rotation, true, false);
     }
 
     @Override
@@ -105,12 +122,4 @@ public class GoToPositionCommand extends Command {
             System.out.println("  Final pose: " + m_drivetrain.getPose());
         }
     }
-
-    /*@Override
-    public boolean isFinished() {
-        // Finish when all controllers are at setpoint
-        return m_xController.atSetpoint() && 
-               m_yController.atSetpoint() && 
-               m_rotController.atSetpoint();
-    }*/
 }
