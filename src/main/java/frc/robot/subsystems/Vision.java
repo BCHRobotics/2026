@@ -62,6 +62,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
+    /**
+     * Information about heading and distance to a specific AprilTag.
+     */
+    public static class TagNavigationInfo {
+        public final int tagId;
+        public final boolean tagExists;
+        public final double distance;  // meters
+        public final double heading;   // degrees, field-relative angle to tag
+        
+        public TagNavigationInfo(int tagId, boolean tagExists, double distance, double heading) {
+            this.tagId = tagId;
+            this.tagExists = tagExists;
+            this.distance = distance;
+            this.heading = heading;
+        }
+    }
     
     /**
      * Detailed information about a visible AprilTag.
@@ -545,23 +561,6 @@ public class Vision extends SubsystemBase {
         }
         
         return count;
-    }
-    
-    /**
-     * Information about heading and distance to a specific AprilTag.
-     */
-    public static class TagNavigationInfo {
-        public final int tagId;
-        public final boolean tagExists;
-        public final double distance;  // meters
-        public final double heading;   // degrees, field-relative angle to tag
-        
-        public TagNavigationInfo(int tagId, boolean tagExists, double distance, double heading) {
-            this.tagId = tagId;
-            this.tagExists = tagExists;
-            this.distance = distance;
-            this.heading = heading;
-        }
     }
     
     /**
