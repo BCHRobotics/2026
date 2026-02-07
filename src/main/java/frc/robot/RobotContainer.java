@@ -19,23 +19,11 @@ public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
     
-    /**
-     * Vision subsystem for AprilTag detection and pose estimation.
-     * 
-     * IMPORTANT: Requires PhotonVision to be running on a coprocessor and
-     * camera configuration to be completed in VisionConstants.
-     */
+    //Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
     
-    /**
-     * Web server for vision diagnostics running on RoboRIO port 8082.
-     * 
-     * Provides a browser-based dashboard for monitoring PhotonVision cameras,
-     * AprilTag detection, object tracking, and pose estimation in real-time.
-     * 
-     * Access at: http://10.TE.AM.2:8082 or http://roborio-TEAM-frc.local:8082
-     */
-    private final VisionWebServer webServer = new VisionWebServer(vision);
+    // Web server for vision diagnostics running on RoboRIO port 8082.
+    private final VisionWebServer webServer = new VisionWebServer(m_vision);
 
     // Controllers
     CommandPS5Controller driverController = new CommandPS5Controller(OIConstants.kMainControllerPort);
@@ -43,9 +31,7 @@ public class RobotContainer {
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-    /**
-     * The container for the robot, initializing everything and setting up the controller chooser
-     */
+    //The container for the robot, initializing everything and setting up the controller chooser
     public RobotContainer() {
         // Connect Vision subsystem to Drivetrain for diagnostics
         robotDrive.setVision(vision);
@@ -87,7 +73,7 @@ public class RobotContainer {
         robotDrive.setSpeedPercent();
     }
     
-    /* Configures button and trigger bindings for controllers. */
+    // Configures button and trigger bindings for controllers.
     private void configureBindings() {
         
         // ========== Vision-Based Navigation Commands ==========
