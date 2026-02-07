@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "e1"
+            "pathName": "T1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "T2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Test Autos",
   "choreoAuto": false
 }
