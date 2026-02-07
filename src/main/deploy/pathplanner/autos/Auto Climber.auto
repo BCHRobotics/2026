@@ -7,43 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1"
+            "pathName": "11"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2"
+            "pathName": "12"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3"
+            "pathName": "13"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "4"
+            "name": "shooter on"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "6"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "7"
+            "name": "shooter off"
           }
         }
       ]
