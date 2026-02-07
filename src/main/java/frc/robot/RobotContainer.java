@@ -1,6 +1,5 @@
 package frc.robot;
 
-//import frc.robot.commands.ball.PointToBallCommand;
 import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
@@ -18,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 
 public class RobotContainer {
     // Subsystems
-    private final Drivetrain m_robotDrive = new Drivetrain();
+    private final Drivetrain robotDrive = new Drivetrain();
     
     /**
      * Vision subsystem for AprilTag detection and pose estimation.
@@ -26,7 +25,7 @@ public class RobotContainer {
      * IMPORTANT: Requires PhotonVision to be running on a coprocessor and
      * camera configuration to be completed in VisionConstants.
      */
-    private final Vision m_vision = new Vision(m_robotDrive);
+    private final Vision vision = new Vision(robotDrive);
     
     /**
      * Web server for vision diagnostics running on RoboRIO port 8082.
@@ -36,23 +35,23 @@ public class RobotContainer {
      * 
      * Access at: http://10.TE.AM.2:8082 or http://roborio-TEAM-frc.local:8082
      */
-    private final VisionWebServer m_webServer = new VisionWebServer(m_vision);
+    private final VisionWebServer webServer = new VisionWebServer(vision);
 
     // Controllers
     CommandPS5Controller driverController = new CommandPS5Controller(OIConstants.kMainControllerPort);
     
     // Autonomous chooser
-    private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     /**
      * The container for the robot, initializing everything and setting up the controller chooser
      */
     public RobotContainer() {
         // Connect Vision subsystem to Drivetrain for diagnostics
-        m_robotDrive.setVision(m_vision);
+        robotDrive.setVision(vision);
         
         // Start the web server for vision diagnostics
-        m_webServer.start();
+        webServer.start();
         
         // Configure default commands
         configureDefaultCommands();
@@ -73,9 +72,9 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         // ========== Drivetrain Default Command: Teleop Drive ==========
         // Left stick controls translation (X/Y), right stick X controls rotation
-        m_robotDrive.setDefaultCommand(
+        robotDrive.setDefaultCommand(
             new TeleopDriveCommand(
-                m_robotDrive,
+                robotDrive,
                 () -> -driverController.getLeftY(),    // Forward/backward (inverted)
                 () -> -driverController.getLeftX(),    // Left/right (inverted)
                 () -> -driverController.getRightX(),   // Rotation (inverted)
@@ -85,7 +84,7 @@ public class RobotContainer {
         );
         
         // CRITICAL: Set max speed for drivetrain (required for movement)
-        m_robotDrive.setSpeedPercent();
+        robotDrive.setSpeedPercent();
     }
     
     /* Configures button and trigger bindings for controllers. */
@@ -97,12 +96,12 @@ public class RobotContainer {
         // Uses vision-based autonomous navigation to position the robot
         // Runs while button is held, cancels when released
         driverController.square().whileTrue(
-            new FacePointCommand(m_robotDrive, () -> -driverController.getLeftY(),    // Forward/backward (inverted)
+            new FacePointCommand(robotDrive, () -> -driverController.getLeftY(),    // Forward/backward (inverted)
                 () -> -driverController.getLeftX(), 11.945, 4.029, 2) // Safety timeout
         );
 
          driverController.circle().whileTrue(
-             new GoToPositionCommand(m_robotDrive,10.0, 4.0,0.0)
+             new GoToPositionCommand(robotDrive,10.0, 4.0,0.0)
                      .withTimeout(10.0) // Safety timeout
          );
  
@@ -113,7 +112,7 @@ public class RobotContainer {
 
         // Reset gyro heading to zero (forward)
         driverController.triangle().onTrue(
-            Commands.runOnce(() -> m_robotDrive.zeroHeading())
+            Commands.runOnce(() -> robotDrive.zeroHeading())
         );
 
         // driverController.square().whileTrue(
@@ -123,7 +122,7 @@ public class RobotContainer {
         // ========== Vision Alignment Commands ==========
         // Options button (PS5): Align to nearest AprilTag for autonomous scoring
         driverController.options().whileTrue(
-            new AlignToAprilTagCommand(m_vision, m_robotDrive, 4)
+            new AlignToAprilTagCommand(vision, robotDrive, 4)
                     .withTimeout(5.0) // Safety timeout
         );
         
@@ -161,51 +160,45 @@ public class RobotContainer {
      */
     private void configureAutoChooser() {
         // Default option: Do nothing (safe for testing)
-        m_autoChooser.setDefaultOption("Do Nothing", Commands.none());
+        autoChooser.setDefaultOption("Do Nothing", Commands.none());
         
         // Simple autonomous: Drive forward 2 meters for mobility points
-        m_autoChooser.addOption("Drive Forward 2m",
+        autoChooser.addOption("Drive Forward 2m",
             Commands.sequence(
                 // Reset odometry to start at origin
-                Commands.runOnce(() -> m_robotDrive.resetOdometry(new Pose2d()), m_robotDrive),
+                Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
                 
                 // Drive forward at 30% speed until 2 meters traveled
                 Commands.run(
-                    () -> m_robotDrive.drive(0.3, 0, 0, false, false),
-                    m_robotDrive
-                ).until(() -> m_robotDrive.getPose().getX() > 2.0),
+                    () -> robotDrive.drive(0.3, 0, 0, false, false),
+                    robotDrive
+                ).until(() -> robotDrive.getPose().getX() > 2.0),
                 
                 // Stop driving
-                Commands.runOnce(() -> m_robotDrive.drive(0, 0, 0, false, false), m_robotDrive)
+                Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
             ).withName("Drive Forward Auto")
         );
         
         // Vision-based autonomous: Align to AprilTag 0
-        m_autoChooser.addOption("Align to AprilTag 0",
+        autoChooser.addOption("Align to AprilTag 0",
             Commands.sequence(
                 // Reset odometry
-                Commands.runOnce(() -> m_robotDrive.resetOdometry(new Pose2d()), m_robotDrive),
+                Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
                 
                 // Wait briefly for vision to initialize
                 Commands.waitSeconds(0.5),
                 
                 // Use vision to align to AprilTag 0 (first tag on field)
-                new AlignToAprilTagCommand(m_vision, m_robotDrive, 1)
+                new AlignToAprilTagCommand(vision, robotDrive, 1)
                     .withTimeout(10.0), // 10 second timeout for safety
                 
                 // Stop when finished
-                Commands.runOnce(() -> m_robotDrive.drive(0, 0, 0, false, false), m_robotDrive)
+                Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
             ).withName("Vision Align Auto")
         );
         
-        // TODO: Add PathPlanner autonomous routines
-        // Example:
-        // m_autoChooser.addOption("Center 2 Coral",
-        //     AutoBuilder.buildAuto("[C] 2 Coral")
-        // );
-        
         // Put chooser on SmartDashboard for driver station selection
-        SmartDashboard.putData("Autonomous Mode", m_autoChooser);
+        SmartDashboard.putData("Autonomous Mode", autoChooser);
     }
 
     /**
@@ -214,6 +207,6 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-        return m_autoChooser.getSelected();
+        return autoChooser.getSelected();
     }
 }
