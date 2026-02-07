@@ -1,37 +1,6 @@
 /*
- * Vision.java
- * 
- * Multi-Camera PhotonVision Subsystem for FRC 2026 Rebuilt
- * 
- * This subsystem manages vision processing using PhotonVision for AprilTag detection
- * and robot localization on the 2026 Rebuilt field. It integrates with the drivetrain's
- * odometry system to provide accurate pose estimation.
- * 
- * Key Features:
- * - Multi-camera support (up to 4 cameras)
- * - Individual camera enable/disable configuration
- * - AprilTag detection and pose estimation
- * - Multi-target tracking for improved accuracy
- * - Pose estimation fusion with drivetrain odometry
- * - Ambiguity filtering to reject unreliable measurements
- * - Distance-based standard deviation adjustment
- * - Aggregates poses from all enabled cameras
- * 
- * Hardware Requirements:
- * - Cameras compatible with PhotonVision (OV9281, Microsoft LifeCam, etc.)
- * - Raspberry Pi or other coprocessor running PhotonVision
- * - Network connection to robot radio
- * 
- * Configuration Needed:
- * - Set number of cameras in VisionConstants.kNumCameras
- * - Enable/disable cameras in VisionConstants.kCamerasEnabled
- * - Set camera names in VisionConstants.kCameraNames
- * - Calibrate and set robot-to-camera transforms in VisionConstants.kRobotToCams
- * - Tune vision standard deviations in VisionConstants for your specific setup
- * 
- 
- * @see Drivetrain For odometry integration
- * @see VisionConstants For camera configuration.
+ * Vision subsystem for multi-camera AprilTag pose estimation
+ * usingPhotonVision, fused with drivetrain odometry
  */
 
 package frc.robot.subsystems;
@@ -62,9 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
-    /**
-     * Information about heading and distance to a specific AprilTag.
-     */
+    // Information about heading and distance to a specific AprilTag
     public static class TagNavigationInfo {
         public final int tagId;
         public final boolean tagExists;
@@ -79,9 +46,7 @@ public class Vision extends SubsystemBase {
         }
     }
     
-    /**
-     * Detailed information about a visible AprilTag.
-     */
+    // Detailed information about a visible AprilTag
     public static class AprilTagInfo {
         public final int id;
         public final double ambiguity;
@@ -98,9 +63,7 @@ public class Vision extends SubsystemBase {
         }
     }
     
-    /**
-     * Container class for camera and its associated pose estimator.
-     */
+    // Container class for camera and its associated pose estimator
     private static class CameraModule {
         public final PhotonCamera camera;
         public final PhotonPoseEstimator poseEstimator;
@@ -115,32 +78,15 @@ public class Vision extends SubsystemBase {
         }
     }
     
-    /**
-     * List of active camera modules.
-     * 
-     * Only cameras that are enabled in VisionConstants.kCamerasEnabled are added.
-     * Each camera has its own PhotonCamera instance and PhotonPoseEstimator.
-     */
+    // List of active camera modules
     private final List<CameraModule> cameraModules = new ArrayList<>();
-    
-    /**
-     * 2026 Rebuilt field layout with AprilTag positions.
-     * 
-     * Loaded from WPILib's built-in field layouts. Contains precise 3D positions
-     * of all AprilTags on the 2026 field.
-     */
     private final AprilTagFieldLayout aprilTagFieldLayout;
-    
-    /**
-     * Reference to the drivetrain subsystem for pose estimation integration.
-     * 
-     * Used to get current odometry pose and update pose estimator with vision measurements.
-     */
+
+    // Used to get current odometry pose and update pose estimator with vision measurements
     private final Drivetrain drivetrain;
     
     /**
      * Field2d widget for visualizing vision estimates on dashboard.
-     * 
      * Shows the robot's vision-estimated position alongside odometry position
      * for debugging and verification.
      */
@@ -151,10 +97,8 @@ public class Vision extends SubsystemBase {
     
     /**
      * Creates a new Vision subsystem with multi-camera support.
-     * 
      * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
      * field layout, and sets up pose estimators for each camera with their configured transforms.
-     * 
      * Only cameras with kCamerasEnabled[i] = true will be initialized.
      * 
      * @param drivetrain Reference to drivetrain subsystem for odometry integration
@@ -317,26 +261,15 @@ public class Vision extends SubsystemBase {
     }
     
     /**
-     * Calculates dynamic standard deviations for Kalman filter vision measurements.
-     * 
-     * Standard deviations represent measurement uncertainty (covariance matrix diagonal)
-     * and are used by the Unscented Kalman Filter to optimally weight vision vs. odometry.
-     * 
-     * Kalman Filter Math:
-     * - Standard deviation = sqrt(variance) of measurement noise
-     * - Forms the R matrix (measurement noise covariance) in Kalman equations
-     * - Kalman Gain K = P * H^T * (H * P * H^T + R)^-1
-     * - Higher R (stddev) → Lower K → Filter trusts odometry more
-     * - Lower R (stddev) → Higher K → Filter trusts vision more
-     * 
-     * Dynamic Adjustment Factors:
-     * - Distance to target: Farther = less accurate → higher stddev
-     * - Number of tags: More tags = more accurate → lower stddev
-     * - Target area: Smaller = less accurate → higher stddev
-     * 
-     * This creates an adaptive filter that automatically adjusts trust based
-     * on measurement quality, providing optimal fusion in all conditions.
-     * 
+     * Computes adaptive vision measurement standard deviations for pose fusion.
+     *
+     * Adjusts uncertainty based on:
+     * - Distance to the detected AprilTag (farther = less reliable)
+     * - Number of visible tags (more tags = more reliable)
+     *
+     * These values are used by the drivetrain pose estimator to weight
+     * vision measurements relative to odometry.
+     *
      * @param module The camera module providing the measurement
      * @param estimatedPose The vision-estimated robot pose
      * @return 3x1 matrix of standard deviations [x, y, theta] in meters/radians

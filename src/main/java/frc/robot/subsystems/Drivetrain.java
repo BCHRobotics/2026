@@ -86,23 +86,6 @@ public class Drivetrain extends SubsystemBase {
   
   /**
    * Pose estimator that fuses wheel odometry with vision measurements using Kalman filtering.
-   * 
-   * Uses an Unscented Kalman Filter (UKF) to optimally combine:
-   * - Wheel odometry (continuous, but drifts over time due to wheel slip)
-   * - Vision measurements (accurate but intermittent, may have outliers)
-   * 
-   * How it works:
-   * 1. Predicts pose based on wheel odometry (process model)
-   * 2. Corrects prediction when vision measurements arrive (measurement update)
-   * 3. Weights each measurement by its uncertainty (standard deviations)
-   * 4. Produces optimal estimate that's better than either source alone
-   * 
-   * Benefits over basic odometry:
-   * - Corrects for wheel slip and drift using AprilTag vision
-   * - Smoothly integrates intermittent vision measurements
-   * - Handles measurement noise and outliers gracefully
-   * - Provides statistically optimal pose estimate
-   * 
    * The vision subsystem calls addVisionMeasurement() to provide vision updates.
    */
   private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
@@ -117,7 +100,7 @@ public class Drivetrain extends SubsystemBase {
       new Pose2d()
   );
 
-  /** Creates a new DriveSubsystem. */
+  // Creates a new Drivetrain subsystem
   public Drivetrain() {
     
   }
@@ -230,7 +213,6 @@ public class Drivetrain extends SubsystemBase {
 
   /**
    * Returns the currently-estimated pose of the robot.
-   * 
    * This returns the pose from the pose estimator, which fuses wheel odometry
    * with vision measurements for improved accuracy.
    * 
@@ -242,7 +224,6 @@ public class Drivetrain extends SubsystemBase {
   
   /**
    * Returns the wheel-odometry-only pose (no vision fusion).
-   * 
    * Useful for debugging or comparing odometry vs. vision-fused estimates.
    * 
    * @return The odometry-only pose
@@ -253,10 +234,6 @@ public class Drivetrain extends SubsystemBase {
 
   /**
    * Resets the odometry to the specified pose.
-   * 
-   * KEEP IN MIND this doesn't actually set the gyro,
-   * the odometry just works with the current heading as an offset.
-   * 
    * This resets both the basic odometry and the vision-fused pose estimator.
    * 
    * @param pose The pose to which to set the odometry
