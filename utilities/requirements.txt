@@ -1,0 +1,3 @@
+# Python dependencies for NetworkTables utilities
+# pynetworktables - Pure Python NetworkTables implementation
+pynetworktables

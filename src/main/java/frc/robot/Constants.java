@@ -119,7 +119,7 @@ public final class Constants {
      */
     public static final boolean[] kCamerasEnabled = {
       true,  // Camera 0
-      false,  // Camera 1
+      true,  // Camera 1 - banana_1 (ball detection)
       false,  // Camera 2
       false,   // Camera 3
     };
@@ -131,8 +131,8 @@ public final class Constants {
      *               "OV9281_Front", "LifeCam_Left", etc.
      */
     public static final String[] kCameraNames = {
-      "Camera_0",  // Front camera
-      "Camera_1",  // Back camera
+      "Camera_0",  // Front camera (AprilTag detection)
+      "banana_1",  // Ball detection camera
       "Camera_2",  // Left camera
       "Camera_3"   // Right camera
     };
@@ -170,10 +170,11 @@ public final class Constants {
         new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34)),
         new Rotation3d(0, 0, 0)
       ),
-      // Camera 1 - Back
+      // Camera 1 - banana_1 (Ball detection)
+      // PLACEHOLDER: Measure and set actual position/orientation
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
-        new Rotation3d(0, 0, Math.toRadians(180))
+        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(0.75), Units.inchesToMeters(6)),
+        new Rotation3d(0, 0, 0)
       ),
       // Camera 2 - Left
       new Transform3d(
@@ -198,6 +199,7 @@ public final class Constants {
      * Recommended: 0.2 for competition, 0.3 for testing
      * If you get too many rejected poses, increase this value.
      */
+    
     public static final double kMaxAmbiguity = 0.3;
     
     /**
@@ -356,9 +358,9 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 0.4;
-    public static final double kPositionI = 0.05;
-    public static final double kPositionD = 0.0;
+    public static final double kPositionP = 2.8;
+    public static final double kPositionI = 0.00;
+    public static final double kPositionD = 0.03;
     
     /**
      * PID gains for rotation control.
@@ -375,7 +377,7 @@ public final class Constants {
      * Position tolerance in meters.
      * Command finishes when robot is within this distance of target.
      */
-    public static final double kPositionTolerance = 0.1; // meters
+    public static final double kPositionTolerance = 0.05; // meters
     
     /**
      * Rotation tolerance in degrees.
@@ -410,6 +412,54 @@ public final class Constants {
      * Used for alliance-relative coordinate mirroring.
      */
     public static final double kFieldWidth = 8.21; // meters (26.94 feet)
+  }
+
+  /**
+   * Constants for Ball Tracking and Alignment.
+   * 
+   * PID control for rotating the robot to align with detected balls
+   * using vision-based yaw angle feedback.
+   */
+  public static final class BallTrackingConstants {
+    // ========== PID Gains ==========
+    
+    /**
+     * Proportional gain for ball alignment rotation control.
+     * Higher values = faster response to yaw error.
+     * Tune this first - start low and increase until responsive.
+     * Lowered to 0.02 to prevent saturation and match max speed limit.
+     */
+    public static final double kRotationP = 0.02;
+    
+    /**
+     * Integral gain for ball alignment rotation control.
+     * Helps eliminate steady-state error.
+     * Usually keep low to avoid oscillation.
+     */
+    public static final double kRotationI = 0.0;
+    
+    /**
+     * Derivative gain for ball alignment rotation control.
+     * Reduces overshoot and oscillation.
+     * Increased to dampen oscillations and reduce hunting behavior.
+     */
+    public static final double kRotationD = 0.02;
+    
+    // ========== Tolerances ==========
+    
+    /**
+     * Yaw tolerance in degrees.
+     * Robot is considered aligned when ball yaw is within this tolerance.
+     */
+    public static final double kYawTolerance = 3.0; // degrees
+    
+    // ========== Speed Limits ==========
+    
+    /**
+     * Maximum rotation speed during ball tracking.
+     * Limits how fast the robot can turn while aligning to ball.
+     */
+    public static final double kMaxRotationSpeed = 0.3; // rad/s
   }
 
   /**
