@@ -119,7 +119,7 @@ public final class Constants {
      */
     public static final boolean[] kCamerasEnabled = {
       true,  // Camera 0
-      false,  // Camera 1
+      true,  // Camera 1
       false,  // Camera 2
       false,   // Camera 3
     };

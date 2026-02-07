@@ -267,7 +267,7 @@ public class Drivetrain extends SubsystemBase {
     
     diagnostics.append("=======================================\n");
     
-    System.out.print(diagnostics.toString());
+    //System.out.print(diagnostics.toString());
   }
 
   /**
