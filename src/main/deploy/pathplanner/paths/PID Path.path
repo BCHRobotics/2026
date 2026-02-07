@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 11.98339514978602,
-        "y": 0.9491298145506415
+        "x": 10.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 12.232759824743704,
-        "y": 0.9313180520536664
+        "x": 9.404821683309558,
+        "y": 4.205249643366619
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 14.41586305278174,
-        "y": 0.9491298145506415
+        "x": 9.2274607703281,
+        "y": 1.479614835948646
       },
       "prevControl": {
-        "x": 13.854066765429526,
-        "y": 0.9842420825101561
+        "x": 8.928498573466474,
+        "y": 3.071069900142657
       },
       "nextControl": {
-        "x": 15.036918687589157,
-        "y": 0.9103138373751767
+        "x": 9.526422967189728,
+        "y": -0.11184022824536255
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 14.41586305278174,
-        "y": 6.1245934379457925
+        "x": 10.0,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 14.172508760698346,
-        "y": 6.067333604514406
+        "x": 11.229172610556347,
+        "y": 2.3420827389443666
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +49,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 0.75,
     "maxAcceleration": 1.5,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 720.0,
@@ -57,14 +57,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 177.91743472026917
+    "velocity": 0,
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Test 2 Paths",
+  "folder": "PID_tunig",
   "idealStartingState": {
-    "velocity": 1.5,
-    "rotation": 91.21887523513114
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

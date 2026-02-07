@@ -15,6 +15,18 @@
           "data": {
             "pathName": "T2"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "T3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "T4"
+          }
         }
       ]
     }

@@ -6,10 +6,11 @@
     "Auto 1 Left Paths",
     "Auto Right Path",
     "Climber Paths",
-    "Test 4 Paths",
+    "PID_tunig",
     "Test 1 Paths",
     "Test 2 Paths",
-    "Test 3 Paths"
+    "Test 3 Paths",
+    "Test 4 Paths"
   ],
   "autoFolders": [
     "Test Autos"
