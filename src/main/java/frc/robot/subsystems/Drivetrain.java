@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -124,11 +125,20 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
-    // Configure PathPlanner AutoBuilder for autonomous path following
+    configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
+  }
+
+  /**
+   * Configures PathPlanner AutoBuilder with the provided PID constants.
+   *
+   * @param translationConstants PID for X/Y translation
+   * @param rotationConstants PID for robot heading
+   */
+  public void configureAutoBuilder(PIDConstants translationConstants, PIDConstants rotationConstants) {
     try {
       // Load robot configuration from PathPlanner GUI settings
       RobotConfig config = RobotConfig.fromGUISettings();
-      
+
       // Configure AutoBuilder for holonomic (swerve) drive
       AutoBuilder.configure(
         this::getPose, // Robot pose supplier
@@ -136,8 +146,8 @@ public class Drivetrain extends SubsystemBase {
         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier (MUST be robot-relative)
         (speeds, feedforwards) -> driveRobotRelative(speeds), // Method to drive robot
         new PPHolonomicDriveController(
-          AutoConstants.translationConstants, // Translation PID from Constants
-          AutoConstants.rotationConstants      // Rotation PID from Constants
+          translationConstants,
+          rotationConstants
         ),
         config, // Robot configuration
         () -> {

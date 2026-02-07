@@ -10,9 +10,11 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 // import frc.robot.Constants.ActuatorConstants;  // DISABLED: Not needed when actuators disabled
 // import frc.robot.Constants.Actuator2Constants;  // DISABLED: Not needed when actuators disabled
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.PIDConstants;
 
 // import edu.wpi.first.math.MathUtil;  // DISABLED: Not needed when actuators disabled
 import edu.wpi.first.math.geometry.Pose2d;
@@ -70,6 +72,8 @@ public class RobotContainer {
     
     // Autonomous chooser
     private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+    private final SendableChooser<PIDConstants> m_ppTranslationPidChooser = new SendableChooser<>();
+    private final SendableChooser<PIDConstants> m_ppRotationPidChooser = new SendableChooser<>();
 
     /**
      * The container for the robot, initializing everything and setting up the controller chooser
@@ -83,6 +87,9 @@ public class RobotContainer {
         
         // Configure default commands
         configureDefaultCommands();
+
+        // Configure PathPlanner PID choosers
+        configurePathPlannerPidChoosers();
         
         // Configure button bindings
         configureBindings();
@@ -103,6 +110,28 @@ public class RobotContainer {
         
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", m_autoChooser);
+    }
+
+    /**
+     * Configures Shuffleboard choosers for PathPlanner translation/rotation PID presets.
+     */
+    private void configurePathPlannerPidChoosers() {
+        m_ppTranslationPidChooser.setDefaultOption(
+            "Default (2.0, 1.0, 0.0)",
+            AutoConstants.translationConstants
+        );
+        m_ppTranslationPidChooser.addOption("Soft (1.2, 0.0, 0.0)", new PIDConstants(1.2, 0.0, 0.0));
+        m_ppTranslationPidChooser.addOption("Aggressive (3.0, 1.2, 0.0)", new PIDConstants(3.0, 1.2, 0.0));
+
+        m_ppRotationPidChooser.setDefaultOption(
+            "Default (1.0, 0.0, 0.0)",
+            AutoConstants.rotationConstants
+        );
+        m_ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
+        m_ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
+
+        SmartDashboard.putData("PP Translation PID", m_ppTranslationPidChooser);
+        SmartDashboard.putData("PP Rotation PID", m_ppRotationPidChooser);
     }
     
     /**
@@ -307,7 +336,17 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-                   // return new PathPlannerAuto("Test 4 Auto");
+        PIDConstants translationConstants = m_ppTranslationPidChooser.getSelected();
+        PIDConstants rotationConstants = m_ppRotationPidChooser.getSelected();
+        if (translationConstants == null) {
+            translationConstants = AutoConstants.translationConstants;
+        }
+        if (rotationConstants == null) {
+            rotationConstants = AutoConstants.rotationConstants;
+        }
+        m_robotDrive.configureAutoBuilder(translationConstants, rotationConstants);
+
+        // return new PathPlannerAuto("Test 4 Auto");
         return m_autoChooser.getSelected();
     
     }
