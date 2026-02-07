@@ -20,22 +20,10 @@ public class RobotContainer {
     // Subsystems
     private final Drivetrain m_robotDrive = new Drivetrain();
     
-    /**
-     * Vision subsystem for AprilTag detection and pose estimation.
-     * 
-     * IMPORTANT: Requires PhotonVision to be running on a coprocessor and
-     * camera configuration to be completed in VisionConstants.
-     */
+    //Vision subsystem for AprilTag detection and pose estimation.
     private final Vision m_vision = new Vision(m_robotDrive);
     
-    /**
-     * Web server for vision diagnostics running on RoboRIO port 8082.
-     * 
-     * Provides a browser-based dashboard for monitoring PhotonVision cameras,
-     * AprilTag detection, object tracking, and pose estimation in real-time.
-     * 
-     * Access at: http://10.TE.AM.2:8082 or http://roborio-TEAM-frc.local:8082
-     */
+    // Web server for vision diagnostics running on RoboRIO port 8082.
     private final VisionWebServer m_webServer = new VisionWebServer(m_vision);
 
     // Controllers
@@ -44,9 +32,7 @@ public class RobotContainer {
     // Autonomous chooser
     private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
-    /**
-     * The container for the robot, initializing everything and setting up the controller chooser
-     */
+    //The container for the robot, initializing everything and setting up the controller chooser
     public RobotContainer() {
         // Connect Vision subsystem to Drivetrain for diagnostics
         m_robotDrive.setVision(m_vision);
@@ -88,7 +74,7 @@ public class RobotContainer {
         m_robotDrive.setSpeedPercent();
     }
     
-    /* Configures button and trigger bindings for controllers. */
+    // Configures button and trigger bindings for controllers.
     private void configureBindings() {
         
         // ========== Vision-Based Navigation Commands ==========
