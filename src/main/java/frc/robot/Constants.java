@@ -172,8 +172,8 @@ public final class Constants {
       ),
       // Camera 1 - Back
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
-        new Rotation3d(0, 0, Math.toRadians(180))
+        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(0), Units.inchesToMeters(0)),
+        new Rotation3d(0, 0, Math.toRadians(0))
       ),
       // Camera 2 - Left
       new Transform3d(
