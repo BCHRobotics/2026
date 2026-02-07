@@ -267,17 +267,6 @@ public class Drivetrain extends SubsystemBase {
    * pose estimate. The Unscented Kalman Filter (UKF) will optimally fuse this
    * with wheel odometry based on the provided standard deviations.
    * 
-   * Kalman Filter Operation:
-   * - Standard deviations represent measurement uncertainty (covariance)
-   * - Lower stddev = filter trusts this measurement more (higher Kalman gain)
-   * - Higher stddev = filter trusts odometry more (lower Kalman gain)
-   * - Filter finds optimal balance between the two sources
-   * 
-   * Why timestamps matter:
-   * - Vision has processing latency (~20-100ms)
-   * - Timestamp allows filter to apply measurement to correct historical state
-   * - Filter "rewinds" to that time, applies update, then "fast-forwards"
-   * 
    * @param visionPose The vision-estimated robot pose
    * @param timestamp The timestamp of the vision measurement (from PhotonVision)
    * @param stdDevs Standard deviations (measurement uncertainty) [x, y, theta]
@@ -441,9 +430,7 @@ public class Drivetrain extends SubsystemBase {
     return Rotation2d.fromDegrees(-gyro.getAngle()).getDegrees();
   }
 
-  /**
-   * Updated the max speed of the robot based on what mode is enabled
-   */
+  // Updated the max speed of the robot based on what mode is enabled
   public void setSpeedPercent() {
     maxSpeed = DriveConstants.maxSpeedNormal;
   }   

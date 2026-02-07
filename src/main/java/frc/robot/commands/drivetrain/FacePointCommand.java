@@ -65,7 +65,7 @@ public class FacePointCommand extends Command {
 
     @Override
     public void initialize() {
-        
+        // For debugging purposes
         // System.out.println("GoToPosition: Navigating to position " + m_targetPose);
         // System.out.println("  Current pose: " + m_drivetrain.getPose());
     }
