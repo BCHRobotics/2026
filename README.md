@@ -1,3 +1,5 @@
+# [please someone refactor this, why is it 374 lines]
+
 # FRC Team 2386 - 2026 REBUILT Robot Code
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
