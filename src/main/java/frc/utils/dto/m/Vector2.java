@@ -41,6 +41,14 @@ public class Vector2 {
         return Math.acos(dot(a, b) / Vector2.magnitude(a) / Vector2.magnitude(b));
     }
 
+    public static Vector2 project(Vector2 a, Vector2 b) {
+        if (Vector2.magnitude(a) == 0 || Vector2.magnitude(b) == 0) {return new Vector2(0,0);}
+        double len = Vector2.magnitude(a) * Math.cos(Vector2.angleBetween(a, b));
+        Vector2 result = Vector2.normalize(b);
+        result = new Vector2(result.x * len, result.y * len);
+        return result;
+    }
+
     // c is [0..1]
     public static Vector2 lerp(Vector2 a, Vector2 b, double c) {
         return new Vector2(a.x + (b.x-a.x) * c, a.y + (b.y-a.y)*c);
