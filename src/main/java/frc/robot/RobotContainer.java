@@ -307,16 +307,16 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-                    return new PathPlannerAuto("Test 4 Auto");
-        // Command selectedAuto = m_autoChooser.getSelected();
-        // System.out.println("Test run");
-        // // Return selected auto, or default to Auto 1 Left if none selected
-        // System.out.println(selectedAuto.getName());
-        // if (selectedAuto != null) {
-        //     return selectedAuto;
-        // } else {
-        //    System.out.println("we are getting into this path code");
-        //     return new PathPlannerAuto("Test Path");
-        // }
+                   // return new PathPlannerAuto("Test 4 Auto");
+        Command selectedAuto = m_autoChooser.getSelected();
+        System.out.println("Test run");
+        // Return selected auto, or default to Auto 1 Left if none selected
+        System.out.println(selectedAuto.getName());
+        if (selectedAuto != null) {
+            return selectedAuto;
+        } else {
+           System.out.println("we are getting into this path code");
+            return new PathPlannerAuto("Test Path");
+        }
     }
 }
