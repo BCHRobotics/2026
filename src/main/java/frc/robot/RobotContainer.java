@@ -181,6 +181,11 @@ public class RobotContainer {
             new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
                     .withTimeout(10.0) // Safety timeout
         );
+
+        // Reset gyro heading to zero (forward)
+        driverController.triangle().onTrue(
+            Commands.runOnce(() -> m_robotDrive.zeroHeading())
+        );
         
         /* DISABLED: Actuator 2 controls - Hardware does not exist
          * 
