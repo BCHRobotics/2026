@@ -104,7 +104,7 @@ public class RobotContainer {
         // Add autonomous options
         // Note: PathPlanner autos require AutoBuilder to be configured in the drivetrain
         m_autoChooser.setDefaultOption("Do Nothing", Commands.none());
-        m_autoChooser.addOption("Auto 1 Left", new PathPlannerAuto("Auto 1 Left"));
+        m_autoChooser.addOption("PID Auto", new PathPlannerAuto("Auto 1 Left"));
         m_autoChooser.addOption("Auto Right", new PathPlannerAuto("Auto Right"));
         m_autoChooser.addOption("Auto Climber", new PathPlannerAuto("Auto Climber"));
         
