@@ -311,8 +311,6 @@ src/main/java/frc/
 | RL Turn | NEO (SPARK MAX) | 11 | MAXSwerve Module |
 | RR Drive | NEO (SPARK MAX) | 16 | MAXSwerve Module |
 | RR Turn | NEO (SPARK MAX) | 17 | MAXSwerve Module |
-| ~~Actuator~~ | ~~NEO (SPARK MAX)~~ | ~~20~~ | ⚠️ DISABLED - Example code only |
-| ~~Actuator2~~ | ~~NEO (SPARK MAX)~~ | ~~21~~ | ⚠️ DISABLED - Example code only |
 | ~~Ball Intake~~ | ~~NEO (SPARK MAX)~~ | ~~22~~ | ⚠️ DISABLED - Example code only |
 
 ### 6.2 Sensors
@@ -354,19 +352,6 @@ src/main/java/frc/
 
 **Disabled Controls (Example Code)**:
 ⚠️ The following controls are disabled as the hardware does not exist:
-
-~~**Actuator 1 (SPARK MAX PID)**~~:
-- ~~Cross Button: Home position (retracted)~~
-- ~~Circle Button: Mid position~~
-- ~~Triangle Button: Max position (extended)~~
-- ~~Right Stick Y: Manual control~~
-
-~~**Actuator 2 (WPILib PID)**~~:
-- ~~L2/R2 Triggers: Manual control (extend/retract while held)~~
-- ~~D-Pad Down: Home position~~
-- ~~D-Pad Left/Right: Mid position~~
-- ~~D-Pad Up: Max position~~
-- ~~Create Button: Reset encoder~~
 
 ~~**Ball Intake**~~:
 - ~~L1 Button: Intake balls (while held)~~
