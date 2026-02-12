@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.124,
-        "y": 2.993
+        "x": 4.0,
+        "y": 0.8197432239657632
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3403708987161194,
-        "y": 4.6495863052781745
+        "x": 5.203537803145367,
+        "y": 0.4833380884511132
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.124,
-        "y": 3.653309557774607
+        "x": 2.1241369472182594,
+        "y": 2.993437945791726
       },
       "prevControl": {
-        "x": 1.124,
-        "y": 3.653309557774607
+        "x": -0.9035092724679026,
+        "y": 0.28925820256775925
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shooter on",
+      "waypointRelativePos": 0.809385863267663,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.5,
@@ -42,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -149.88626684901752
   },
   "reversed": false,
-  "folder": "Climber Paths",
+  "folder": "Test Climber Right and Left Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -143.7623673705524
+    "rotation": -177.39633021218052
   },
   "useDefaultConstraints": true
 }

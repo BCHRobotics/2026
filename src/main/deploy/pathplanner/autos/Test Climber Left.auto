@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "11"
+            "pathName": "Left Path 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "12"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "13"
+            "pathName": "Left Path 2"
           }
         },
         {
@@ -27,17 +21,11 @@
           "data": {
             "name": "shooter on"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter off"
-          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Climber Autos",
   "choreoAuto": false
 }

@@ -7,49 +7,55 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1"
+            "pathName": "CC-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "2"
+            "pathName": "CC-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3"
+            "pathName": "CC-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "4"
+            "pathName": "CC-4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake on"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "6"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "7"
+            "pathName": "CC-5"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Centre Autos",
+  "folder": "Climber Autos",
   "choreoAuto": false
 }
