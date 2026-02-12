@@ -131,10 +131,10 @@ public final class Constants {
      *               "OV9281_Front", "LifeCam_Left", etc.
      */
     public static final String[] kCameraNames = {
-      "Camera_0",  // Front camera
-      "Camera_1",  // Back camera
-      "Camera_2",  // Left camera
-      "Camera_3"   // Right camera
+      "Camera_0",  // Left camera
+      "Camera_1",  // Front camera
+      "Camera_2",  // Spare camera
+      "Camera_3"   // Spare camera
     };
     
     /**
@@ -167,12 +167,12 @@ public final class Constants {
     public static final Transform3d[] kRobotToCams = {
       // Camera 0 - Side
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(5), Units.inchesToMeters(-10), Units.inchesToMeters(33)),
+        new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(-12), Units.inchesToMeters(29.5)),
         new Rotation3d(0, 0, -90)
       ),
       // Camera 1 - Front
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(5), Units.inchesToMeters(0), Units.inchesToMeters(34)),
+        new Translation3d(Units.inchesToMeters(6.5), Units.inchesToMeters(0), Units.inchesToMeters(36)),
         new Rotation3d(0, 0, Math.toRadians(0))
       ),
       // Camera 2 - Left
