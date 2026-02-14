@@ -128,6 +128,14 @@ public class Vector2 {
         return Math.sqrt((b.x-a.x)*(b.x-a.x) + (b.y-a.y)*(b.y-a.y));
     }
 
+    public static Vector2 project(Vector2 a, Vector2 b) {
+        if (Vector2.magnitude(a) == 0 || Vector2.magnitude(b) == 0) {return new Vector2(0,0);}
+        double len = Vector2.magnitude(a) * Math.cos(Vector2.angleBetween(a, b));
+        Vector2 result = Vector2.normalize(b);
+        result = new Vector2(result.x * len, result.y * len);
+        return result;
+    }
+
     /**
      * Calculates the dot product of two vectors.
      * 

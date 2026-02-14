@@ -1,13 +1,16 @@
 package frc.robot;
 
+import frc.robot.commands.ball.PointToBallCommand;
+import frc.robot.commands.drivetrain.FacePointCommand;
+import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
-import frc.robot.commands.vision.GoToAprilTagCommand;
 // import frc.robot.subsystems.Actuator;  // DISABLED: Example subsystem - hardware does not exist
 // import frc.robot.subsystems.Actuator2;  // DISABLED: Example subsystem - hardware does not exist
-// import frc.robot.subsystems.BallIntake;  // DISABLED: Example subsystem - hardware does not exist
+// import frc.robot.subsysems.BallIntake;  // DISABLED: Example subsystem - hardware does not exist
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
+import frc.robot.webserver.VisionWebServer;
 // import frc.robot.Constants.ActuatorConstants;  // DISABLED: Not needed when actuators disabled
 // import frc.robot.Constants.Actuator2Constants;  // DISABLED: Not needed when actuators disabled
 import frc.robot.Constants.AutoConstants;
@@ -18,6 +21,7 @@ import com.pathplanner.lib.config.PIDConstants;
 
 // import edu.wpi.first.math.MathUtil;  // DISABLED: Not needed when actuators disabled
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,10 +43,20 @@ public class RobotContainer {
      */
     private final Vision m_vision = new Vision(m_robotDrive);
     
+    /**
+     * Web server for vision diagnostics running on RoboRIO port 8082.
+     * 
+     * Provides a browser-based dashboard for monitoring PhotonVision cameras,
+     * AprilTag detection, object tracking, and pose estimation in real-time.
+     * 
+     * Access at: http://10.TE.AM.2:8082 or http://roborio-TEAM-frc.local:8082
+     */
+    private final VisionWebServer m_webServer = new VisionWebServer(m_vision);
+    
     /* DISABLED: Example subsystems - Hardware does not physically exist on this robot
      * Kept in code as examples for future development
      * 
-    /**
+    /** 
      * PID-controlled actuator subsystem (using SPARK MAX onboard PID).
      * 
      * Provides closed-loop position control for mechanisms like elevators,
@@ -79,8 +93,14 @@ public class RobotContainer {
      * The container for the robot, initializing everything and setting up the controller chooser
      */
     public RobotContainer() {
+        // Start data logging for AdvantageScope
+        DataLogManager.start();
+        
         // Connect Vision subsystem to Drivetrain for diagnostics
         m_robotDrive.setVision(m_vision);
+        
+        // Start the web server for vision diagnostics
+        m_webServer.start();
         
         // Configure autonomous chooser with available auto paths
         configureAutonomousChooser();
@@ -223,18 +243,33 @@ public class RobotContainer {
         
         // ========== Vision-Based Navigation Commands ==========
         
-        // Square button (PS5): Navigate to 1 meter in front of AprilTag 28
+        // Square button (PS5): Navigate to 1 meter in front of an AprilTag
         // Uses vision-based autonomous navigation to position the robot
         // Runs while button is held, cancels when released
         driverController.square().whileTrue(
-            new GoToAprilTagCommand(m_vision, m_robotDrive, 28, 1.0)
-                    .withTimeout(10.0) // Safety timeout
+            new FacePointCommand(m_robotDrive, () -> -driverController.getLeftY(),    // Forward/backward (inverted)
+                () -> -driverController.getLeftX(), 11.945, 4.029, 2) // Safety timeout
         );
+
+         driverController.circle().whileTrue(
+             new GoToPositionCommand(m_robotDrive,10.0, 4.0,0.0)
+                     .withTimeout(10.0) // Safety timeout
+         );
+ 
+        // driverController.cross().whileTrue(
+        //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
+        //             .withTimeout(10.0) // Safety timeout
+        // );
 
         // Reset gyro heading to zero (forward)
         driverController.triangle().onTrue(
             Commands.runOnce(() -> m_robotDrive.zeroHeading())
         );
+
+        // driverController.square().whileTrue(
+        //     new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
+        // );
+
         
         /* DISABLED: Actuator 2 controls - Hardware does not exist
          * 

@@ -48,8 +48,8 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
-    public static final double maxSpeedNormal = 3.3; // 3.3-LIMIT SPEEDS FOR TESTING
-    public static final double maxAngularSpeed = 3.0 * Math.PI; // radians per second
+    public static final double maxSpeedNormal = 3.3; // 3.3
+    public static final double maxAngularSpeed = 2 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 3; // radians per second
     public static final double kMagnitudeSlewRate = 3.5; // percent per second (1 = 100%) // 3.6
@@ -198,7 +198,8 @@ public final class Constants {
      * Recommended: 0.2 for competition, 0.3 for testing
      * If you get too many rejected poses, increase this value.
      */
-    public static final double kMaxAmbiguity = 0.2;
+    
+    public static final double kMaxAmbiguity = 0.3;
     
     /**
      * Standard deviations for single-tag pose estimates.
@@ -251,8 +252,8 @@ public final class Constants {
      * These define when the robot is "close enough" to the target position.
      * Cannot be zero or commands will never complete (robot can't be perfect).
      */
-    public static final double allowedXError = 0.05; // 5cm tolerance
-    public static final double allowedYError = 0.05; // 5cm tolerance
+    public static final double allowedXError = 0.025; // 5cm tolerance
+    public static final double allowedYError = 0.025; // 5cm tolerance
     
     /**
      * PID constants for X-axis alignment to AprilTags.
@@ -335,6 +336,129 @@ public final class Constants {
     // the PID constants that PathPlanner uses to drive the robot
     public static final PIDConstants translationConstants = new PIDConstants(2, 1, 0);
     public static final PIDConstants rotationConstants = new PIDConstants(1, 0, 0);
+  }
+
+  /**
+   * Constants for autonomous navigation commands (GoToPosition, GoToPositionRelative, etc.).
+   * 
+   * These PID values control the robot's behavior when navigating to specific field positions.
+   * Higher P values = more aggressive, faster response but may overshoot
+   * Lower P values = smoother, more stable but slower response
+   * 
+   * Tune these values through testing:
+   * 1. Start with low P values and gradually increase
+   * 2. Add D if oscillation occurs
+   * 3. Only add I if there's persistent steady-state error
+   */
+  public static final class NavigationConstants {
+    // ========== PID Gains ==========
+    
+    /**
+     * PID gains for X position control (field-relative).
+     * Controls forward/backward movement accuracy.
+     */
+    public static final double kPositionP = 2.8;
+    public static final double kPositionI = 0.00;
+    public static final double kPositionD = 0.03;
+    
+    /**
+     * PID gains for rotation control.
+     * Controls turning accuracy to target heading.
+     * Note: Lower P value than position because rotation is more sensitive.
+     */
+    public static final double kRotationP = 0.025;
+    public static final double kRotationI = 0.005;
+    public static final double kRotationD = 0.0;
+    
+    // ========== Tolerances ==========
+    
+    /**
+     * Position tolerance in meters.
+     * Command finishes when robot is within this distance of target.
+     */
+    public static final double kPositionTolerance = 0.05; // meters
+    
+    /**
+     * Rotation tolerance in degrees.
+     * Command finishes when robot heading is within this angle of target.
+     */
+    public static final double kRotationTolerance = 5.0; // degrees
+    
+    // ========== Speed Limits ==========
+    
+    /**
+     * Maximum linear speed during autonomous navigation.
+     * Limits how fast the robot can translate to target position.
+     */
+    public static final double kMaxLinearSpeed = 5.0; // m/s
+    
+    /**
+     * Maximum angular speed during autonomous navigation.
+     * Limits how fast the robot can rotate to target heading.
+     */
+    public static final double kMaxAngularSpeed = 1.0; // rad/s
+    
+    // ========== Field Dimensions ==========
+    
+    /**
+     * FRC 2026 Rebuilt field length in meters.
+     * Used for alliance-relative coordinate mirroring.
+     */
+    public static final double kFieldLength = 16.54; // meters (54.27 feet)
+    
+    /**
+     * FRC 2026 Rebuilt field width in meters.
+     * Used for alliance-relative coordinate mirroring.
+     */
+    public static final double kFieldWidth = 8.21; // meters (26.94 feet)
+  }
+
+  /**
+   * Constants for Ball Tracking and Alignment.
+   * 
+   * PID control for rotating the robot to align with detected balls
+   * using vision-based yaw angle feedback.
+   */
+  public static final class BallTrackingConstants {
+    // ========== PID Gains ==========
+    
+    /**
+     * Proportional gain for ball alignment rotation control.
+     * Higher values = faster response to yaw error.
+     * Tune this first - start low and increase until responsive.
+     * Lowered to 0.02 to prevent saturation and match max speed limit.
+     */
+    public static final double kRotationP = 0.02;
+    
+    /**
+     * Integral gain for ball alignment rotation control.
+     * Helps eliminate steady-state error.
+     * Usually keep low to avoid oscillation.
+     */
+    public static final double kRotationI = 0.0;
+    
+    /**
+     * Derivative gain for ball alignment rotation control.
+     * Reduces overshoot and oscillation.
+     * Increased to dampen oscillations and reduce hunting behavior.
+     */
+    public static final double kRotationD = 0.02;
+    
+    // ========== Tolerances ==========
+    
+    /**
+     * Yaw tolerance in degrees.
+     * Robot is considered aligned when ball yaw is within this tolerance.
+     */
+    public static final double kYawTolerance = 3.0; // degrees
+    
+    // ========== Speed Limits ==========
+    
+    /**
+     * Maximum rotation speed during ball tracking.
+     * Limits how fast the robot can turn while aligning to ball.
+     */
+    public static final double kMaxRotationSpeed = 0.3; // rad/s
   }
 
   /**
