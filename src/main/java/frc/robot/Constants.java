@@ -48,8 +48,8 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
-    public static final double maxSpeedNormal = 7.0; // 3.3
-    public static final double maxAngularSpeed = 5.0 * Math.PI; // radians per second
+    public static final double maxSpeedNormal = 3.3; // 3.3-LIMIT SPEEDS FOR TESTING
+    public static final double maxAngularSpeed = 3.0 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 3; // radians per second
     public static final double kMagnitudeSlewRate = 3.5; // percent per second (1 = 100%) // 3.6
@@ -290,7 +290,7 @@ public final class Constants {
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-    public static final double kWheelDiameterMeters = 0.0793;
+    public static final double kWheelDiameterMeters = 0.0793; //SUGGEST ISING THE Units.inchesToMeters() method to convert from inches to meters for better readability
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
     // teeth on the bevel pinion
