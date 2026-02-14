@@ -16,6 +16,7 @@ import frc.robot.webserver.VisionWebServer;
 import frc.robot.Constants.OIConstants;
 // import edu.wpi.first.math.MathUtil;  // DISABLED: Not needed when actuators disabled
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -85,6 +86,9 @@ public class RobotContainer {
      * The container for the robot, initializing everything and setting up the controller chooser
      */
     public RobotContainer() {
+        // Start data logging for AdvantageScope
+        DataLogManager.start();
+        
         // Connect Vision subsystem to Drivetrain for diagnostics
         m_robotDrive.setVision(m_vision);
         
