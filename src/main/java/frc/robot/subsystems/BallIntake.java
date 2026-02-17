@@ -2,8 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -43,7 +43,6 @@ public class BallIntake extends SubsystemBase {
    * - Motor inversion based on constants
    * - Persistent configuration across power cycles
    */
-  @SuppressWarnings("deprecation") // ResetMode and PersistMode enums deprecated in 2026.0.0
   public BallIntake() {
     // Initialize motor
     m_motor = new SparkMax(BallIntakeConstants.kMotorCanId, MotorType.kBrushless);
