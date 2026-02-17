@@ -168,7 +168,7 @@ public final class Constants {
       // Camera 0 - Side
       new Transform3d(
         new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(-12), Units.inchesToMeters(29.5)),
-        new Rotation3d(0, 0, -90)
+        new Rotation3d(0, 0, Math.PI/2)
       ),
       // Camera 1 - Front
       new Transform3d(
