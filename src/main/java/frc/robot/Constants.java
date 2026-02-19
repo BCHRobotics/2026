@@ -95,31 +95,29 @@ public final class Constants {
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
       true,  // Camera 0
-      true,  // Camera 1
+      true,  // Camera 1 - banana_1 (ball detection)
       false,  // Camera 2
       false,   // Camera 3
     };
     
     // Camera names
     public static final String[] kCameraNames = {
-      "Camera_0",  // Left camera
-      "Camera_1",  // Front camera
-      "Camera_2",  // Spare camera
-      "Camera_3"   // Spare camera
+      "Camera_0",  // Front camera (AprilTag detection)
+      "banana_1",  // Ball detection camera
+      "Camera_2",  // Left camera
+      "Camera_3"   // Right camera
     };
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      // Camera 0 - Side
-      new Transform3d(
-        new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(-12), Units.inchesToMeters(29.5)),
-        new Rotation3d(0, 0, Math.PI/2)
-      ),
-      // Camera 1 - Front
-      new Transform3d(
-        new Translation3d(Units.inchesToMeters(6.5), Units.inchesToMeters(0), Units.inchesToMeters(36)),
-        new Rotation3d(0, 0, Math.toRadians(0))
-      ),
+      // Camera 0 - Front
+      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34)),
+                      new Rotation3d(0, 0, 0)),
+
+      // Camera 1 - banana_1 (Ball detection)
+      new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(0.75), Units.inchesToMeters(6)),
+                      new Rotation3d(0, 0, 0)),
+
       // Camera 2 - Left
       new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
                       new Rotation3d(0, 0, Math.toRadians(90))),
@@ -157,7 +155,7 @@ public final class Constants {
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-    public static final double kWheelDiameterMeters = 0.0793; //SUGGEST ISING THE Units.inchesToMeters() method to convert from inches to meters for better readability
+    public static final double kWheelDiameterMeters = 0.0746;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
