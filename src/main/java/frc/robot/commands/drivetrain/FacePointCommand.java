@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.NavigationConstants;
 import frc.robot.subsystems.Drivetrain;
-import frc.utils.M.Vector2;
+import frc.utils.dto.m.Vector2;
 
 /**
  * Command to drive the robot to a specified position on the field.
@@ -65,7 +65,7 @@ public class FacePointCommand extends Command {
 
     @Override
     public void initialize() {
-        
+        // For debugging purposes
         // System.out.println("GoToPosition: Navigating to position " + m_targetPose);
         // System.out.println("  Current pose: " + m_drivetrain.getPose());
     }
