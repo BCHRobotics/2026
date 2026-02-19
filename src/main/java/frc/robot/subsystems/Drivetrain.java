@@ -298,7 +298,7 @@ public class Drivetrain extends SubsystemBase {
    * @param pose The pose to which to reset
    */
   public void resetPose(Pose2d pose) {
-    m_odometry.resetPosition(
+    odometry.resetPosition(
         Rotation2d.fromDegrees(getHeading()),
         new SwerveModulePosition[] {
             frontLeftModule.getPosition(),

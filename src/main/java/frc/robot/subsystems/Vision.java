@@ -97,88 +97,88 @@ public class Vision extends SubsystemBase {
 
     private List<PhotonTrackedTarget> visibleGamePieces;
     private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules
+        
+        /**
+         * Creates a new Vision subsystem with multi-camera support.
+         * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
+         * field layout, and sets up pose estimators for each camera with their configured transforms.
+         * Only cameras with kCamerasEnabled[i] = true will be initialized.
+         * 
+         * @param drivetrain Reference to drivetrain subsystem for odometry integration
+         */
+        public Vision(Drivetrain drivetrain) {
+            this.drivetrain = drivetrain;
+            this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
+            
+            // Load 2026 Rebuilt AprilTag field layout
+            aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+            
+            // Initialize each enabled camera
+            for (int i = 0; i < VisionConstants.kNumCameras && i < VisionConstants.kCamerasEnabled.length; i++) {
+                // Skip disabled cameras
+                if (!VisionConstants.kCamerasEnabled[i]) {
+                    System.out.println("Vision: Camera " + i + " (" + VisionConstants.kCameraNames[i] + ") is disabled");
+                    continue;
+                }
+                
+                try {
+                    // Initialize PhotonVision camera
+                    PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
+     
+                    // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
+                    //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
     
-    /**
-     * Creates a new Vision subsystem with multi-camera support.
-     * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
-     * field layout, and sets up pose estimators for each camera with their configured transforms.
-     * Only cameras with kCamerasEnabled[i] = true will be initialized.
-     * 
-     * @param drivetrain Reference to drivetrain subsystem for odometry integration
-     */
-    public Vision(Drivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-        this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
-        
-        // Load 2026 Rebuilt AprilTag field layout
-        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
-        
-        // Initialize each enabled camera
-        for (int i = 0; i < VisionConstants.kNumCameras && i < VisionConstants.kCamerasEnabled.length; i++) {
-            // Skip disabled cameras
-            if (!VisionConstants.kCamerasEnabled[i]) {
-                System.out.println("Vision: Camera " + i + " (" + VisionConstants.kCameraNames[i] + ") is disabled");
-                continue;
+                    // Initialize pose estimator with multi-tag strategy for best accuracy
+                    PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
+                        aprilTagFieldLayout,
+                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
+                        VisionConstants.kRobotToCams[i]
+                    );
+                    
+                    // Set reference pose to current odometry estimate
+                    poseEstimator.setReferencePose(drivetrain.getPose());
+                    
+                    // Add to active camera list
+                    cameraModules.add(new CameraModule(camera, poseEstimator, i, VisionConstants.kCameraNames[i]));
+                    
+                    System.out.println("Vision: Initialized camera " + i + " (" + VisionConstants.kCameraNames[i] + ")");
+                    
+                } catch (Exception e) {
+                    System.err.println("Vision: Failed to initialize camera " + i + " (" + VisionConstants.kCameraNames[i] + "): " + e.getMessage());
+                }
             }
             
-            try {
-                // Initialize PhotonVision camera
-                PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
- 
-                // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
-                //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
-
-                // Initialize pose estimator with multi-tag strategy for best accuracy
-                PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
-                    aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
-                    VisionConstants.kRobotToCams[i]
-                );
-                
-                // Set reference pose to current odometry estimate
-                poseEstimator.setReferencePose(drivetrain.getPose());
-                
-                // Add to active camera list
-                cameraModules.add(new CameraModule(camera, poseEstimator, i, VisionConstants.kCameraNames[i]));
-                
-                System.out.println("Vision: Initialized camera " + i + " (" + VisionConstants.kCameraNames[i] + ")");
-                
-            } catch (Exception e) {
-                System.err.println("Vision: Failed to initialize camera " + i + " (" + VisionConstants.kCameraNames[i] + "): " + e.getMessage());
+            System.out.println("Vision: " + cameraModules.size() + " cameras active");
+            
+            // Find and assign the ball detection camera (banana_1)
+            for (CameraModule module : cameraModules) {
+                if (module.name.equals("banana_1")) {
+                    ballCamera = module.camera;
+                    System.out.println("Vision: Ball detection camera (banana_1) assigned from Camera " + module.index);
+                    break;
+                }
             }
-        }
-        
-        System.out.println("Vision: " + cameraModules.size() + " cameras active");
-        
-        // Find and assign the ball detection camera (banana_1)
-        for (CameraModule module : cameraModules) {
-            if (module.name.equals("banana_1")) {
-                ballCamera = module.camera;
-                System.out.println("Vision: Ball detection camera (banana_1) assigned from Camera " + module.index);
-                break;
+            
+            if (ballCamera == null) {
+                System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
             }
+            
+            // Add field visualization to SmartDashboard
+            SmartDashboard.putData("Vision Field", field2d);
+            //SmartDashboard.putData("Odometry Field", odometryField2d);
         }
-        
-        if (ballCamera == null) {
-            System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
-        }
-        
-        // Add field visualization to SmartDashboard
-        SmartDashboard.putData("Vision Field", field2d);
-        SmartDashboard.putData("Odometry Field", odometryField2d);
-    }
-
-    public PhotonTrackedTarget getBallPosition() {
-        if (visibleGamePieces.size() > 0) {
-            return visibleGamePieces.get(0);
-        } else {
-            return null;
-        }
-    }
     
-    @Override
-    public void periodic() {
-        odometryField2d.setRobotPose(drivetrain.getOdometryPose());
+        public PhotonTrackedTarget getBallPosition() {
+            if (visibleGamePieces.size() > 0) {
+                return visibleGamePieces.get(0);
+            } else {
+                return null;
+            }
+        }
+        
+        @Override
+        public void periodic() {
+            //odometryField2d.setRobotPose(drivetrain.getOdometryPose());
         // Update ball detection (only if ballCamera is initialized)
         if (ballCamera != null) {
             List<PhotonPipelineResult> res = ballCamera.getAllUnreadResults();

@@ -209,7 +209,7 @@ public class RobotContainer {
         if (rotationConstants == null) {
             rotationConstants = AutoConstants.rotationConstants;
         }
-        m_robotDrive.configureAutoBuilder(translationConstants, rotationConstants);
+        robotDrive.configureAutoBuilder(translationConstants, rotationConstants);
 
         // return new PathPlannerAuto("Test 4 Auto");
         return m_autoChooser.getSelected();
