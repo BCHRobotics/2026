@@ -1,0 +1,102 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 10.0,
+        "y": 7.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 9.950295263350306,
+        "y": 6.661500578391939
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 10.0,
+        "y": 0.8197432239657632
+      },
+      "prevControl": {
+        "x": 9.75227981933385,
+        "y": 0.7860577361300525
+      },
+      "nextControl": {
+        "x": 10.247720180666153,
+        "y": 0.8534287118014743
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 12.03514978601997,
+        "y": 0.9361911554921551
+      },
+      "prevControl": {
+        "x": 9.900692396911753,
+        "y": 4.047774562313624
+      },
+      "nextControl": {
+        "x": 10.443285405160887,
+        "y": 3.996099037718471
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 9.198855421686746,
+        "y": 2.177289156626506
+      },
+      "prevControl": {
+        "x": 9.445453902644783,
+        "y": 2.136189409800167
+      },
+      "nextControl": {
+        "x": 8.95225694072871,
+        "y": 2.218388903452845
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 10.14956626506024,
+        "y": 1.2593614457831324
+      },
+      "prevControl": {
+        "x": 9.960643994362787,
+        "y": 1.4230940803875944
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.5,
+    "rotation": 91.97493401088198
+  },
+  "reversed": false,
+  "folder": "Test 2 Paths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}

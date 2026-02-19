@@ -91,6 +91,9 @@ public class Vision extends SubsystemBase {
      * for debugging and verification.
      */
     private final Field2d field2d = new Field2d();
+    
+    //Odomoetry pose: This is separate from the vision pose so we can compare them on the dashboard
+    //private final Field2d odometryField2d = new Field2d();
 
     private List<PhotonTrackedTarget> visibleGamePieces;
     private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules
@@ -162,6 +165,7 @@ public class Vision extends SubsystemBase {
         
         // Add field visualization to SmartDashboard
         SmartDashboard.putData("Vision Field", field2d);
+        SmartDashboard.putData("Odometry Field", odometryField2d);
     }
 
     public PhotonTrackedTarget getBallPosition() {
@@ -174,6 +178,7 @@ public class Vision extends SubsystemBase {
     
     @Override
     public void periodic() {
+        odometryField2d.setRobotPose(drivetrain.getOdometryPose());
         // Update ball detection (only if ballCamera is initialized)
         if (ballCamera != null) {
             List<PhotonPipelineResult> res = ballCamera.getAllUnreadResults();

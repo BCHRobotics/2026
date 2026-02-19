@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CC-1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CC-2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CC-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CC-4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CC-5"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Climber Autos",
+  "choreoAuto": false
+}

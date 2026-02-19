@@ -1,0 +1,79 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "111"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "112"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "113"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "114"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "115"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "116"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "117"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "118"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Centre Autos",
+  "choreoAuto": false
+}
