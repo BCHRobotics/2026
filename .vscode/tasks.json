@@ -1,0 +1,50 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Gradle build",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Gradle build",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Gradle build",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Gradle clean build",
+			"type": "shell",
+			"command": "./gradlew",
+			"args": [
+				"clean",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

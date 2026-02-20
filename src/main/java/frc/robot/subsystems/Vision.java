@@ -13,7 +13,6 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -69,12 +68,14 @@ public class Vision extends SubsystemBase {
         public final PhotonPoseEstimator poseEstimator;
         public final int index;
         public final String name;
+        public PhotonPipelineResult lastResult;
         
         public CameraModule(PhotonCamera camera, PhotonPoseEstimator estimator, int index, String name) {
             this.camera = camera;
             this.poseEstimator = estimator;
             this.index = index;
             this.name = name;
+            this.lastResult = null;
         }
     }
     
@@ -131,12 +132,8 @@ public class Vision extends SubsystemBase {
                     // Initialize pose estimator with multi-tag strategy for best accuracy
                     PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
                         aprilTagFieldLayout,
-                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
                         VisionConstants.kRobotToCams[i]
                     );
-                    
-                    // Set reference pose to current odometry estimate
-                    poseEstimator.setReferencePose(drivetrain.getPose());
                     
                     // Add to active camera list
                     cameraModules.add(new CameraModule(camera, poseEstimator, i, VisionConstants.kCameraNames[i]));
@@ -186,11 +183,6 @@ public class Vision extends SubsystemBase {
             if (res.size() > 0) {
                 visibleGamePieces = res.get(0).getTargets();
             }
-        }
-        
-        // Update all pose estimators with current odometry
-        for (CameraModule module : cameraModules) {
-            module.poseEstimator.setReferencePose(drivetrain.getPose());
         }
         
         // Process vision measurements from all cameras
@@ -247,6 +239,7 @@ public class Vision extends SubsystemBase {
         
         // Process most recent result
         PhotonPipelineResult result = results.get(results.size() - 1);
+        module.lastResult = result;
         
         // Check if we detected any targets
         if (!result.hasTargets()) {
@@ -261,7 +254,11 @@ public class Vision extends SubsystemBase {
         }
         
         // Get pose estimate from PhotonPoseEstimator
-        return module.poseEstimator.update(result);
+        Optional<EstimatedRobotPose> visionEst = module.poseEstimator.estimateCoprocMultiTagPose(result);
+        if (visionEst.isEmpty()) {
+            visionEst = module.poseEstimator.estimateLowestAmbiguityPose(result);
+        }
+        return visionEst;
     }
     
     /**
@@ -337,15 +334,14 @@ public class Vision extends SubsystemBase {
         
         // Update telemetry for each camera
         for (CameraModule module : cameraModules) {
-            var results = module.camera.getAllUnreadResults();
             String prefix = "Vision/Cam" + module.index + "/";
-            
-            if (results.isEmpty()) {
+
+            if (module.lastResult == null) {
                 SmartDashboard.putBoolean(prefix + "Has Targets", false);
                 continue;
             }
-            
-            PhotonPipelineResult result = results.get(results.size() - 1);
+
+            PhotonPipelineResult result = module.lastResult;
             
             boolean hasTargets = result.hasTargets();
             SmartDashboard.putBoolean(prefix + "Has Targets", hasTargets);
@@ -424,8 +420,8 @@ public class Vision extends SubsystemBase {
         List<Integer> visibleTags = new ArrayList<>();
         
         for (CameraModule module : cameraModules) {
-            PhotonPipelineResult result = module.camera.getLatestResult();
-            if (result.hasTargets()) {
+            PhotonPipelineResult result = module.lastResult;
+            if (result != null && result.hasTargets()) {
                 for (PhotonTrackedTarget target : result.getTargets()) {
                     visibleTags.add(target.getFiducialId());
                 }
@@ -445,8 +441,8 @@ public class Vision extends SubsystemBase {
         List<AprilTagInfo> tagInfoList = new ArrayList<>();
         
         for (CameraModule module : cameraModules) {
-            PhotonPipelineResult result = module.camera.getLatestResult();
-            if (result.hasTargets()) {
+            PhotonPipelineResult result = module.lastResult;
+            if (result != null && result.hasTargets()) {
                 for (PhotonTrackedTarget target : result.getTargets()) {
                     double ambiguity = target.getPoseAmbiguity();
                     boolean usedForUpdate = ambiguity <= VisionConstants.kMaxAmbiguity;
@@ -481,8 +477,8 @@ public class Vision extends SubsystemBase {
         int count = 0;
         
         for (CameraModule module : cameraModules) {
-            PhotonPipelineResult result = module.camera.getLatestResult();
-            if (result.hasTargets()) {
+            PhotonPipelineResult result = module.lastResult;
+            if (result != null && result.hasTargets()) {
                 count += result.getTargets().size();
             }
         }
