@@ -1,37 +1,6 @@
 /*
- * Vision.java
- * 
- * Multi-Camera PhotonVision Subsystem for FRC 2026 Rebuilt
- * 
- * This subsystem manages vision processing using PhotonVision for AprilTag detection
- * and robot localization on the 2026 Rebuilt field. It integrates with the drivetrain's
- * odometry system to provide accurate pose estimation.
- * 
- * Key Features:
- * - Multi-camera support (up to 4 cameras)
- * - Individual camera enable/disable configuration
- * - AprilTag detection and pose estimation
- * - Multi-target tracking for improved accuracy
- * - Pose estimation fusion with drivetrain odometry
- * - Ambiguity filtering to reject unreliable measurements
- * - Distance-based standard deviation adjustment
- * - Aggregates poses from all enabled cameras
- * 
- * Hardware Requirements:
- * - Cameras compatible with PhotonVision (OV9281, Microsoft LifeCam, etc.)
- * - Raspberry Pi or other coprocessor running PhotonVision
- * - Network connection to robot radio
- * 
- * Configuration Needed:
- * - Set number of cameras in VisionConstants.kNumCameras
- * - Enable/disable cameras in VisionConstants.kCamerasEnabled
- * - Set camera names in VisionConstants.kCameraNames
- * - Calibrate and set robot-to-camera transforms in VisionConstants.kRobotToCams
- * - Tune vision standard deviations in VisionConstants for your specific setup
- * 
- 
- * @see Drivetrain For odometry integration
- * @see VisionConstants For camera configuration.
+ * Vision subsystem for multi-camera AprilTag pose estimation
+ * usingPhotonVision, fused with drivetrain odometry
  */
 
 package frc.robot.subsystems;
@@ -62,10 +31,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
+    // Information about heading and distance to a specific AprilTag
+    public static class TagNavigationInfo {
+        public final int tagId;
+        public final boolean tagExists;
+        public final double distance;  // meters
+        public final double heading;   // degrees, field-relative angle to tag
+        
+        public TagNavigationInfo(int tagId, boolean tagExists, double distance, double heading) {
+            this.tagId = tagId;
+            this.tagExists = tagExists;
+            this.distance = distance;
+            this.heading = heading;
+        }
+    }
     
-    /**
-     * Detailed information about a visible AprilTag.
-     */
+    // Detailed information about a visible AprilTag
     public static class AprilTagInfo {
         public final int id;
         public final double ambiguity;
@@ -82,9 +63,7 @@ public class Vision extends SubsystemBase {
         }
     }
     
-    /**
-     * Container class for camera and its associated pose estimator.
-     */
+    // Container class for camera and its associated pose estimator
     private static class CameraModule {
         public final PhotonCamera camera;
         public final PhotonPoseEstimator poseEstimator;
@@ -99,121 +78,107 @@ public class Vision extends SubsystemBase {
         }
     }
     
-    /**
-     * List of active camera modules.
-     * 
-     * Only cameras that are enabled in VisionConstants.kCamerasEnabled are added.
-     * Each camera has its own PhotonCamera instance and PhotonPoseEstimator.
-     */
+    // List of active camera modules
     private final List<CameraModule> cameraModules = new ArrayList<>();
-    
-    /**
-     * 2026 Rebuilt field layout with AprilTag positions.
-     * 
-     * Loaded from WPILib's built-in field layouts. Contains precise 3D positions
-     * of all AprilTags on the 2026 field.
-     */
     private final AprilTagFieldLayout aprilTagFieldLayout;
-    
-    /**
-     * Reference to the drivetrain subsystem for pose estimation integration.
-     * 
-     * Used to get current odometry pose and update pose estimator with vision measurements.
-     */
+
+    // Used to get current odometry pose and update pose estimator with vision measurements
     private final Drivetrain drivetrain;
     
     /**
      * Field2d widget for visualizing vision estimates on dashboard.
-     * 
      * Shows the robot's vision-estimated position alongside odometry position
      * for debugging and verification.
      */
     private final Field2d field2d = new Field2d();
+    
+    //Odomoetry pose: This is separate from the vision pose so we can compare them on the dashboard
+    //private final Field2d odometryField2d = new Field2d();
 
     private List<PhotonTrackedTarget> visibleGamePieces;
     private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules
+        
+        /**
+         * Creates a new Vision subsystem with multi-camera support.
+         * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
+         * field layout, and sets up pose estimators for each camera with their configured transforms.
+         * Only cameras with kCamerasEnabled[i] = true will be initialized.
+         * 
+         * @param drivetrain Reference to drivetrain subsystem for odometry integration
+         */
+        public Vision(Drivetrain drivetrain) {
+            this.drivetrain = drivetrain;
+            this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
+            
+            // Load 2026 Rebuilt AprilTag field layout
+            aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+            
+            // Initialize each enabled camera
+            for (int i = 0; i < VisionConstants.kNumCameras && i < VisionConstants.kCamerasEnabled.length; i++) {
+                // Skip disabled cameras
+                if (!VisionConstants.kCamerasEnabled[i]) {
+                    System.out.println("Vision: Camera " + i + " (" + VisionConstants.kCameraNames[i] + ") is disabled");
+                    continue;
+                }
+                
+                try {
+                    // Initialize PhotonVision camera
+                    PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
+     
+                    // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
+                    //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
     
-    /**
-     * Creates a new Vision subsystem with multi-camera support.
-     * 
-     * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
-     * field layout, and sets up pose estimators for each camera with their configured transforms.
-     * 
-     * Only cameras with kCamerasEnabled[i] = true will be initialized.
-     * 
-     * @param drivetrain Reference to drivetrain subsystem for odometry integration
-     */
-    public Vision(Drivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-        this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
-        
-        // Load 2026 Rebuilt AprilTag field layout
-        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
-        
-        // Initialize each enabled camera
-        for (int i = 0; i < VisionConstants.kNumCameras && i < VisionConstants.kCamerasEnabled.length; i++) {
-            // Skip disabled cameras
-            if (!VisionConstants.kCamerasEnabled[i]) {
-                System.out.println("Vision: Camera " + i + " (" + VisionConstants.kCameraNames[i] + ") is disabled");
-                continue;
+                    // Initialize pose estimator with multi-tag strategy for best accuracy
+                    PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
+                        aprilTagFieldLayout,
+                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
+                        VisionConstants.kRobotToCams[i]
+                    );
+                    
+                    // Set reference pose to current odometry estimate
+                    poseEstimator.setReferencePose(drivetrain.getPose());
+                    
+                    // Add to active camera list
+                    cameraModules.add(new CameraModule(camera, poseEstimator, i, VisionConstants.kCameraNames[i]));
+                    
+                    System.out.println("Vision: Initialized camera " + i + " (" + VisionConstants.kCameraNames[i] + ")");
+                    
+                } catch (Exception e) {
+                    System.err.println("Vision: Failed to initialize camera " + i + " (" + VisionConstants.kCameraNames[i] + "): " + e.getMessage());
+                }
             }
             
-            try {
-                // Initialize PhotonVision camera
-                PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
- 
-                // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
-                //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
-
-                // Initialize pose estimator with multi-tag strategy for best accuracy
-                PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
-                    aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
-                    VisionConstants.kRobotToCams[i]
-                );
-                
-                // Set reference pose to current odometry estimate
-                poseEstimator.setReferencePose(drivetrain.getPose());
-                
-                // Add to active camera list
-                cameraModules.add(new CameraModule(camera, poseEstimator, i, VisionConstants.kCameraNames[i]));
-                
-                System.out.println("Vision: Initialized camera " + i + " (" + VisionConstants.kCameraNames[i] + ")");
-                
-            } catch (Exception e) {
-                System.err.println("Vision: Failed to initialize camera " + i + " (" + VisionConstants.kCameraNames[i] + "): " + e.getMessage());
+            System.out.println("Vision: " + cameraModules.size() + " cameras active");
+            
+            // Find and assign the ball detection camera (banana_1)
+            for (CameraModule module : cameraModules) {
+                if (module.name.equals("banana_1")) {
+                    ballCamera = module.camera;
+                    System.out.println("Vision: Ball detection camera (banana_1) assigned from Camera " + module.index);
+                    break;
+                }
             }
-        }
-        
-        System.out.println("Vision: " + cameraModules.size() + " cameras active");
-        
-        // Find and assign the ball detection camera (banana_1)
-        for (CameraModule module : cameraModules) {
-            if (module.name.equals("banana_1")) {
-                ballCamera = module.camera;
-                System.out.println("Vision: Ball detection camera (banana_1) assigned from Camera " + module.index);
-                break;
+            
+            if (ballCamera == null) {
+                System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
             }
+            
+            // Add field visualization to SmartDashboard
+            SmartDashboard.putData("Vision Field", field2d);
+            //SmartDashboard.putData("Odometry Field", odometryField2d);
         }
-        
-        if (ballCamera == null) {
-            System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
-        }
-        
-        // Add field visualization to SmartDashboard
-        SmartDashboard.putData("Vision Field", field2d);
-    }
-
-    public PhotonTrackedTarget getBallPosition() {
-        if (visibleGamePieces.size() > 0) {
-            return visibleGamePieces.get(0);
-        } else {
-            return null;
-        }
-    }
     
-    @Override
-    public void periodic() {
+        public PhotonTrackedTarget getBallPosition() {
+            if (visibleGamePieces.size() > 0) {
+                return visibleGamePieces.get(0);
+            } else {
+                return null;
+            }
+        }
+        
+        @Override
+        public void periodic() {
+            //odometryField2d.setRobotPose(drivetrain.getOdometryPose());
         // Update ball detection (only if ballCamera is initialized)
         if (ballCamera != null) {
             List<PhotonPipelineResult> res = ballCamera.getAllUnreadResults();
@@ -262,10 +227,9 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the latest estimated robot pose from a specific camera.
-     * 
      * This method retrieves the most recent camera frame, checks for AprilTag targets,
      * and uses the PhotonPoseEstimator to calculate the robot's field position.
-     * 
+     *
      * Filtering:
      * - Rejects estimates with high ambiguity (> threshold)
      * - Requires at least one valid target
@@ -301,26 +265,15 @@ public class Vision extends SubsystemBase {
     }
     
     /**
-     * Calculates dynamic standard deviations for Kalman filter vision measurements.
-     * 
-     * Standard deviations represent measurement uncertainty (covariance matrix diagonal)
-     * and are used by the Unscented Kalman Filter to optimally weight vision vs. odometry.
-     * 
-     * Kalman Filter Math:
-     * - Standard deviation = sqrt(variance) of measurement noise
-     * - Forms the R matrix (measurement noise covariance) in Kalman equations
-     * - Kalman Gain K = P * H^T * (H * P * H^T + R)^-1
-     * - Higher R (stddev) → Lower K → Filter trusts odometry more
-     * - Lower R (stddev) → Higher K → Filter trusts vision more
-     * 
-     * Dynamic Adjustment Factors:
-     * - Distance to target: Farther = less accurate → higher stddev
-     * - Number of tags: More tags = more accurate → lower stddev
-     * - Target area: Smaller = less accurate → higher stddev
-     * 
-     * This creates an adaptive filter that automatically adjusts trust based
-     * on measurement quality, providing optimal fusion in all conditions.
-     * 
+     * Computes adaptive vision measurement standard deviations for pose fusion.
+     *
+     * Adjusts uncertainty based on:
+     * - Distance to the detected AprilTag (farther = less reliable)
+     * - Number of visible tags (more tags = more reliable)
+     *
+     * These values are used by the drivetrain pose estimator to weight
+     * vision measurements relative to odometry.
+     *
      * @param module The camera module providing the measurement
      * @param estimatedPose The vision-estimated robot pose
      * @return 3x1 matrix of standard deviations [x, y, theta] in meters/radians
@@ -374,11 +327,10 @@ public class Vision extends SubsystemBase {
      * - Best target ID and distance
      * - Pose ambiguity
      * - Pipeline timestamp
-     * 
-     * Also displays aggregate statistics:
      * - Total cameras active
      * - Total cameras seeing targets
      */
+
     private void updateTelemetry() {
         int totalTargets = 0;
         int camerasWithTargets = 0;
@@ -427,7 +379,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets a specific PhotonCamera instance by index.
-     * 
      * @param index Camera index (0-3)
      * @return The PhotonCamera object, or null if index is invalid or camera not enabled
      */
@@ -442,7 +393,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets all active camera modules.
-     * 
      * @return List of active camera modules
      */
     public List<CameraModule> getCameraModules() {
@@ -451,7 +401,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the number of active cameras.
-     * 
      * @return Number of enabled and initialized cameras
      */
     public int getActiveCameraCount() {
@@ -460,9 +409,7 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the AprilTag field layout.
-     * 
      * Useful for calculating distances to specific tags or getting tag poses.
-     * 
      * @return The 2026 Rebuilt AprilTag field layout
      */
     public AprilTagFieldLayout getFieldLayout() {
@@ -471,7 +418,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets a list of all currently visible AprilTag IDs from all cameras.
-     * 
      * @return List of visible AprilTag IDs (may contain duplicates if seen by multiple cameras)
      */
     public List<Integer> getVisibleAprilTags() {
@@ -491,10 +437,8 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets detailed information about all currently visible AprilTags.
-     * 
      * Includes ambiguity values and whether each tag is being used for pose updates.
      * A tag is used for pose updates if its ambiguity is below kMaxAmbiguity threshold.
-     * 
      * @return List of AprilTagInfo objects with detailed information
      */
     public List<AprilTagInfo> getDetailedAprilTagInfo() {
@@ -531,7 +475,6 @@ public class Vision extends SubsystemBase {
     
     /**
      * Gets the total number of AprilTags currently visible across all cameras.
-     * 
      * @return Total count of visible targets (may count same tag multiple times if seen by multiple cameras)
      */
     public int getVisibleTagCount() {
@@ -548,28 +491,9 @@ public class Vision extends SubsystemBase {
     }
     
     /**
-     * Information about heading and distance to a specific AprilTag.
-     */
-    public static class TagNavigationInfo {
-        public final int tagId;
-        public final boolean tagExists;
-        public final double distance;  // meters
-        public final double heading;   // degrees, field-relative angle to tag
-        
-        public TagNavigationInfo(int tagId, boolean tagExists, double distance, double heading) {
-            this.tagId = tagId;
-            this.tagExists = tagExists;
-            this.distance = distance;
-            this.heading = heading;
-        }
-    }
-    
-    /**
      * Gets heading and distance to a specific AprilTag.
-     * 
      * Calculates the field-relative heading (angle) from the robot's current position
      * to the specified AprilTag, along with the distance.
-     * 
      * @param tagId The AprilTag ID to get navigation info for
      * @return TagNavigationInfo with distance and heading, or invalid info if tag doesn't exist
      */

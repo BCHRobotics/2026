@@ -105,12 +105,4 @@ public class GoToPositionCommand extends Command {
             System.out.println("  Final pose: " + m_drivetrain.getPose());
         }
     }
-
-    /*@Override
-    public boolean isFinished() {
-        // Finish when all controllers are at setpoint
-        return m_xController.atSetpoint() && 
-               m_yController.atSetpoint() && 
-               m_rotController.atSetpoint();
-    }*/
 }
