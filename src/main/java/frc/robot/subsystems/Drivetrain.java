@@ -224,23 +224,23 @@ public class Drivetrain extends SubsystemBase {
     
     // Navigation to specific AprilTags
     if (m_vision != null) {
-      Vision.TagNavigationInfo tag3 = m_vision.getTagNavigationInfo(3);
-      Vision.TagNavigationInfo tag4 = m_vision.getTagNavigationInfo(4);
+     // Vision.TagNavigationInfo tag3 = m_vision.getTagNavigationInfo(3);
+     // Vision.TagNavigationInfo tag4 = m_vision.getTagNavigationInfo(4);
       
-      diagnostics.append("Target AprilTags:\n");
-      if (tag3.tagExists) {
-        diagnostics.append(String.format("  Tag 3: Distance=%.2fm, Heading=%.1f°\n",
-            tag3.distance, tag3.heading));
-      } else {
-        diagnostics.append("  Tag 3: NOT IN FIELD LAYOUT\n");
-      }
+    //   diagnostics.append("Target AprilTags:\n");
+    //   if (tag3.tagExists) {
+    //    // diagnostics.append(String.format("  Tag 3: Distance=%.2fm, Heading=%.1f°\n",
+    //         tag3.distance, tag3.heading));
+    //   } else {
+    //  //   diagnostics.append("  Tag 3: NOT IN FIELD LAYOUT\n");
+    //   }
       
-      if (tag4.tagExists) {
-        diagnostics.append(String.format("  Tag 4: Distance=%.2fm, Heading=%.1f°\n",
-            tag4.distance, tag4.heading));
-      } else {
-        diagnostics.append("  Tag 4: NOT IN FIELD LAYOUT\n");
-      }
+    //   if (tag4.tagExists) {
+    //   //  diagnostics.append(String.format("  Tag 4: Distance=%.2fm, Heading=%.1f°\n",
+    //         tag4.distance, tag4.heading));
+    //   } else {
+    //     //diagnostics.append("  Tag 4: NOT IN FIELD LAYOUT\n");
+    //   }
     }
     
     // Vision - AprilTags with detailed information

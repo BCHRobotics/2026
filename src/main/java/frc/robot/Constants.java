@@ -48,8 +48,8 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
-    public static final double maxSpeedNormal = 3.3; // 3.3
-    public static final double maxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double maxSpeedNormal = 5.0; // 3.3
+    public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 3; // radians per second
     public static final double kMagnitudeSlewRate = 3.5; // percent per second (1 = 100%) // 3.6
@@ -99,7 +99,7 @@ public final class Constants {
    * 
    * Multi-Camera Support:
    * - Up to 4 cameras can be configured
-   * - Each camera can be individually enabled/disabled
+   * - Each >can be individually enabled/disabled
    * - Each camera has its own name and transform
    * - Pose estimates from all enabled cameras are fused
    */
@@ -167,7 +167,7 @@ public final class Constants {
     public static final Transform3d[] kRobotToCams = {
       // Camera 0 - Side
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(-12), Units.inchesToMeters(29.5)),
+        new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(12), Units.inchesToMeters(29.5)),
         new Rotation3d(0, 0, Math.PI/2)
       ),
       // Camera 1 - Front
@@ -334,7 +334,7 @@ public final class Constants {
 
   public static final class AutoConstants {
     // the PID constants that PathPlanner uses to drive the robot
-    public static final PIDConstants translationConstants = new PIDConstants(2, 1, 0);
+    public static final PIDConstants translationConstants = new PIDConstants(2, 0.1, 0);
     public static final PIDConstants rotationConstants = new PIDConstants(1, 0, 0);
   }
 

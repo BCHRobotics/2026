@@ -125,8 +125,8 @@ public class RobotContainer {
         // Note: PathPlanner autos require AutoBuilder to be configured in the drivetrain
         m_autoChooser.setDefaultOption("Do Nothing", Commands.none());
         
-        m_autoChooser.addOption("Auto Right", new PathPlannerAuto("Auto Right"));
-        m_autoChooser.addOption("Auto Climber", new PathPlannerAuto("Auto Climber"));
+        m_autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
+        m_autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
         m_autoChooser.addOption("Test Climber Left", new PathPlannerAuto("Test Climber Left"));
         m_autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));  
         
@@ -143,7 +143,7 @@ public class RobotContainer {
             AutoConstants.translationConstants
         );
         m_ppTranslationPidChooser.addOption("Soft (1.2, 0.0, 0.0)", new PIDConstants(1.2, 0.0, 0.0));
-        m_ppTranslationPidChooser.addOption("Aggressive (3.0, 1.2, 0.0)", new PIDConstants(3.0, 1.2, 0.0));
+        m_ppTranslationPidChooser.addOption("Aggressive (2.0, 0.0, 0.0)", new PIDConstants(2.0, 0.0, 0.0));
 
         m_ppRotationPidChooser.setDefaultOption(
             "Default (1.0, 0.0, 0.0)",

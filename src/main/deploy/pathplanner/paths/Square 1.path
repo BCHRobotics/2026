@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.458587731811697,
-        "y": 3.9897146932952925
+        "x": 6.445649072753208,
+        "y": 3.912082738944366
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.507616765596243,
-        "y": 4.2348598622180225
+        "x": 6.406833095577745,
+        "y": 5.503537803138374
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.911440798858774,
-        "y": 6.460998573466477
+        "x": 6.885563480741797,
+        "y": 7.302011412268189
       },
       "prevControl": {
-        "x": 7.041409304869369,
-        "y": 5.736999270423874
+        "x": 7.13492815569948,
+        "y": 7.319823174765167
       },
       "nextControl": {
-        "x": 6.7814722928481785,
-        "y": 7.18499787650908
+        "x": 6.6361988057841135,
+        "y": 7.28419964977121
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.0,
-        "y": 7.379643366619116
+        "x": 2.732253922967189,
+        "y": 7.302011412268189
       },
       "prevControl": {
-        "x": 6.963195435092723,
-        "y": 7.198502139800285
+        "x": 3.4952510316444982,
+        "y": 7.696665089170245
+      },
+      "nextControl": {
+        "x": 1.9818116975748925,
+        "y": 6.913851640513553
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.382910128388017,
+        "y": 3.782696148359487
+      },
+      "prevControl": {
+        "x": 2.631197779468736,
+        "y": 3.8119064602513353
       },
       "nextControl": null,
       "isLocked": false,
@@ -57,14 +73,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
+    "velocity": 0,
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Mr Dykstra Path",
+  "folder": null,
   "idealStartingState": {
-    "velocity": 0.5,
-    "rotation": -177.75425743410491
+    "velocity": 0,
+    "rotation": -175.03025927188966
   },
   "useDefaultConstraints": false
 }
