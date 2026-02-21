@@ -41,7 +41,7 @@ public final class Constants {
       PS5,
       XBOX
     }
-    public static final ControllerType kDriverControllerType = ControllerType.XBOX;
+    public static final ControllerType kDriverControllerType = ControllerType.PS5;
 
     public static final double kDriveDeadband = 0.05;
     public static final double kTurnDeadband = 0.12;

@@ -67,7 +67,7 @@ public class RobotContainer {
         
         autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
         autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
-        autoChooser.addOption("Test 1 Auto", new PathPlannerAuto("Test 1 Auto"));
+        autoChooser.addOption("Circle Auto", new PathPlannerAuto("Circle Auto"));
         autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));  
         
         // Put the chooser on SmartDashboard for driver selection
