@@ -41,7 +41,7 @@ public final class Constants {
       PS5,
       XBOX
     }
-    public static final ControllerType kDriverControllerType = ControllerType.PS5;
+    public static final ControllerType kDriverControllerType = ControllerType.XBOX;
 
     public static final double kDriveDeadband = 0.05;
     public static final double kTurnDeadband = 0.12;
@@ -232,9 +232,9 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 2.8;
+    public static final double kPositionP = 1.0;
     public static final double kPositionI = 0.00;
-    public static final double kPositionD = 0.03;
+    public static final double kPositionD = 0.01;
     
     /**
      * PID gains for rotation control.
