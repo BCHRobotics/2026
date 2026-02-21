@@ -37,6 +37,12 @@ public final class Constants {
     public static final int kMainControllerPort = 0;
     public static final int kBackupControllerPort = 1;
 
+    public enum ControllerType {
+      PS5,
+      XBOX
+    }
+    public static final ControllerType kDriverControllerType = ControllerType.PS5;
+
     public static final double kDriveDeadband = 0.05;
     public static final double kTurnDeadband = 0.12;
     public static final double kTwistDeadband = 0.5;
