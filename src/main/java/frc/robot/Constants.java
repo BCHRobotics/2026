@@ -180,7 +180,7 @@ public final class Constants {
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-    public static final double kWheelDiameterMeters = 0.0793; //SUGGEST ISING THE Units.inchesToMeters() method to convert from inches to meters for better readability
+    public static final double kWheelDiameterMeters = 0.0746;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;

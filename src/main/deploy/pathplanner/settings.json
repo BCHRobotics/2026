@@ -14,9 +14,9 @@
     "Test Climber Right and Left Paths"
   ],
   "autoFolders": [
-    "Climber Autos",
-    "Centre Autos",
-    "Test Autos"
+    "C",
+    "L",
+    "R"
   ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 1.5,

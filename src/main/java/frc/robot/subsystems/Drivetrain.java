@@ -6,10 +6,6 @@ package frc.robot.subsystems;
 
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.Matrix;
@@ -25,9 +21,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -109,44 +102,7 @@ public class Drivetrain extends SubsystemBase {
 
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
-    configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
-  }
-
-  /**
-   * Configures PathPlanner AutoBuilder with the provided PID constants.
-   *
-   * @param translationConstants PID for X/Y translation
-   * @param rotationConstants PID for robot heading
-   */
-  public void configureAutoBuilder(PIDConstants translationConstants, PIDConstants rotationConstants) {
-    try {
-      // Load robot configuration from PathPlanner GUI settings
-      RobotConfig config = RobotConfig.fromGUISettings();
-
-      // Configure AutoBuilder for holonomic (swerve) drive
-      AutoBuilder.configure(
-        this::getPose, // Robot pose supplier
-        this::resetPose, // Method to reset odometry (called at auto start)
-        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier (MUST be robot-relative)
-        (speeds, feedforwards) -> driveRobotRelative(speeds), // Method to drive robot
-        new PPHolonomicDriveController(
-          translationConstants,
-          rotationConstants
-        ),
-        config, // Robot configuration
-        () -> {
-          // Flip path for red alliance (origin stays on blue side)
-          var alliance = DriverStation.getAlliance();
-          return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
-        },
-        this // Reference to this subsystem
-      );
-    } catch (Exception e) {
-      // Handle exception - AutoBuilder will not be available
-      System.err.println("Failed to configure PathPlanner AutoBuilder:");
-      e.printStackTrace();
-      System.err.println("Make sure you have created a robot configuration in PathPlanner GUI!");
-    }
+    
   }
   
   /**
@@ -180,9 +136,6 @@ public class Drivetrain extends SubsystemBase {
             rearLeftModule.getPosition(),
             rearRightModule.getPosition()
         });
-    
-    // Add gyro heading to Shuffleboard
-    SmartDashboard.putNumber("Gyro Heading", getHeading());
 
     // Print comprehensive diagnostics once per second
     double currentTime = WPIUtilJNI.now() * 1e-6;
@@ -495,13 +448,11 @@ public class Drivetrain extends SubsystemBase {
   }   
   
   /**
-   * Sets the speed of the robot chassis using ChassisSpeeds
-   * This is used by PathPlanner for autonomous movement
-   * @param speed The chassis speeds to apply
+   * Sets the speed of the robot chassis
+   * @param speed The new chassis speed
    */
-  public void setChassisSpeeds(ChassisSpeeds speed) {
-    SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speed);
-    setModuleStates(moduleStates);
+  public void setChassisSpeeds(ChassisSpeeds speed, DriveFeedforwards ff) {
+    this.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(speed));
   }
 
   /**
@@ -510,29 +461,5 @@ public class Drivetrain extends SubsystemBase {
    */
   public ChassisSpeeds getChassisSpeeds() {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(this.getModuleStates());
-  }
-  
-  /**
-   * Gets the current robot-relative chassis speeds.
-   * 
-   * This is the method used by PathPlanner AutoBuilder.
-   * Returns speeds relative to the robot (not field-relative).
-   * 
-   * @return Current robot-relative ChassisSpeeds
-   */
-  public ChassisSpeeds getRobotRelativeSpeeds() {
-    return getChassisSpeeds();
-  }
-  
-  /**
-   * Drives the robot using robot-relative chassis speeds.
-   * 
-   * This is the method used by PathPlanner AutoBuilder.
-   * Accepts speeds that are relative to the robot, not the field.
-   * 
-   * @param speeds Robot-relative ChassisSpeeds to apply
-   */
-  public void driveRobotRelative(ChassisSpeeds speeds) {
-    setChassisSpeeds(speeds);
   }
 }

@@ -92,9 +92,6 @@ public class Vision extends SubsystemBase {
      * for debugging and verification.
      */
     private final Field2d field2d = new Field2d();
-    
-    //Odomoetry pose: This is separate from the vision pose so we can compare them on the dashboard
-    //private final Field2d odometryField2d = new Field2d();
 
     private List<PhotonTrackedTarget> visibleGamePieces;
     private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules

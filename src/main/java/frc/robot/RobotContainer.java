@@ -7,17 +7,8 @@ import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.webserver.VisionWebServer;
-// import frc.robot.Constants.ActuatorConstants;  // DISABLED: Not needed when actuators disabled
-// import frc.robot.Constants.Actuator2Constants;  // DISABLED: Not needed when actuators disabled
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
-
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.config.PIDConstants;
-
-// import edu.wpi.first.math.MathUtil;  // DISABLED: Not needed when actuators disabled
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,9 +33,7 @@ public class RobotContainer {
     CommandXboxController driverXbox;
     
     // Autonomous chooser
-    private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
-    private final SendableChooser<PIDConstants> m_ppTranslationPidChooser = new SendableChooser<>();
-    private final SendableChooser<PIDConstants> m_ppRotationPidChooser = new SendableChooser<>();
+    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     //The container for the robot, initializing everything and setting up the controller chooser
     public RobotContainer() {
@@ -64,28 +53,11 @@ public class RobotContainer {
         // Start the web server for vision diagnostics
         webServer.start();
         
-        // Configure autonomous chooser with available auto paths
-        configureAutonomousChooser();
-        
         // Configure default commands
         configureDefaultCommands();
-
-        // Configure PathPlanner PID choosers
-        configurePathPlannerPidChoosers();
         
         // Configure button bindings
         configureBindings();
-    }
-    
-    /**
-     * Configures the autonomous command chooser with all available auto paths.
-     * Autos are loaded from the deploy/pathplanner/autos directory.
-     * The chooser is displayed on SmartDashboard for driver station selection.
-     */
-    private void configureAutonomousChooser() {
-        // Add autonomous options
-        // Note: PathPlanner autos require AutoBuilder to be configured in the drivetrain
-        m_autoChooser.setDefaultOption("Do Nothing", Commands.none());
         
         m_autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
         m_autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
@@ -235,12 +207,60 @@ public class RobotContainer {
         );
         */
     }
+    
+    
+    //   Configures the autonomous command chooser.
+      
+    //   Creates a dashboard selector for autonomous modes including:
+    //   - Do Nothing (safe default)
+    //   - Drive Forward (simple mobility)
+    //   - Align to AprilTag 0 (vision-based positioning)
+     
+    private void configureAutoChooser() {
+        // Default option: Do nothing (safe for testing)
+        autoChooser.setDefaultOption("Do Nothing", Commands.none());
+        
+        // Simple autonomous: Drive forward 2 meters for mobility points
+        autoChooser.addOption("Drive Forward 2m",
+            Commands.sequence(
+                // Reset odometry to start at origin
+                Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
+                
+                // Drive forward at 30% speed until 2 meters traveled
+                Commands.run(
+                    () -> robotDrive.drive(0.3, 0, 0, false, false),
+                    robotDrive
+                ).until(() -> robotDrive.getPose().getX() > 2.0),
+                
+                // Stop driving
+                Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
+            ).withName("Drive Forward Auto")
+        );
+        
+        // Vision-based autonomous: Align to AprilTag 0
+        autoChooser.addOption("Align to AprilTag 0",
+            Commands.sequence(
+                // Reset odometry
+                Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
+                
+                // Wait briefly for vision to initialize
+                Commands.waitSeconds(0.5),
+                
+                // Use vision to align to AprilTag 0 (first tag on field)
+                new AlignToAprilTagCommand(vision, robotDrive, 1)
+                    .withTimeout(10.0), // 10 second timeout for safety
+                
+                // Stop when finished
+                Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
+            ).withName("Vision Align Auto")
+        );
+        
+        // Put chooser on SmartDashboard for driver station selection
+        SmartDashboard.putData("Autonomous Mode", autoChooser);
+    }
 
     /**
      * Returns the command to run during autonomous period.
-     * 
-     * Selects the autonomous command from the SmartDashboard chooser.
-     * Defaults to "Auto 1 Left" if no selection is made.
      * 
      * @return the autonomous command selected from dashboard
      */
