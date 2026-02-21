@@ -210,7 +210,8 @@ public class Vision extends SubsystemBase {
         }
         
         // Update dashboard with vision status from all cameras
-        //updateTelemetry();
+    // Update dashboard with vision status from all cameras
+    updateTelemetry();
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
@@ -222,10 +223,11 @@ public class Vision extends SubsystemBase {
      * This method retrieves the most recent camera frame, checks for AprilTag targets,
      * and uses the PhotonPoseEstimator to calculate the robot's field position.
      *
-     * Filtering:
-     * - Rejects estimates with high ambiguity (> threshold)
-     * - Requires at least one valid target
-     * - Validates that pose estimate is reasonable
+    * Filtering:
+    * - Rejects estimates with high ambiguity (> threshold)
+    * - Requires at least one valid target
+    * - Applies a maximum distance cutoff (ignore targets > 3 m)
+    * - Validates that pose estimate is reasonable
      * 
      * @param module The camera module to get pose estimate from
      * @return Optional containing the estimated pose if available and valid, empty otherwise
@@ -252,12 +254,29 @@ public class Vision extends SubsystemBase {
         if (bestTarget.getPoseAmbiguity() > VisionConstants.kMaxAmbiguity) {
             return Optional.empty();
         }
-        
-        // Get pose estimate from PhotonPoseEstimator
+
+        // Distance filtering: reject any targets that are farther than our
+        // configured maximum distance.  This prevents very distant tags from
+        // contributing noisy pose estimates.  The distance is computed using the
+        // pose returned by the estimator and the known field location of the tag.
         Optional<EstimatedRobotPose> visionEst = module.poseEstimator.estimateCoprocMultiTagPose(result);
         if (visionEst.isEmpty()) {
             visionEst = module.poseEstimator.estimateLowestAmbiguityPose(result);
         }
+        if (visionEst.isPresent()) {
+            Pose2d estPose2d = visionEst.get().estimatedPose.toPose2d();
+            Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(bestTarget.getFiducialId());
+            if (tagPose.isPresent()) {
+                double distance = estPose2d.getTranslation()
+                        .getDistance(tagPose.get().toPose2d().getTranslation());
+                if (distance > VisionConstants.kMaxTargetDistance) {
+                    // too far away, ignore this result
+                    return Optional.empty();
+                }
+            }
+        }
+
+        // If we haven't returned early due to filtering, return the computed estimate
         return visionEst;
     }
     

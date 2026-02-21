@@ -106,28 +106,28 @@ public final class Constants {
     
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
-      true,  // Camera 0
-      true,  // Camera 1
+      true,  // L_Side_Camera
+      true,  // Top_Camera
       false,  // Camera 2
       false,   // Camera 3
     };
     
     // Camera names
     public static final String[] kCameraNames = {
-      "Camera_0",  // Left camera
-      "Camera_1",  // Front camera
+      "L_Side_Camera",  // Left camera
+      "Top_Camera",  // Front camera
       "Camera_2",  // Spare camera
       "Camera_3"   // Spare camera
     };
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      // Camera 0 - Side
+      // L_Side_Camera - Side
       new Transform3d(
         new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(12), Units.inchesToMeters(29.5)),
         new Rotation3d(0, 0, Math.PI/2)
       ),
-      // Camera 1 - Front
+      // Top_Camera - Front
       new Transform3d(
         new Translation3d(Units.inchesToMeters(6.5), Units.inchesToMeters(0), Units.inchesToMeters(36)),
         new Rotation3d(0, 0, Math.toRadians(0))
@@ -142,10 +142,15 @@ public final class Constants {
     };
     
     // Pose estimation tuning
-    public static final double kMaxAmbiguity = 0.3;
+    public static final double kMaxAmbiguity = 0.2;
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.7, 0.7, 0.9);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 0.3);
     public static final double kDistanceWeight = 0.01;
+    
+  // Maximum distance (meters) at which we will accept a vision pose update.
+  //  Measurements from targets farther than this are ignored to avoid
+  //  using excessively noisy detections for pose fusion.
+  public static final double kMaxTargetDistance = 5.0;
     
     // Allowed error tolerances
     public static final double allowedXError = 0.025; // 5cm tolerance
