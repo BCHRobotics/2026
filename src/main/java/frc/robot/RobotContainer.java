@@ -7,8 +7,9 @@ import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.webserver.VisionWebServer;
-import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.PIDConstants;
 
 public class RobotContainer {
     // Subsystems
@@ -34,6 +38,8 @@ public class RobotContainer {
     
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+    private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
+    private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
 
     //The container for the robot, initializing everything and setting up the controller chooser
     public RobotContainer() {
@@ -58,47 +64,36 @@ public class RobotContainer {
         
         // Configure button bindings
         configureBindings();
-    }
-    
-    /**
-     * Configures the autonomous command chooser with all available auto paths.
-     * Autos are loaded from the deploy/pathplanner/autos directory.
-     * The chooser is displayed on SmartDashboard for driver station selection.
-     */
-    private void configureAutonomousChooser() {
-        // Add autonomous options
-        // Note: PathPlanner autos require AutoBuilder to be configured in the drivetrain
-        m_autoChooser.setDefaultOption("Do Nothing", Commands.none());
         
-        m_autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
-        m_autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
-        m_autoChooser.addOption("Test 1 Auto", new PathPlannerAuto("Test 1 Auto"));
-        m_autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));  
+        autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
+        autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
+        autoChooser.addOption("Circle Auto", new PathPlannerAuto("Circle Auto"));
+        autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));  
         
         // Put the chooser on SmartDashboard for driver selection
-        SmartDashboard.putData("Auto Mode", m_autoChooser);
+        SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
     /**
      * Configures Shuffleboard choosers for PathPlanner translation/rotation PID presets.
      */
     private void configurePathPlannerPidChoosers() {
-        m_ppTranslationPidChooser.setDefaultOption(
+        ppTranslationPidChooser.setDefaultOption(
             "Default (2.0, 1.0, 0.0)",
             AutoConstants.translationConstants
         );
-        m_ppTranslationPidChooser.addOption("Soft (1.2, 0.0, 0.0)", new PIDConstants(1.2, 0.0, 0.0));
-        m_ppTranslationPidChooser.addOption("Aggressive (2.0, 0.0, 0.0)", new PIDConstants(2.0, 0.0, 0.0));
+        ppTranslationPidChooser.addOption("Soft (1.2, 0.0, 0.0)", new PIDConstants(1.2, 0.0, 0.0));
+        ppTranslationPidChooser.addOption("Aggressive (2.0, 0.0, 0.0)", new PIDConstants(2.0, 0.0, 0.0));
 
-        m_ppRotationPidChooser.setDefaultOption(
+        ppRotationPidChooser.setDefaultOption(
             "Default (1.0, 0.0, 0.0)",
             AutoConstants.rotationConstants
         );
-        m_ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
-        m_ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
+        ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
+        ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
 
-        SmartDashboard.putData("PP Translation PID", m_ppTranslationPidChooser);
-        SmartDashboard.putData("PP Rotation PID", m_ppRotationPidChooser);
+        SmartDashboard.putData("PP Translation PID", ppTranslationPidChooser);
+        SmartDashboard.putData("PP Rotation PID", ppRotationPidChooser);
     }
     
     /**
@@ -276,8 +271,8 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-        PIDConstants translationConstants = m_ppTranslationPidChooser.getSelected();
-        PIDConstants rotationConstants = m_ppRotationPidChooser.getSelected();
+        PIDConstants translationConstants = ppTranslationPidChooser.getSelected();
+        PIDConstants rotationConstants = ppRotationPidChooser.getSelected();
         if (translationConstants == null) {
             translationConstants = AutoConstants.translationConstants;
         }
@@ -287,7 +282,7 @@ public class RobotContainer {
         robotDrive.configureAutoBuilder(translationConstants, rotationConstants);
 
         // return new PathPlannerAuto("Test 4 Auto");
-        return m_autoChooser.getSelected();
+        return autoChooser.getSelected();
     
     }
 }
