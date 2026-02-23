@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R-Drive"
+            "pathName": "Circle path"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "R",
+  "folder": null,
   "choreoAuto": false
 }
