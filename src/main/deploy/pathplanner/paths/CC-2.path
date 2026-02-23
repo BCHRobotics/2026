@@ -1,0 +1,93 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.799,
+        "y": 4.898
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9512736472064909,
+        "y": 5.096274396648768
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.379963855421687,
+        "y": 6.646722891566265
+      },
+      "prevControl": {
+        "x": 2.130827415860467,
+        "y": 6.6259615216028305
+      },
+      "nextControl": {
+        "x": 2.6291002949829054,
+        "y": 6.667484261529699
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.2104698795180724,
+        "y": 6.646722891566265
+      },
+      "prevControl": {
+        "x": 3.165748519968077,
+        "y": 6.892690369091241
+      },
+      "nextControl": {
+        "x": 3.255191239068068,
+        "y": 6.400755414041288
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.374385542168675,
+        "y": 6.045698795180723
+      },
+      "prevControl": {
+        "x": 3.343376858521373,
+        "y": 6.29376826435914
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "shooter on",
+      "waypointRelativePos": 0.7,
+      "endWaypointRelativePos": 2.0,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 3.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "Climber Centre Paths",
+  "idealStartingState": {
+    "velocity": 3.0,
+    "rotation": 147.41
+  },
+  "useDefaultConstraints": true
+}

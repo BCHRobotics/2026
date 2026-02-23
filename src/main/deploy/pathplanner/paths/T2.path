@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.458587731811697,
-        "y": 3.9897146932952925
+        "x": 11.98339514978602,
+        "y": 0.9491298145506415
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.507616765596243,
-        "y": 4.2348598622180225
+        "x": 12.232759824743704,
+        "y": 0.9313180520536664
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.911440798858774,
-        "y": 6.460998573466477
+        "x": 14.41586305278174,
+        "y": 0.9491298145506415
       },
       "prevControl": {
-        "x": 7.041409304869369,
-        "y": 5.736999270423874
+        "x": 13.854066765429526,
+        "y": 0.9842420825101561
       },
       "nextControl": {
-        "x": 6.7814722928481785,
-        "y": 7.18499787650908
+        "x": 15.036918687589157,
+        "y": 0.9103138373751767
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.0,
-        "y": 7.379643366619116
+        "x": 14.41586305278174,
+        "y": 6.1245934379457925
       },
       "prevControl": {
-        "x": 6.963195435092723,
-        "y": 7.198502139800285
+        "x": 14.172508760698346,
+        "y": 6.067333604514406
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,22 +49,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.5,
-    "maxAcceleration": 0.5,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": 180.0
+    "velocity": 0.0,
+    "rotation": 177.91743472026917
   },
   "reversed": false,
-  "folder": "Mr Dykstra Path",
+  "folder": "Test 2 Paths",
   "idealStartingState": {
-    "velocity": 0.5,
-    "rotation": -177.75425743410491
+    "velocity": 1.5,
+    "rotation": 91.21887523513114
   },
   "useDefaultConstraints": false
 }

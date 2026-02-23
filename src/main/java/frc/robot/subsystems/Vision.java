@@ -13,7 +13,6 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -69,12 +68,14 @@ public class Vision extends SubsystemBase {
         public final PhotonPoseEstimator poseEstimator;
         public final int index;
         public final String name;
+        public PhotonPipelineResult lastResult;
         
         public CameraModule(PhotonCamera camera, PhotonPoseEstimator estimator, int index, String name) {
             this.camera = camera;
             this.poseEstimator = estimator;
             this.index = index;
             this.name = name;
+            this.lastResult = null;
         }
     }
     
@@ -94,86 +95,84 @@ public class Vision extends SubsystemBase {
 
     private List<PhotonTrackedTarget> visibleGamePieces;
     private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules
+        
+        /**
+         * Creates a new Vision subsystem with multi-camera support.
+         * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
+         * field layout, and sets up pose estimators for each camera with their configured transforms.
+         * Only cameras with kCamerasEnabled[i] = true will be initialized.
+         * 
+         * @param drivetrain Reference to drivetrain subsystem for odometry integration
+         */
+        public Vision(Drivetrain drivetrain) {
+            this.drivetrain = drivetrain;
+            this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
+            
+            // Load 2026 Rebuilt AprilTag field layout
+            aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+            
+            // Initialize each enabled camera
+            for (int i = 0; i < VisionConstants.kNumCameras && i < VisionConstants.kCamerasEnabled.length; i++) {
+                // Skip disabled cameras
+                if (!VisionConstants.kCamerasEnabled[i]) {
+                    System.out.println("Vision: Camera " + i + " (" + VisionConstants.kCameraNames[i] + ") is disabled");
+                    continue;
+                }
+                
+                try {
+                    // Initialize PhotonVision camera
+                    PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
+     
+                    // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
+                    //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
     
-    /**
-     * Creates a new Vision subsystem with multi-camera support.
-     * Initializes all enabled PhotonVision cameras, loads the 2026 Rebuilt AprilTag
-     * field layout, and sets up pose estimators for each camera with their configured transforms.
-     * Only cameras with kCamerasEnabled[i] = true will be initialized.
-     * 
-     * @param drivetrain Reference to drivetrain subsystem for odometry integration
-     */
-    public Vision(Drivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-        this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
-        
-        // Load 2026 Rebuilt AprilTag field layout
-        aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
-        
-        // Initialize each enabled camera
-        for (int i = 0; i < VisionConstants.kNumCameras && i < VisionConstants.kCamerasEnabled.length; i++) {
-            // Skip disabled cameras
-            if (!VisionConstants.kCamerasEnabled[i]) {
-                System.out.println("Vision: Camera " + i + " (" + VisionConstants.kCameraNames[i] + ") is disabled");
-                continue;
+                    // Initialize pose estimator with multi-tag strategy for best accuracy
+                    PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
+                        aprilTagFieldLayout,
+                        VisionConstants.kRobotToCams[i]
+                    );
+                    
+                    // Add to active camera list
+                    cameraModules.add(new CameraModule(camera, poseEstimator, i, VisionConstants.kCameraNames[i]));
+                    
+                    System.out.println("Vision: Initialized camera " + i + " (" + VisionConstants.kCameraNames[i] + ")");
+                    
+                } catch (Exception e) {
+                    System.err.println("Vision: Failed to initialize camera " + i + " (" + VisionConstants.kCameraNames[i] + "): " + e.getMessage());
+                }
             }
             
-            try {
-                // Initialize PhotonVision camera
-                PhotonCamera camera = new PhotonCamera(VisionConstants.kCameraNames[i]);
- 
-                // Each camera needs its own PhotonPoseEstimator because each camera has a unique physical mounting position and orientation on the robot. 
-                //The pose estimator needs to know exactly where the camera is to correctly convert "what the camera sees" into "where the robot is on the field."
-
-                // Initialize pose estimator with multi-tag strategy for best accuracy
-                PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
-                    aprilTagFieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, 
-                    VisionConstants.kRobotToCams[i]
-                );
-                
-                // Set reference pose to current odometry estimate
-                poseEstimator.setReferencePose(drivetrain.getPose());
-                
-                // Add to active camera list
-                cameraModules.add(new CameraModule(camera, poseEstimator, i, VisionConstants.kCameraNames[i]));
-                
-                System.out.println("Vision: Initialized camera " + i + " (" + VisionConstants.kCameraNames[i] + ")");
-                
-            } catch (Exception e) {
-                System.err.println("Vision: Failed to initialize camera " + i + " (" + VisionConstants.kCameraNames[i] + "): " + e.getMessage());
+            System.out.println("Vision: " + cameraModules.size() + " cameras active");
+            
+            // Find and assign the ball detection camera (banana_1)
+            for (CameraModule module : cameraModules) {
+                if (module.name.equals("banana_1")) {
+                    ballCamera = module.camera;
+                    System.out.println("Vision: Ball detection camera (banana_1) assigned from Camera " + module.index);
+                    break;
+                }
             }
-        }
-        
-        System.out.println("Vision: " + cameraModules.size() + " cameras active");
-        
-        // Find and assign the ball detection camera (banana_1)
-        for (CameraModule module : cameraModules) {
-            if (module.name.equals("banana_1")) {
-                ballCamera = module.camera;
-                System.out.println("Vision: Ball detection camera (banana_1) assigned from Camera " + module.index);
-                break;
+            
+            if (ballCamera == null) {
+                System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
             }
+            
+            // Add field visualization to SmartDashboard
+            SmartDashboard.putData("Vision Field", field2d);
+            //SmartDashboard.putData("Odometry Field", odometryField2d);
         }
-        
-        if (ballCamera == null) {
-            System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
-        }
-        
-        // Add field visualization to SmartDashboard
-        SmartDashboard.putData("Vision Field", field2d);
-    }
-
-    public PhotonTrackedTarget getBallPosition() {
-        if (visibleGamePieces.size() > 0) {
-            return visibleGamePieces.get(0);
-        } else {
-            return null;
-        }
-    }
     
-    @Override
-    public void periodic() {
+        public PhotonTrackedTarget getBallPosition() {
+            if (visibleGamePieces.size() > 0) {
+                return visibleGamePieces.get(0);
+            } else {
+                return null;
+            }
+        }
+        
+        @Override
+        public void periodic() {
+            //odometryField2d.setRobotPose(drivetrain.getOdometryPose());
         // Update ball detection (only if ballCamera is initialized)
         if (ballCamera != null) {
             List<PhotonPipelineResult> res = ballCamera.getAllUnreadResults();
@@ -181,11 +180,6 @@ public class Vision extends SubsystemBase {
             if (res.size() > 0) {
                 visibleGamePieces = res.get(0).getTargets();
             }
-        }
-        
-        // Update all pose estimators with current odometry
-        for (CameraModule module : cameraModules) {
-            module.poseEstimator.setReferencePose(drivetrain.getPose());
         }
         
         // Process vision measurements from all cameras
@@ -213,7 +207,8 @@ public class Vision extends SubsystemBase {
         }
         
         // Update dashboard with vision status from all cameras
-        //updateTelemetry();
+    // Update dashboard with vision status from all cameras
+    updateTelemetry();
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
@@ -225,10 +220,11 @@ public class Vision extends SubsystemBase {
      * This method retrieves the most recent camera frame, checks for AprilTag targets,
      * and uses the PhotonPoseEstimator to calculate the robot's field position.
      *
-     * Filtering:
-     * - Rejects estimates with high ambiguity (> threshold)
-     * - Requires at least one valid target
-     * - Validates that pose estimate is reasonable
+    * Filtering:
+    * - Rejects estimates with high ambiguity (> threshold)
+    * - Requires at least one valid target
+    * - Applies a maximum distance cutoff (ignore targets > 3 m)
+    * - Validates that pose estimate is reasonable
      * 
      * @param module The camera module to get pose estimate from
      * @return Optional containing the estimated pose if available and valid, empty otherwise
@@ -242,6 +238,7 @@ public class Vision extends SubsystemBase {
         
         // Process most recent result
         PhotonPipelineResult result = results.get(results.size() - 1);
+        module.lastResult = result;
         
         // Check if we detected any targets
         if (!result.hasTargets()) {
@@ -254,9 +251,30 @@ public class Vision extends SubsystemBase {
         if (bestTarget.getPoseAmbiguity() > VisionConstants.kMaxAmbiguity) {
             return Optional.empty();
         }
-        
-        // Get pose estimate from PhotonPoseEstimator
-        return module.poseEstimator.update(result);
+
+        // Distance filtering: reject any targets that are farther than our
+        // configured maximum distance.  This prevents very distant tags from
+        // contributing noisy pose estimates.  The distance is computed using the
+        // pose returned by the estimator and the known field location of the tag.
+        Optional<EstimatedRobotPose> visionEst = module.poseEstimator.estimateCoprocMultiTagPose(result);
+        if (visionEst.isEmpty()) {
+            visionEst = module.poseEstimator.estimateLowestAmbiguityPose(result);
+        }
+        if (visionEst.isPresent()) {
+            Pose2d estPose2d = visionEst.get().estimatedPose.toPose2d();
+            Optional<Pose3d> tagPose = aprilTagFieldLayout.getTagPose(bestTarget.getFiducialId());
+            if (tagPose.isPresent()) {
+                double distance = estPose2d.getTranslation()
+                        .getDistance(tagPose.get().toPose2d().getTranslation());
+                if (distance > VisionConstants.kMaxTargetDistance) {
+                    // too far away, ignore this result
+                    return Optional.empty();
+                }
+            }
+        }
+
+        // If we haven't returned early due to filtering, return the computed estimate
+        return visionEst;
     }
     
     /**
@@ -332,15 +350,14 @@ public class Vision extends SubsystemBase {
         
         // Update telemetry for each camera
         for (CameraModule module : cameraModules) {
-            var results = module.camera.getAllUnreadResults();
             String prefix = "Vision/Cam" + module.index + "/";
-            
-            if (results.isEmpty()) {
+
+            if (module.lastResult == null) {
                 SmartDashboard.putBoolean(prefix + "Has Targets", false);
                 continue;
             }
-            
-            PhotonPipelineResult result = results.get(results.size() - 1);
+
+            PhotonPipelineResult result = module.lastResult;
             
             boolean hasTargets = result.hasTargets();
             SmartDashboard.putBoolean(prefix + "Has Targets", hasTargets);
@@ -419,8 +436,8 @@ public class Vision extends SubsystemBase {
         List<Integer> visibleTags = new ArrayList<>();
         
         for (CameraModule module : cameraModules) {
-            PhotonPipelineResult result = module.camera.getLatestResult();
-            if (result.hasTargets()) {
+            PhotonPipelineResult result = module.lastResult;
+            if (result != null && result.hasTargets()) {
                 for (PhotonTrackedTarget target : result.getTargets()) {
                     visibleTags.add(target.getFiducialId());
                 }
@@ -440,8 +457,8 @@ public class Vision extends SubsystemBase {
         List<AprilTagInfo> tagInfoList = new ArrayList<>();
         
         for (CameraModule module : cameraModules) {
-            PhotonPipelineResult result = module.camera.getLatestResult();
-            if (result.hasTargets()) {
+            PhotonPipelineResult result = module.lastResult;
+            if (result != null && result.hasTargets()) {
                 for (PhotonTrackedTarget target : result.getTargets()) {
                     double ambiguity = target.getPoseAmbiguity();
                     boolean usedForUpdate = ambiguity <= VisionConstants.kMaxAmbiguity;
@@ -476,8 +493,8 @@ public class Vision extends SubsystemBase {
         int count = 0;
         
         for (CameraModule module : cameraModules) {
-            PhotonPipelineResult result = module.camera.getLatestResult();
-            if (result.hasTargets()) {
+            PhotonPipelineResult result = module.lastResult;
+            if (result != null && result.hasTargets()) {
                 count += result.getTargets().size();
             }
         }

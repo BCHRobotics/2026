@@ -3,7 +3,15 @@
   "robotLength": 0.864,
   "holonomicMode": true,
   "pathFolders": [
-    "Opening Paths"
+    "Auto 1 Left Paths",
+    "Auto Right Path",
+    "Climber Centre Paths",
+    "Mr Dykstra Path",
+    "Test 1 Paths",
+    "Test 2 Paths",
+    "Test 3 Paths",
+    "Test 4 Paths",
+    "Test Climber Right and Left Paths"
   ],
   "autoFolders": [
     "C",
@@ -20,7 +28,7 @@
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.038,
   "driveGearing": 5.4,
-  "maxDriveSpeed": 3.3,
+  "maxDriveSpeed": 3.0,
   "driveMotorType": "NEO",
   "driveCurrentLimit": 60.0,
   "wheelCOF": 1.2,

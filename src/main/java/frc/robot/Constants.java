@@ -37,6 +37,12 @@ public final class Constants {
     public static final int kMainControllerPort = 0;
     public static final int kBackupControllerPort = 1;
 
+    public enum ControllerType {
+      PS5,
+      XBOX
+    }
+    public static final ControllerType kDriverControllerType = ControllerType.XBOX;
+
     public static final double kDriveDeadband = 0.05;
     public static final double kTurnDeadband = 0.12;
     public static final double kTwistDeadband = 0.5;
@@ -47,9 +53,10 @@ public final class Constants {
 
   // Drive Constants
   public static final class DriveConstants {
-    // Maximum allowed robot speeds
-    public static final double maxSpeedNormal = 3.3; // m/s
-    public static final double maxAngularSpeed = 2 * Math.PI; // rad/s
+    // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
+    // the robot, rather the allowed maximum and minimum speeds.
+    public static final double maxSpeedNormal = 5.0; // 3.3
+    public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
     public static final double kDirectionSlewRate = 3; // rad/s
@@ -87,37 +94,50 @@ public final class Constants {
     public static final boolean kGyroReversed = true;
   }
 
-  // Vision Constants
+  /**
+   * Vision and PhotonVision Constants for 2026 Rebuilt
+   * 
+   * Contains all configuration for AprilTag detection, pose estimation,
+   * and vision-based autonomous alignment.
+   * 
+   * Multi-Camera Support:
+   * - Up to 4 cameras can be configured
+   * - Each >can be individually enabled/disabled
+   * - Each camera has its own name and transform
+   * - Pose estimates from all enabled cameras are fused
+   */
   public static final class VisionConstants{
     // Number of cameras to use
     public static final int kNumCameras = 4;
     
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
-      true,  // Camera 0
-      true,  // Camera 1 - banana_1 (ball detection)
+      true,  // L_Side_Camera
+      true,  // Top_Camera
       false,  // Camera 2
       false,   // Camera 3
     };
     
     // Camera names
     public static final String[] kCameraNames = {
-      "Camera_0",  // Front camera (AprilTag detection)
-      "banana_1",  // Ball detection camera
-      "Camera_2",  // Left camera
-      "Camera_3"   // Right camera
+      "L_Side_Camera",  // Left camera
+      "Top_Camera",  // Front camera
+      "Camera_2",  // Spare camera
+      "Camera_3"   // Spare camera
     };
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      // Camera 0 - Front
-      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34)),
-                      new Rotation3d(0, 0, 0)),
-
-      // Camera 1 - banana_1 (Ball detection)
-      new Transform3d(new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(0.75), Units.inchesToMeters(6)),
-                      new Rotation3d(0, 0, 0)),
-
+      // L_Side_Camera - Side
+      new Transform3d(
+        new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(12), Units.inchesToMeters(29.5)),
+        new Rotation3d(0, 0, Math.PI/2)
+      ),
+      // Top_Camera - Front
+      new Transform3d(
+        new Translation3d(Units.inchesToMeters(6.5), Units.inchesToMeters(0), Units.inchesToMeters(36)),
+        new Rotation3d(0, 0, Math.toRadians(0))
+      ),
       // Camera 2 - Left
       new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
                       new Rotation3d(0, 0, Math.toRadians(90))),
@@ -128,10 +148,15 @@ public final class Constants {
     };
     
     // Pose estimation tuning
-    public static final double kMaxAmbiguity = 0.3;
+    public static final double kMaxAmbiguity = 0.2;
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.7, 0.7, 0.9);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 0.3);
     public static final double kDistanceWeight = 0.01;
+    
+  // Maximum distance (meters) at which we will accept a vision pose update.
+  //  Measurements from targets farther than this are ignored to avoid
+  //  using excessively noisy detections for pose fusion.
+  public static final double kMaxTargetDistance = 5.0;
     
     // Allowed error tolerances
     public static final double allowedXError = 0.025; // 5cm tolerance
@@ -196,7 +221,8 @@ public final class Constants {
 
   // PID constants that PathPlanner uses to drive the robot
   public static final class AutoConstants {
-    public static final PIDConstants translationConstants = new PIDConstants(2, 1, 0);
+    // the PID constants that PathPlanner uses to drive the robot
+    public static final PIDConstants translationConstants = new PIDConstants(2, 0.1, 0);
     public static final PIDConstants rotationConstants = new PIDConstants(1, 0, 0);
   }
 
@@ -206,9 +232,9 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 2.8;
+    public static final double kPositionP = 1.0;
     public static final double kPositionI = 0.00;
-    public static final double kPositionD = 0.03;
+    public static final double kPositionD = 0.01;
     
     /**
      * PID gains for rotation control.

@@ -14,6 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.function.DoubleSupplier;
 
 public class RobotContainer {
     // Subsystems
@@ -26,13 +29,24 @@ public class RobotContainer {
     private final VisionWebServer webServer = new VisionWebServer(vision);
 
     // Controllers
-    CommandPS5Controller driverController = new CommandPS5Controller(OIConstants.kMainControllerPort);
+    CommandPS5Controller driverPS5;
+    CommandXboxController driverXbox;
     
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     //The container for the robot, initializing everything and setting up the controller chooser
     public RobotContainer() {
+        // Initialize Driver Controller based on Type
+        if (OIConstants.kDriverControllerType == OIConstants.ControllerType.PS5) {
+            driverPS5 = new CommandPS5Controller(OIConstants.kMainControllerPort);
+        } else {
+            driverXbox = new CommandXboxController(OIConstants.kMainControllerPort);
+        }
+
+        // Start data logging for AdvantageScope
+        DataLogManager.start();
+        
         // Connect Vision subsystem to Drivetrain for diagnostics
         robotDrive.setVision(vision);
         
@@ -44,9 +58,47 @@ public class RobotContainer {
         
         // Configure button bindings
         configureBindings();
+    }
+    
+    /**
+     * Configures the autonomous command chooser with all available auto paths.
+     * Autos are loaded from the deploy/pathplanner/autos directory.
+     * The chooser is displayed on SmartDashboard for driver station selection.
+     */
+    private void configureAutonomousChooser() {
+        // Add autonomous options
+        // Note: PathPlanner autos require AutoBuilder to be configured in the drivetrain
+        m_autoChooser.setDefaultOption("Do Nothing", Commands.none());
         
-        // Configure autonomous chooser
-        configureAutoChooser();
+        m_autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
+        m_autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
+        m_autoChooser.addOption("Test 1 Auto", new PathPlannerAuto("Test 1 Auto"));
+        m_autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));  
+        
+        // Put the chooser on SmartDashboard for driver selection
+        SmartDashboard.putData("Auto Mode", m_autoChooser);
+    }
+
+    /**
+     * Configures Shuffleboard choosers for PathPlanner translation/rotation PID presets.
+     */
+    private void configurePathPlannerPidChoosers() {
+        m_ppTranslationPidChooser.setDefaultOption(
+            "Default (2.0, 1.0, 0.0)",
+            AutoConstants.translationConstants
+        );
+        m_ppTranslationPidChooser.addOption("Soft (1.2, 0.0, 0.0)", new PIDConstants(1.2, 0.0, 0.0));
+        m_ppTranslationPidChooser.addOption("Aggressive (2.0, 0.0, 0.0)", new PIDConstants(2.0, 0.0, 0.0));
+
+        m_ppRotationPidChooser.setDefaultOption(
+            "Default (1.0, 0.0, 0.0)",
+            AutoConstants.rotationConstants
+        );
+        m_ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
+        m_ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
+
+        SmartDashboard.putData("PP Translation PID", m_ppTranslationPidChooser);
+        SmartDashboard.putData("PP Rotation PID", m_ppRotationPidChooser);
     }
     
     /**
@@ -58,12 +110,24 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         // ========== Drivetrain Default Command: Teleop Drive ==========
         // Left stick controls translation (X/Y), right stick X controls rotation
+        DoubleSupplier leftY, leftX, rightX;
+        
+        if (driverPS5 != null) {
+            leftY = () -> -driverPS5.getLeftY();
+            leftX = () -> -driverPS5.getLeftX();
+            rightX = () -> -driverPS5.getRightX();
+        } else {
+            leftY = () -> -driverXbox.getLeftY();
+            leftX = () -> -driverXbox.getLeftX();
+            rightX = () -> -driverXbox.getRightX();
+        }
+
         robotDrive.setDefaultCommand(
             new TeleopDriveCommand(
                 robotDrive,
-                () -> -driverController.getLeftY(),    // Forward/backward (inverted)
-                () -> -driverController.getLeftX(),    // Left/right (inverted)
-                () -> -driverController.getRightX(),   // Rotation (inverted)
+                leftY,    // Forward/backward (inverted)
+                leftX,    // Left/right (inverted)
+                rightX,   // Rotation (inverted)
                 OIConstants.kFieldRelative,            // Field-relative driving
                 OIConstants.kRateLimited               // Enable slew rate limiting
             )
@@ -75,16 +139,37 @@ public class RobotContainer {
     
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
+
+        Trigger alignToTag, goToPosition, zeroHeading, autoScoring;
+        DoubleSupplier leftY, leftX;
+
+        if (driverPS5 != null) {
+            alignToTag = driverPS5.square();
+            goToPosition = driverPS5.circle();
+            zeroHeading = driverPS5.triangle();
+            autoScoring = driverPS5.options();
+            
+            leftY = () -> -driverPS5.getLeftY();
+            leftX = () -> -driverPS5.getLeftX();
+        } else {
+            alignToTag = driverXbox.x();
+            goToPosition = driverXbox.b();
+            zeroHeading = driverXbox.y();
+            autoScoring = driverXbox.start(); // Using Start button like Options
+
+            leftY = () -> -driverXbox.getLeftY();
+            leftX = () -> -driverXbox.getLeftX();
+        }
         
         // ========== Vision-Based Navigation Commands ==========
         
-        // Square button (PS5): Navigate to 1 meter in front of an AprilTag
-        driverController.square().whileTrue(
-            new FacePointCommand(robotDrive, () -> -driverController.getLeftY(),    // Forward/backward (inverted)
-                () -> -driverController.getLeftX(), 11.945, 4.029, 2) // Safety timeout
+        // Square/X button: Navigate to 1 meter in front of an AprilTag
+        alignToTag.whileTrue(
+            new FacePointCommand(robotDrive, leftY,    // Forward/backward (inverted)
+                leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-         driverController.circle().whileTrue(
+         goToPosition.whileTrue(
              new GoToPositionCommand(robotDrive,10.0, 4.0,0.0)
                      .withTimeout(10.0) // Safety timeout
          );
@@ -95,7 +180,7 @@ public class RobotContainer {
         // );
 
         // Reset gyro heading to zero (forward)
-        driverController.triangle().onTrue(
+        zeroHeading.onTrue(
             Commands.runOnce(() -> robotDrive.zeroHeading())
         );
 
@@ -104,8 +189,8 @@ public class RobotContainer {
         // );
         
         // ========== Vision Alignment Commands ==========
-        // Options button (PS5): Align to nearest AprilTag for autonomous scoring
-        driverController.options().whileTrue(
+        // Options/Start button: Align to nearest AprilTag for autonomous scoring
+        autoScoring.whileTrue(
             new AlignToAprilTagCommand(vision, robotDrive, 4)
                     .withTimeout(5.0) // Safety timeout
         );
@@ -191,6 +276,18 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        PIDConstants translationConstants = m_ppTranslationPidChooser.getSelected();
+        PIDConstants rotationConstants = m_ppRotationPidChooser.getSelected();
+        if (translationConstants == null) {
+            translationConstants = AutoConstants.translationConstants;
+        }
+        if (rotationConstants == null) {
+            rotationConstants = AutoConstants.rotationConstants;
+        }
+        robotDrive.configureAutoBuilder(translationConstants, rotationConstants);
+
+        // return new PathPlannerAuto("Test 4 Auto");
+        return m_autoChooser.getSelected();
+    
     }
 }

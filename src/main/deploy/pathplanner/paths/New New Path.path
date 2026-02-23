@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.458587731811697,
-        "y": 3.9897146932952925
+        "x": 2.9,
+        "y": 3.912
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.507616765596243,
-        "y": 4.2348598622180225
+        "x": 2.650563429366098,
+        "y": 3.9287748988193205
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.911440798858774,
-        "y": 6.460998573466477
+        "x": 1.7618544935805986,
+        "y": 3.912
       },
       "prevControl": {
-        "x": 7.041409304869369,
-        "y": 5.736999270423874
-      },
-      "nextControl": {
-        "x": 6.7814722928481785,
-        "y": 7.18499787650908
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.0,
-        "y": 7.379643366619116
-      },
-      "prevControl": {
-        "x": 6.963195435092723,
-        "y": 7.198502139800285
+        "x": 2.0098994832469432,
+        "y": 3.9432038956129345
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0.5,
-    "rotation": 180.0
+    "rotation": -178.46173754527288
   },
   "reversed": false,
   "folder": "Mr Dykstra Path",
   "idealStartingState": {
     "velocity": 0.5,
-    "rotation": -177.75425743410491
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }
