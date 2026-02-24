@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2698205128263274,
+        "y": 6.807
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.564562309683477,
+        "y": 6.812136831456591
+      },
+      "isLocked": false,
+      "linkedName": "Climber-2_path_1end"
+    },
+    {
+      "anchor": {
+        "x": 1.0605128205128216,
+        "y": 4.744320512820513
+      },
+      "prevControl": {
+        "x": 1.0135352879479047,
+        "y": 5.521109813272415
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Climber-2_Path_2end"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Climber_path_2",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 140.0
+  },
+  "useDefaultConstraints": true
+}
