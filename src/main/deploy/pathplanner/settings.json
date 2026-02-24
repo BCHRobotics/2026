@@ -3,20 +3,17 @@
   "robotLength": 0.864,
   "holonomicMode": true,
   "pathFolders": [
-    "Auto 1 Left Paths",
-    "Auto Right Path",
-    "Climber Centre Paths",
-    "Mr Dykstra Path",
-    "Test 1 Paths",
-    "Test 2 Paths",
-    "Test 3 Paths",
-    "Test 4 Paths",
-    "Test Climber Right and Left Paths"
+    "Auto Ball Collect Right",
+    "AutoShootingCenter",
+    "AutoShootingLeft",
+    "AutoShootingRight",
+    "Climber_path_1",
+    "Climber_path_2",
+    "Climber_path_3",
+    "Climber_path_4"
   ],
   "autoFolders": [
-    "C",
-    "L",
-    "R"
+    "Climber_Autos"
   ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 1.5,

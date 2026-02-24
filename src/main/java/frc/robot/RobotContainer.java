@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 
@@ -64,6 +65,8 @@ public class RobotContainer {
         
         // Configure button bindings
         configureBindings();
+
+        //NamedCommands.registerCommand("name", getAutonomousCommand());
         
         autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
         autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
