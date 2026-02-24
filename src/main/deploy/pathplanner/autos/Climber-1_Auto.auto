@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-1_Path_1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-1_Path_2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-1_Path_3"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Climber_Autos",
+  "choreoAuto": false
+}
