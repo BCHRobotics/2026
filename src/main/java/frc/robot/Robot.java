@@ -7,7 +7,10 @@ package frc.robot;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -17,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -30,6 +33,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // AdvantageKit Logger initialization — must happen before RobotContainer
+    Logger.recordMetadata("ProjectName", "2026");
+
+    if (isReal()) {
+      Logger.addDataReceiver(new WPILOGWriter()); // Log to USB stick on roboRIO
+      Logger.addDataReceiver(new NT4Publisher()); // Publish to NT4 (for AdvantageScope)
+    } else {
+      Logger.addDataReceiver(new NT4Publisher()); // Simulation: publish to NT4
+    }
+
+    Logger.start(); // Start logging — this starts the NT4 AdvantageKit server
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();

@@ -32,6 +32,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SubsystemBase {
   // Create MAXSwerveModules
@@ -195,6 +196,10 @@ public class Drivetrain extends SubsystemBase {
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
     SmartDashboard.putData("Field", field);
+
+    // Log pose for AdvantageScope
+    Logger.recordOutput("Drivetrain/RobotPose", getPose());
+    Logger.recordOutput("Drivetrain/EstimatedPose", poseEstimator.getEstimatedPosition());
 
     // Print comprehensive diagnostics once per second
     double currentTime = WPIUtilJNI.now() * 1e-6;
