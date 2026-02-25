@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.GoToPositionCommand;
+import frc.robot.commands.drivetrain.GoToPositionRelativeCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.subsystems.Drivetrain;
@@ -9,6 +10,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.webserver.VisionWebServer;
 import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -39,6 +42,9 @@ public class RobotContainer {
     
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+    // Field pose chooser — selects where the robot drives when the pose-nav button is held
+    private final SendableChooser<Pose2d> fieldPoseChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
 
@@ -66,6 +72,9 @@ public class RobotContainer {
         // Configure button bindings
         configureBindings();
 
+        // Configure field pose chooser
+        configureFieldPoseChooser();
+
         //NamedCommands.registerCommand("name", getAutonomousCommand());
         
         autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
@@ -75,6 +84,23 @@ public class RobotContainer {
         
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", autoChooser);
+    }
+
+    /**
+     * Populates and publishes the field pose chooser on SmartDashboard.
+     *
+     * Coordinates are blue-alliance-relative. GoToPositionRelativeCommand mirrors
+     * them automatically when the DriverStation reports red alliance:
+     *   red_x = fieldLength - x,  red_y = fieldWidth - y,  red_heading = 180 - heading
+     */
+    private void configureFieldPoseChooser() {
+        // Climber positions (final waypoints from PathPlanner paths, blue alliance)
+        fieldPoseChooser.setDefaultOption("Climber 1", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
+        fieldPoseChooser.addOption(      "Climber 2", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees( 90.0)));
+        fieldPoseChooser.addOption(      "Climber 3", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
+        fieldPoseChooser.addOption(      "Climber 4", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees( 90.0)));
+
+        SmartDashboard.putData("Field Pose", fieldPoseChooser);
     }
 
     /**
@@ -138,7 +164,7 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger alignToTag, goToPosition, zeroHeading, autoScoring;
+        Trigger alignToTag, goToPosition, zeroHeading, autoScoring, goToSelectedPose;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -146,6 +172,7 @@ public class RobotContainer {
             goToPosition = driverPS5.circle();
             zeroHeading = driverPS5.triangle();
             autoScoring = driverPS5.options();
+            goToSelectedPose = driverPS5.cross();
             
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
@@ -154,6 +181,7 @@ public class RobotContainer {
             goToPosition = driverXbox.b();
             zeroHeading = driverXbox.y();
             autoScoring = driverXbox.start(); // Using Start button like Options
+            goToSelectedPose = driverXbox.a();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -180,6 +208,18 @@ public class RobotContainer {
         // Reset gyro heading to zero (forward)
         zeroHeading.onTrue(
             Commands.runOnce(() -> robotDrive.zeroHeading())
+        );
+
+        // Cross/A: Drive to the pose selected in the SmartDashboard "Field Pose" chooser.
+        // Uses alliance-relative coordinates — automatically mirrors for red alliance.
+        goToSelectedPose.whileTrue(
+            Commands.defer(() -> {
+                Pose2d pose = fieldPoseChooser.getSelected();
+                if (pose == null) return Commands.none();
+                return new GoToPositionRelativeCommand(
+                    robotDrive, pose.getX(), pose.getY(), pose.getRotation().getDegrees()
+                ).withTimeout(10.0);
+            }, Set.of(robotDrive))
         );
 
         // driverController.square().whileTrue(
