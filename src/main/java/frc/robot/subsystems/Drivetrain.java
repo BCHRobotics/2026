@@ -33,6 +33,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class Drivetrain extends SubsystemBase {
   // Create MAXSwerveModules
@@ -453,7 +454,7 @@ public class Drivetrain extends SubsystemBase {
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, maxSpeed);
+        desiredStates, DriveConstants.maxSpeedNormal);
     frontLeftModule.setDesiredState(desiredStates[0]);
     frontRightModule.setDesiredState(desiredStates[1]);
     rearLeftModule.setDesiredState(desiredStates[2]);
@@ -500,6 +501,10 @@ public class Drivetrain extends SubsystemBase {
    * @return the robot's heading in degrees, from -Infinity to Infinity
    */
   public double getHeading() {
+    if (RobotBase.isSimulation()) {
+      // In simulation, use the simulated yaw updated in simulationPeriodic()
+      return Rotation2d.fromRadians(simYaw).getDegrees();
+    }
     // I'm multiplying the navx heading by -1 
     // because WPILib uses CCW as the positive direction
     // and NavX uses CW as the positive direction
@@ -581,8 +586,7 @@ public SwerveModulePosition[] getModulePositions() {
     // Update the simulated gyro
     simYaw += ChassisSpeeds.omegaRadiansPerSecond * 0.02;
 
-    // Update odemetry with simulated values
-    odometry.update(new Rotation2d(simYaw), getModulePositions());
+    // periodic() handles odometry updates using getHeading() which reads simYaw in sim
     field.setRobotPose(getPose());
   }
 

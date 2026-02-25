@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkSim;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.PersistMode;
@@ -32,8 +33,8 @@ public class MAXSwerveModule {
   private final SparkClosedLoopController m_turningClosedLoopController;
 
   // Simulation variables
-  private double driveSimPosition = 0;
-  private double turningSimPosition = 0;
+  private SparkSim m_drivingSparkSim;
+  private SparkSim m_turningSparkSim;
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -65,6 +66,9 @@ public class MAXSwerveModule {
     m_chassisAngularOffset = chassisAngularOffset;
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
+
+    m_drivingSparkSim = new SparkSim(m_drivingSpark, edu.wpi.first.math.system.plant.DCMotor.getNEO(1));
+    m_turningSparkSim = new SparkSim(m_turningSpark, edu.wpi.first.math.system.plant.DCMotor.getNEO(1));
   }
 
   /**
@@ -137,8 +141,9 @@ public class MAXSwerveModule {
   }
 
   public void simulationUpdate(double dt) {
-    // Calculate how much the mototrs moved based on their current % output
-    driveSimPosition += (m_drivingSpark.get() * ModuleConstants.kDriveWheelFreeSpeedRps * dt);
-    turningSimPosition += (m_turningSpark.get() * 10.0 * dt);
+    // Push simulated motor velocities into SparkMax sim so getVelocity()/getPosition() reflect them
+    double driveVelocity = m_drivingSpark.get() * ModuleConstants.kDriveWheelFreeSpeedRps;
+    m_drivingSparkSim.iterate(driveVelocity, 12.0, dt);
+    m_turningSparkSim.iterate(m_turningSpark.get() * 10.0, 12.0, dt);
   }
 }
