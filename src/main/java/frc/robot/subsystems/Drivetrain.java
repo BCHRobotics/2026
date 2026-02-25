@@ -26,6 +26,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -54,6 +55,9 @@ public class Drivetrain extends SubsystemBase {
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
+
+  private final Field2d field = new Field2d();
+  private double simYaw = 0;
 
   // The gyro sensor
   public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
@@ -148,6 +152,7 @@ public class Drivetrain extends SubsystemBase {
       System.err.println("Make sure you have created a robot configuration in PathPlanner GUI!");
     }
   }
+
   
   /**
    * Sets the Vision subsystem reference for diagnostic output.
@@ -169,6 +174,12 @@ public class Drivetrain extends SubsystemBase {
             rearLeftModule.getPosition(),
             rearRightModule.getPosition()
         });
+
+        SmartDashboard.putNumberArray("RobotPoseArray", new double[] {
+          getPose().getX(),
+          getPose().getY(),
+          getPose().getRotation().getDegrees()
+        });
     
     // Update pose estimator with latest wheel positions
     // Vision measurements are added separately via addVisionMeasurement()
@@ -183,6 +194,7 @@ public class Drivetrain extends SubsystemBase {
     
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
+    SmartDashboard.putData("Field", field);
 
     // Print comprehensive diagnostics once per second
     double currentTime = WPIUtilJNI.now() * 1e-6;
@@ -534,5 +546,42 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveRobotRelative(ChassisSpeeds speeds) {
     setChassisSpeeds(speeds);
+  }
+
+  /**
+ * Returns the current positions of all swerve modules.
+ * @return An array of SwerveModulePosition objects.
+ */
+public SwerveModulePosition[] getModulePositions() {
+  return new SwerveModulePosition[] {
+      frontLeftModule.getPosition(),
+      frontRightModule.getPosition(),
+      rearLeftModule.getPosition(),
+      rearRightModule.getPosition()
+  };
+}
+
+  @Override
+  public void simulationPeriodic() {
+    // Update each module's internal simulation state
+    frontLeftModule.simulationUpdate(0.02);
+    frontRightModule.simulationUpdate(0.02);
+    rearLeftModule.simulationUpdate(0.02);
+    rearRightModule.simulationUpdate(0.02);
+
+    // Calculate the robot's movement from the module states 
+    SwerveModuleState[] moduleStates = getModuleStates();
+    var ChassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds((moduleStates));
+
+    // Update the simulated gyro
+    simYaw += ChassisSpeeds.omegaRadiansPerSecond * 0.02;
+
+    // Update odemetry with simulated values
+    odometry.update(new Rotation2d(simYaw), getModulePositions());
+    field.setRobotPose(getPose());
+  }
+
+  public Field2d getField() {
+    return field;
   }
 }

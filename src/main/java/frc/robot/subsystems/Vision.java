@@ -158,7 +158,7 @@ public class Vision extends SubsystemBase {
             }
             
             // Add field visualization to SmartDashboard
-            SmartDashboard.putData("Vision Field", field2d);
+            //SmartDashboard.putData("Vision Field", field2d);
             //SmartDashboard.putData("Odometry Field", odometryField2d);
         }
     

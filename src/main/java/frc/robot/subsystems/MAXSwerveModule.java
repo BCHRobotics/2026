@@ -19,6 +19,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 
 import frc.robot.Configs;
+import frc.robot.Constants.ModuleConstants;
 
 public class MAXSwerveModule {
   public final SparkMax m_drivingSpark;
@@ -29,6 +30,10 @@ public class MAXSwerveModule {
 
   private final SparkClosedLoopController m_drivingClosedLoopController;
   private final SparkClosedLoopController m_turningClosedLoopController;
+
+  // Simulation variables
+  private double driveSimPosition = 0;
+  private double turningSimPosition = 0;
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -129,5 +134,11 @@ public class MAXSwerveModule {
    */
   public double getTurnCurrent() {
     return m_turningSpark.getOutputCurrent();
+  }
+
+  public void simulationUpdate(double dt) {
+    // Calculate how much the mototrs moved based on their current % output
+    driveSimPosition += (m_drivingSpark.get() * ModuleConstants.kDriveWheelFreeSpeedRps * dt);
+    turningSimPosition += (m_turningSpark.get() * 10.0 * dt);
   }
 }
