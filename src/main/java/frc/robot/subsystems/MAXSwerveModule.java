@@ -20,7 +20,6 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 
 import frc.robot.Configs;
-import frc.robot.Constants.ModuleConstants;
 
 public class MAXSwerveModule {
   public final SparkMax m_drivingSpark;
@@ -121,6 +120,11 @@ public class MAXSwerveModule {
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
   }
+
+  /** Returns the desired state last commanded to this module. */
+  public SwerveModuleState getDesiredState() {
+    return m_desiredState;
+  }
   
   /**
    * Gets the current draw of the driving motor.
@@ -141,9 +145,14 @@ public class MAXSwerveModule {
   }
 
   public void simulationUpdate(double dt) {
-    // Push simulated motor velocities into SparkMax sim so getVelocity()/getPosition() reflect them
-    double driveVelocity = m_drivingSpark.get() * ModuleConstants.kDriveWheelFreeSpeedRps;
-    m_drivingSparkSim.iterate(driveVelocity, 12.0, dt);
-    m_turningSparkSim.iterate(m_turningSpark.get() * 10.0, 12.0, dt);
+    // Use the desired state velocity (m/s) directly — m_drivingSpark.get() returns
+    // duty cycle which doesn't reflect closed-loop setpoints in simulation.
+    double driveVelocityMps = m_desiredState.speedMetersPerSecond;
+    m_drivingSparkSim.iterate(driveVelocityMps, 12.0, dt);
+
+    // For turning, use the difference between desired and current angle as a proxy
+    double turningVelocityRadPerSec = (m_desiredState.angle.getRadians()
+        - m_turningEncoder.getPosition()) / dt;
+    m_turningSparkSim.iterate(turningVelocityRadPerSec, 12.0, dt);
   }
 }

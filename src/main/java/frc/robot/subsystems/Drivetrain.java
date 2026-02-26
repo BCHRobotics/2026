@@ -60,6 +60,7 @@ public class Drivetrain extends SubsystemBase {
 
   private final Field2d field = new Field2d();
   private double simYaw = 0;
+  private Pose2d simPose = new Pose2d();
 
   // The gyro sensor
   public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
@@ -201,6 +202,13 @@ public class Drivetrain extends SubsystemBase {
     // Log pose for AdvantageScope
     Logger.recordOutput("Drivetrain/RobotPose", getPose());
     Logger.recordOutput("Drivetrain/EstimatedPose", poseEstimator.getEstimatedPosition());
+    Logger.recordOutput("Drivetrain/MeasuredStates", getModuleStates());
+    Logger.recordOutput("Drivetrain/DesiredStates", new SwerveModuleState[] {
+        frontLeftModule.getDesiredState(),
+        frontRightModule.getDesiredState(),
+        rearLeftModule.getDesiredState(),
+        rearRightModule.getDesiredState()
+    });
 
     // Print comprehensive diagnostics once per second
     double currentTime = WPIUtilJNI.now() * 1e-6;
@@ -579,15 +587,55 @@ public SwerveModulePosition[] getModulePositions() {
     rearLeftModule.simulationUpdate(0.02);
     rearRightModule.simulationUpdate(0.02);
 
-    // Calculate the robot's movement from the module states 
-    SwerveModuleState[] moduleStates = getModuleStates();
-    var ChassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds((moduleStates));
+    // Derive chassis speeds from the desired module states (not encoders, which don't
+    // update reliably in sim) so both rotation AND translation are captured.
+    SwerveModuleState[] desiredStates = new SwerveModuleState[] {
+        frontLeftModule.getDesiredState(),
+        frontRightModule.getDesiredState(),
+        rearLeftModule.getDesiredState(),
+        rearRightModule.getDesiredState()
+    };
+    var chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(desiredStates);
 
-    // Update the simulated gyro
-    simYaw += ChassisSpeeds.omegaRadiansPerSecond * 0.02;
+    // Integrate yaw
+    simYaw += chassisSpeeds.omegaRadiansPerSecond * 0.02;
 
-    // periodic() handles odometry updates using getHeading() which reads simYaw in sim
-    field.setRobotPose(getPose());
+    // Integrate X/Y in field-relative frame
+    double heading = simYaw;
+    double dx = (chassisSpeeds.vxMetersPerSecond * Math.cos(heading)
+               - chassisSpeeds.vyMetersPerSecond * Math.sin(heading)) * 0.02;
+    double dy = (chassisSpeeds.vxMetersPerSecond * Math.sin(heading)
+               + chassisSpeeds.vyMetersPerSecond * Math.cos(heading)) * 0.02;
+
+    simPose = new Pose2d(
+        simPose.getX() + dx,
+        simPose.getY() + dy,
+        Rotation2d.fromRadians(simYaw)
+    );
+
+    // Push the integrated pose directly into odometry and pose estimator
+    odometry.resetPosition(
+        Rotation2d.fromRadians(simYaw),
+        new SwerveModulePosition[] {
+            frontLeftModule.getPosition(),
+            frontRightModule.getPosition(),
+            rearLeftModule.getPosition(),
+            rearRightModule.getPosition()
+        },
+        simPose
+    );
+    poseEstimator.resetPosition(
+        Rotation2d.fromRadians(simYaw),
+        new SwerveModulePosition[] {
+            frontLeftModule.getPosition(),
+            frontRightModule.getPosition(),
+            rearLeftModule.getPosition(),
+            rearRightModule.getPosition()
+        },
+        simPose
+    );
+
+    field.setRobotPose(simPose);
   }
 
   public Field2d getField() {
