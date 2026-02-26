@@ -5,9 +5,39 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Climber-8_path_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-8_path_2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-8_path_3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-8_path_4"
           }
         }
       ]
