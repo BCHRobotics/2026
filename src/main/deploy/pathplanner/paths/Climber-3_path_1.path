@@ -20,7 +20,7 @@
         "y": 0.7
       },
       "prevControl": {
-        "x": 0.15549737259479923,
+        "x": 0.1554973725947993,
         "y": 0.6966496799488229
       },
       "nextControl": null,
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Climber_path_3",
+  "folder": "Cimber_path_3",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
