@@ -45,7 +45,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Cimber_path_1",
+  "folder": "Climber_path_1",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -90.0

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5164457831325304,
-        "y": 7.357024096385541
+        "x": 6.029819277108434,
+        "y": 6.198686746987952
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.4999397590361445,
-        "y": 7.4553734939759035
+        "x": 5.847549704128767,
+        "y": 6.638078436834454
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Cimber-7_path_2end"
     },
     {
       "anchor": {
-        "x": 7.1335180722891565,
-        "y": 7.357024096385541
+        "x": 6.8,
+        "y": 4.5
       },
       "prevControl": {
-        "x": 6.062602409638554,
-        "y": 7.477228915662651
+        "x": 6.604993119839402,
+        "y": 4.798851947771359
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Cimber-7_path_3end"
     }
   ],
   "rotationTargets": [],
@@ -33,22 +33,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
-    "maxAngularVelocity": 720.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -56.59217541029104
+    "rotation": -56.904666700458385
   },
   "reversed": false,
-  "folder": "Cimber_path_7",
+  "folder": "Climber_path_7",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -69.86391934971826
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
