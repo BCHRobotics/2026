@@ -3,32 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.527,
-        "y": 7.411662650602409
+        "x": 3.537320512828689,
+        "y": 7.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3446407808737457,
-        "y": 7.240650618278181
+        "x": 3.8898573465247344,
+        "y": 7.4
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Climber-7_Path_1end"
     },
     {
       "anchor": {
-        "x": 2.7077951807228917,
-        "y": 5.9473493975903615
+        "x": 6.040746987951807,
+        "y": 7.4
       },
       "prevControl": {
-        "x": 2.7813166429322727,
-        "y": 6.186294149770849
+        "x": 5.631590663019893,
+        "y": 7.4
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Cimber-7_Path_1end"
+      "linkedName": "Cimber-7_path_2end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.1,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 0.6730290456431551,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +51,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 130.409456814394
+    "rotation": -72.71876876705807
   },
   "reversed": false,
   "folder": "Climber_path_7",
   "idealStartingState": {
-    "velocity": 0.0,
-    "rotation": 180.0
+    "velocity": 0,
+    "rotation": 130.409456814394
   },
   "useDefaultConstraints": false
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.040746987951807,
+        "x": 3.537320512828689,
         "y": 7.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.85847741497214,
-        "y": 7.839391689846503
+        "x": 3.398864785867374,
+        "y": 7.191841378579666
       },
       "isLocked": false,
-      "linkedName": "Cimber-7_path_2end"
+      "linkedName": "Climber-2_and_4_path_1start"
     },
     {
       "anchor": {
-        "x": 6.8,
-        "y": 4.5
+        "x": 3.537320512828689,
+        "y": 7.4
       },
       "prevControl": {
-        "x": 6.604993119839402,
-        "y": 4.798851947771359
+        "x": 3.6930055134135755,
+        "y": 7.633962393664763
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Cimber-7_path_3end"
+      "linkedName": "Climber-7_Path_1end"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -56.904666700458385
+    "rotation": 130.409456814394
   },
   "reversed": false,
   "folder": "Climber_path_7",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -72.71876876705807
+    "velocity": 0.0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }
