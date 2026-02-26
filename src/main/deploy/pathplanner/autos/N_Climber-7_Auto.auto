@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cimber-7_path_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cimber-7_path_2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cimber-7_path_3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cimber-7_path_4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cimber-7_path_5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cimber-7_path_6"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Cimber-7_path_7"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Climber_Autos",
+  "choreoAuto": false
+}
