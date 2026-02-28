@@ -58,13 +58,10 @@ public class VisionWebServer {
             running = true;
             
             System.out.println("Vision Web Server started on port " + PORT);
-            SmartDashboard.putBoolean("WebServer/Running", true);
-            SmartDashboard.putNumber("WebServer/Port", PORT);
             
             return true;
         } catch (IOException e) {
             System.err.println("Failed to start web server: " + e.getMessage());
-            SmartDashboard.putBoolean("WebServer/Running", false);
             return false;
         }
     }
@@ -76,7 +73,6 @@ public class VisionWebServer {
         if (server != null) {
             server.stop(0);
             running = false;
-            SmartDashboard.putBoolean("WebServer/Running", false);
             System.out.println("Web server stopped");
         }
     }

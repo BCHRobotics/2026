@@ -205,10 +205,6 @@ public class Vision extends SubsystemBase {
                 );
             }
         }
-        
-        // Update dashboard with vision status from all cameras
-    // Update dashboard with vision status from all cameras
-    updateTelemetry();
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
@@ -329,64 +325,6 @@ public class Vision extends SubsystemBase {
         }
         
         return VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev);
-    }
-    
-    /**
-     * Updates SmartDashboard with current vision system status from all cameras.
-     * 
-     * Displays for each camera:
-     * - Whether targets are detected
-     * - Number of targets visible
-     * - Best target ID and distance
-     * - Pose ambiguity
-     * - Pipeline timestamp
-     * - Total cameras active
-     * - Total cameras seeing targets
-     */
-
-    private void updateTelemetry() {
-        int totalTargets = 0;
-        int camerasWithTargets = 0;
-        
-        // Update telemetry for each camera
-        for (CameraModule module : cameraModules) {
-            String prefix = "Vision/Cam" + module.index + "/";
-
-            if (module.lastResult == null) {
-                SmartDashboard.putBoolean(prefix + "Has Targets", false);
-                continue;
-            }
-
-            PhotonPipelineResult result = module.lastResult;
-            
-            boolean hasTargets = result.hasTargets();
-            SmartDashboard.putBoolean(prefix + "Has Targets", hasTargets);
-            SmartDashboard.putNumber(prefix + "Target Count", result.getTargets().size());
-            SmartDashboard.putNumber(prefix + "Timestamp", result.getTimestampSeconds());
-            SmartDashboard.putString(prefix + "Name", module.name);
-            
-            if (hasTargets) {
-                camerasWithTargets++;
-                totalTargets += result.getTargets().size();
-                
-                PhotonTrackedTarget best = result.getBestTarget();
-                SmartDashboard.putNumber(prefix + "Best Target ID", best.getFiducialId());
-                SmartDashboard.putNumber(prefix + "Ambiguity", best.getPoseAmbiguity());
-                SmartDashboard.putNumber(prefix + "Area", best.getArea());
-                
-                // Display which alliance's tags we're seeing (Blue: 1-8, Red: 9-16)
-                if (best.getFiducialId() <= 8) {
-                    SmartDashboard.putString(prefix + "Alliance", "Blue");
-                } else {
-                    SmartDashboard.putString(prefix + "Alliance", "Red");
-                }
-            }
-        }
-        
-        // Update aggregate statistics
-        SmartDashboard.putNumber("Vision/Total Cameras", cameraModules.size());
-        SmartDashboard.putNumber("Vision/Cameras With Targets", camerasWithTargets);
-        SmartDashboard.putNumber("Vision/Total Targets", totalTargets);
     }
     
     /**

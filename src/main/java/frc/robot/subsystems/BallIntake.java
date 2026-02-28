@@ -144,9 +144,5 @@ public class BallIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Update SmartDashboard with intake status
-    SmartDashboard.putNumber("Ball Intake/Speed", m_currentSpeed);
-    SmartDashboard.putNumber("Ball Intake/Current", getCurrent());
-    SmartDashboard.putBoolean("Ball Intake/Running", isRunning());
   }
 }
