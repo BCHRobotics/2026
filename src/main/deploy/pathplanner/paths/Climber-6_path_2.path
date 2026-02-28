@@ -36,7 +36,20 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shooter off",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "intake on",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 2.0,
@@ -53,7 +66,7 @@
   "folder": "Climber_path_6",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 126.90503859184216
+    "rotation": 135.59045708546557
   },
   "useDefaultConstraints": false
 }

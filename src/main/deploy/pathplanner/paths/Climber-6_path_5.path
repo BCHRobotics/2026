@@ -31,7 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shooter on",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 2.0,

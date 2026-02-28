@@ -61,7 +61,7 @@
   "folder": "Climber_path_4",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 126.90503859184216
+    "rotation": 135.59045708546557
   },
   "useDefaultConstraints": true
 }

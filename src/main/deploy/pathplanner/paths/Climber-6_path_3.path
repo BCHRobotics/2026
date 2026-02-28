@@ -20,7 +20,7 @@
         "y": 5.058282051282052
       },
       "prevControl": {
-        "x": 1.0081771992465296,
+        "x": 1.0081771992465294,
         "y": 5.693953532365641
       },
       "nextControl": null,
@@ -31,7 +31,20 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "intake off",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "shooter on",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 2.0,
