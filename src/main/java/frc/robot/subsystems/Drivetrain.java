@@ -12,8 +12,10 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.NavigationConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -607,11 +610,12 @@ public SwerveModulePosition[] getModulePositions() {
     double dy = (chassisSpeeds.vxMetersPerSecond * Math.sin(heading)
                + chassisSpeeds.vyMetersPerSecond * Math.cos(heading)) * 0.02;
 
-    simPose = new Pose2d(
-        simPose.getX() + dx,
-        simPose.getY() + dy,
-        Rotation2d.fromRadians(simYaw)
-    );
+    // Clamp to field boundaries, keeping the robot (24x24 in) fully within the field
+    double halfRobot = Units.inchesToMeters(12.0);
+    double clampedX = MathUtil.clamp(simPose.getX() + dx, halfRobot, NavigationConstants.kFieldLength - halfRobot);
+    double clampedY = MathUtil.clamp(simPose.getY() + dy, halfRobot, NavigationConstants.kFieldWidth - halfRobot);
+
+    simPose = new Pose2d(clampedX, clampedY, Rotation2d.fromRadians(simYaw));
 
     // Push the integrated pose directly into odometry and pose estimator
     odometry.resetPosition(

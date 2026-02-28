@@ -115,7 +115,7 @@ public class RobotContainer {
         } else {
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
-            rightX = () -> -driverXbox.getRightX();
+            rightX = () -> -driverXbox.getRawAxis(2); // Logitech F310: rotate on Axis 2
         }
 
         robotDrive.setDefaultCommand(
