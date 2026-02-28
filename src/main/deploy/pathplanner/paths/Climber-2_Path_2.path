@@ -20,8 +20,8 @@
         "y": 4.744320512820513
       },
       "prevControl": {
-        "x": 1.0135352879479047,
-        "y": 5.521109813272415
+        "x": 1.7618544935805986,
+        "y": 5.412967189728959
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,20 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shooter off",
+      "waypointRelativePos": 0.27008777852801136,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "climber on",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.5,
@@ -48,7 +61,7 @@
   "folder": "Climber_path_2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 140.0
+    "rotation": 126.90503859184216
   },
   "useDefaultConstraints": true
 }

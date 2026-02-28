@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.8,
-        "y": 4.5
+        "x": 6.040746987951807,
+        "y": 4.339058487874465
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.625452812677244,
-        "y": 4.985710843373495
+        "x": 5.866199800629051,
+        "y": 4.82476933124796
       },
       "isLocked": false,
-      "linkedName": "Cimber-7_path_3end"
+      "linkedName": "Climber-7_Path_3end"
     },
     {
       "anchor": {
@@ -68,8 +68,8 @@
   "reversed": false,
   "folder": "Climber_path_7",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -56.904666700458385
+    "velocity": 3.0,
+    "rotation": 111.05825411494585
   },
   "useDefaultConstraints": false
 }

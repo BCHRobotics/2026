@@ -20,15 +20,36 @@
         "y": 4.5
       },
       "prevControl": {
-        "x": 6.604993119839402,
-        "y": 4.798851947771359
+        "x": 6.704070773948056,
+        "y": 4.84371173035813
+      },
+      "nextControl": {
+        "x": 7.0796433666191145,
+        "y": 3.498045649072753
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.040746987951807,
+        "y": 4.339058487874465
+      },
+      "prevControl": {
+        "x": 6.290385164051354,
+        "y": 3.510984308131241
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Cimber-7_path_3end"
+      "linkedName": "Climber-7_Path_3end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": -72.72
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,8 +62,8 @@
     "unlimited": true
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -56.904666700458385
+    "velocity": 3.0,
+    "rotation": 111.05825411494585
   },
   "reversed": false,
   "folder": "Climber_path_7",

@@ -11,9 +11,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 5.0
+            "name": "intake on"
           }
         },
         {
@@ -23,9 +23,27 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Climber-4_path_3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "climber on"
           }
         },
         {

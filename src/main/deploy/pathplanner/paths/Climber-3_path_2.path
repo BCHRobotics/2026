@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0074250724465432,
-        "y": 1.0331105044310924
+        "x": 1.2184308131241082,
+        "y": 0.7032952924393738
       },
       "isLocked": false,
       "linkedName": "Climber-3_path_1end"
@@ -20,8 +20,8 @@
         "y": 0.7209615384538268
       },
       "prevControl": {
-        "x": 1.1569828140858893,
-        "y": 0.1430507699857817
+        "x": 1.0890442225392292,
+        "y": 0.9361911554921553
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shooter on",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.5,
