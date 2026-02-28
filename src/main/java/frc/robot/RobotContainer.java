@@ -127,9 +127,6 @@ public class RobotContainer {
         );
         ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
         ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
-
-        SmartDashboard.putData("PP Translation PID", ppTranslationPidChooser);
-        SmartDashboard.putData("PP Rotation PID", ppRotationPidChooser);
     }
     
     /**
