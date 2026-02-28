@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 8.851410256410258,
-        "y": 0.34885897435897384
+        "y": 0.34885897435897373
       },
       "isLocked": false,
       "linkedName": "Climber-8_path_1end"
@@ -76,7 +76,14 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "intake off",
+      "waypointRelativePos": 1.9682382133995044,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
