@@ -12,10 +12,8 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,7 +30,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.NavigationConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import edu.wpi.first.wpilibj.Filesystem;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
@@ -64,6 +64,10 @@ public class Drivetrain extends SubsystemBase {
   private final Field2d field = new Field2d();
   private double simYaw = 0;
   private Pose2d simPose = new Pose2d();
+
+  // Navgrid-based collision detection for simulation
+  private boolean[][] simNavGrid = null;
+  private double simNavGridNodeSize = 0.3;
 
   // The gyro sensor
   public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
@@ -120,6 +124,9 @@ public class Drivetrain extends SubsystemBase {
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
     configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
+    if (RobotBase.isSimulation()) {
+      loadSimNavGrid();
+    }
   }
 
   /**
@@ -582,6 +589,41 @@ public SwerveModulePosition[] getModulePositions() {
   };
 }
 
+  /** Loads PathPlanner's navgrid.json to power sim collision detection. */
+  private void loadSimNavGrid() {
+    try {
+      File navGridFile = new File(Filesystem.getDeployDirectory(), "pathplanner/navgrid.json");
+      var root = new ObjectMapper().readTree(navGridFile);
+      simNavGridNodeSize = root.get("nodeSizeMeters").asDouble(0.3);
+      var gridNode = root.get("grid");
+      simNavGrid = new boolean[gridNode.size()][];
+      for (int row = 0; row < gridNode.size(); row++) {
+        var rowNode = gridNode.get(row);
+        simNavGrid[row] = new boolean[rowNode.size()];
+        for (int col = 0; col < rowNode.size(); col++) {
+          simNavGrid[row][col] = rowNode.get(col).asBoolean();
+        }
+      }
+      System.out.println("[Drivetrain] Loaded navgrid for sim collision (" + simNavGrid.length + " rows x " + simNavGrid[0].length + " cols)");
+    } catch (Exception e) {
+      System.err.println("[Drivetrain] Failed to load navgrid.json for sim collision: " + e.getMessage());
+      simNavGrid = null;
+    }
+  }
+
+  /**
+   * Returns true if the given field-relative point falls in a blocked navgrid cell.
+   * Out-of-bounds coordinates are treated as blocked (field walls).
+   */
+  private boolean isNavGridBlocked(double x, double y) {
+    if (simNavGrid == null) return false;
+    int row = (int) Math.floor(y / simNavGridNodeSize);
+    int col = (int) Math.floor(x / simNavGridNodeSize);
+    if (row < 0 || row >= simNavGrid.length) return true;
+    if (col < 0 || col >= simNavGrid[0].length) return true;
+    return simNavGrid[row][col];
+  }
+
   @Override
   public void simulationPeriodic() {
     // Update each module's internal simulation state
@@ -610,12 +652,29 @@ public SwerveModulePosition[] getModulePositions() {
     double dy = (chassisSpeeds.vxMetersPerSecond * Math.sin(heading)
                + chassisSpeeds.vyMetersPerSecond * Math.cos(heading)) * 0.02;
 
-    // Clamp to field boundaries, keeping the robot (24x24 in) fully within the field
-    double halfRobot = Units.inchesToMeters(12.0);
-    double clampedX = MathUtil.clamp(simPose.getX() + dx, halfRobot, NavigationConstants.kFieldLength - halfRobot);
-    double clampedY = MathUtil.clamp(simPose.getY() + dy, halfRobot, NavigationConstants.kFieldWidth - halfRobot);
+    // Navgrid-based collision detection with axis-separated sliding
+    double cx = simPose.getX();
+    double cy = simPose.getY();
+    double newX = cx + dx;
+    double newY = cy + dy;
+    double resolvedX = newX;
+    double resolvedY = newY;
+    if (!isNavGridBlocked(cx, cy)) {
+      // Robot is in valid space — enforce collisions
+      if (isNavGridBlocked(newX, newY)) {
+        resolvedX = cx;
+        resolvedY = cy;
+        if (!isNavGridBlocked(newX, cy)) {
+          resolvedX = newX; // slide along Y obstacle
+        } else if (!isNavGridBlocked(cx, newY)) {
+          resolvedY = newY; // slide along X obstacle
+        }
+      }
+    }
+    // If already in a blocked cell (e.g. startup at origin), allow free movement
+    // so the robot can escape to a valid position.
 
-    simPose = new Pose2d(clampedX, clampedY, Rotation2d.fromRadians(simYaw));
+    simPose = new Pose2d(resolvedX, resolvedY, Rotation2d.fromRadians(simYaw));
 
     // Push the integrated pose directly into odometry and pose estimator
     odometry.resetPosition(
