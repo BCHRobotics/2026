@@ -13,6 +13,9 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -22,8 +25,10 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -93,6 +98,9 @@ public class Vision extends SubsystemBase {
      */
     private final Field2d field2d = new Field2d();
 
+    // PhotonVision simulation — null on a real robot
+    private VisionSystemSim visionSim = null;
+
     private List<PhotonTrackedTarget> visibleGamePieces;
     private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules
         
@@ -156,12 +164,29 @@ public class Vision extends SubsystemBase {
             if (ballCamera == null) {
                 System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
             }
-            
+
+            // Set up PhotonVision simulation for enabled cameras
+            if (RobotBase.isSimulation()) {
+                visionSim = new VisionSystemSim("main");
+                visionSim.addAprilTags(aprilTagFieldLayout);
+                for (CameraModule module : cameraModules) {
+                    SimCameraProperties props = new SimCameraProperties();
+                    // 1280x720, ~70° diagonal FOV — typical USB/Pi camera
+                    props.setCalibration(1280, 720, Rotation2d.fromDegrees(70));
+                    props.setCalibError(0.25, 0.08);
+                    props.setFPS(20);
+                    props.setAvgLatencyMs(35.0);
+                    props.setLatencyStdDevMs(5.0);
+                    PhotonCameraSim cameraSim = new PhotonCameraSim(module.camera, props);
+                    visionSim.addCamera(cameraSim, VisionConstants.kRobotToCams[module.index]);
+                }
+                System.out.println("Vision: PhotonVision simulation initialized with " + cameraModules.size() + " camera(s)");
+            }
+
             // Add field visualization to SmartDashboard
             //SmartDashboard.putData("Vision Field", field2d);
             //SmartDashboard.putData("Odometry Field", odometryField2d);
         }
-    
         public PhotonTrackedTarget getBallPosition() {
             if (visibleGamePieces.size() > 0) {
                 return visibleGamePieces.get(0);
@@ -170,6 +195,13 @@ public class Vision extends SubsystemBase {
             }
         }
         
+        @Override
+        public void simulationPeriodic() {
+            if (visionSim != null) {
+                visionSim.update(drivetrain.getPose());
+            }
+        }
+
         @Override
         public void periodic() {
             //odometryField2d.setRobotPose(drivetrain.getOdometryPose());
