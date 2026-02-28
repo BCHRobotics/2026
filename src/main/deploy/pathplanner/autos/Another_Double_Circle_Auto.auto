@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Circle path"
+            "pathName": "Another_Double_Circle"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Circle_Autos",
   "choreoAuto": false
 }

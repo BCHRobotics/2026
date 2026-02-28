@@ -13,7 +13,8 @@
     "Climber_path_8"
   ],
   "autoFolders": [
-    "Climber_Autos"
+    "Climber_Autos",
+    "Circle_Autos"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

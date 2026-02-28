@@ -3,42 +3,10 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.45,
+        "x": 2.85,
         "y": 4.0
       },
       "prevControl": null,
-      "nextControl": {
-        "x": 6.45,
-        "y": 3.0
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 4.65,
-        "y": 2.2
-      },
-      "prevControl": {
-        "x": 5.65,
-        "y": 2.2
-      },
-      "nextControl": {
-        "x": 3.6500000000000004,
-        "y": 2.2
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.85,
-        "y": 4.0
-      },
-      "prevControl": {
-        "x": 2.85,
-        "y": 3.0
-      },
       "nextControl": {
         "x": 2.85,
         "y": 5.0
@@ -135,9 +103,41 @@
         "x": 6.45,
         "y": 5.0
       },
+      "nextControl": {
+        "x": 6.45,
+        "y": 3.0
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.65,
+        "y": 2.2
+      },
+      "prevControl": {
+        "x": 5.65,
+        "y": 2.2
+      },
+      "nextControl": {
+        "x": 3.6500000000000004,
+        "y": 2.2
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.85,
+        "y": 4.0
+      },
+      "prevControl": {
+        "x": 2.85,
+        "y": 3.0
+      },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Double_Circle_start-and-end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -146,8 +146,8 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 2.5,
-    "maxAngularVelocity": 720.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
@@ -159,8 +159,8 @@
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
