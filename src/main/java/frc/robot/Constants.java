@@ -179,7 +179,7 @@ public final class Constants {
     public static final boolean kTurningEncoderInverted = true;
 
     // Calculations required for driving motor conversion factors and feed forward
-    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
+    public static final double kDrivingMotorFreeSpeedRps = VortexMotorConstants.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = 0.0746;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
@@ -210,13 +210,18 @@ public final class Constants {
     public static final double kTurningMinOutput = -1;
     public static final double kTurningMaxOutput = 1;
 
-    public static final int kDrivingMotorCurrentLimit = 50; // amps
+    public static final int kDrivingMotorCurrentLimit = 60; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
 
   // Neo Motor Constants
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  // Vortex Motor Constants
+  public static final class VortexMotorConstants {
+    public static final double kFreeSpeedRpm = 6784;
   }
 
   // PID constants that PathPlanner uses to drive the robot
