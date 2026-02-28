@@ -41,7 +41,7 @@ public final class Constants {
       PS5,
       XBOX
     }
-    public static final ControllerType kDriverControllerType = ControllerType.XBOX;
+    public static final ControllerType kDriverControllerType = ControllerType.PS5;
 
     public static final double kDriveDeadband = 0.05;
     public static final double kTurnDeadband = 0.12;
@@ -55,7 +55,7 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
-    public static final double maxSpeedNormal = 5.0; // 3.3
+    public static final double maxSpeedNormal = 3.3; // 3.3
     public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
@@ -112,25 +112,25 @@ public final class Constants {
     
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
-      true,  // L_Side_Camera
-      true,  // Top_Camera
-      false,  // Camera 2
-      false,   // Camera 3
+      true,  // Left_Camera
+      true,  // Front_Camera
+      true,  // Rear_Left_Camera
+      true,   // Rear_Right_Camera
     };
     
     // Camera names
     public static final String[] kCameraNames = {
-      "L_Side_Camera",  // Left camera
-      "Top_Camera",  // Front camera
-      "Camera_2",  // Spare camera
-      "Camera_3"   // Spare camera
+      "Left_Camera",  // Left_Camera
+      "Front_Camera",  // Front_Camera
+      "Rear_Left_Camera",  // Rear_Left_Camera
+      "Rear_Right_Camera"   // Rear_Right_Camera
     };
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      // L_Side_Camera - Side
+      // Left camera - Side
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(12), Units.inchesToMeters(29.5)),
+        new Translation3d(Units.inchesToMeters(5.00), Units.inchesToMeters(11.5), Units.inchesToMeters(32)),
         new Rotation3d(0, 0, Math.PI/2)
       ),
       // Top_Camera - Front
@@ -138,25 +138,25 @@ public final class Constants {
         new Translation3d(Units.inchesToMeters(6.5), Units.inchesToMeters(0), Units.inchesToMeters(36)),
         new Rotation3d(0, 0, Math.toRadians(0))
       ),
-      // Camera 2 - Left
-      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
-                      new Rotation3d(0, 0, Math.toRadians(90))),
+      // Rear_Left_Camera 
+      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(4.25), Units.inchesToMeters(36)),
+                      new Rotation3d(0, 0, Math.toRadians(180))),
 
-      // Camera 3 - Right
-      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(0)),
-                      new Rotation3d(0, 0, Math.toRadians(-90)))
+      // Rear_Right_Camera
+      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(-4), Units.inchesToMeters(36)),
+                      new Rotation3d(0, 0, Math.toRadians(180)))
     };
     
     // Pose estimation tuning
     public static final double kMaxAmbiguity = 0.2;
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.7, 0.7, 0.9);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.2, 0.2, 0.3);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.35, 0.35, 0.45);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.1, 0.1, 0.15);
     public static final double kDistanceWeight = 0.01;
     
   // Maximum distance (meters) at which we will accept a vision pose update.
   //  Measurements from targets farther than this are ignored to avoid
   //  using excessively noisy detections for pose fusion.
-  public static final double kMaxTargetDistance = 5.0;
+  public static final double kMaxTargetDistance = 3.0;
     
     // Allowed error tolerances
     public static final double allowedXError = 0.025; // 5cm tolerance
