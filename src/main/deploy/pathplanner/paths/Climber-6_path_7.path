@@ -3,59 +3,52 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4674743589743602,
-        "y": 5.965282051282052
+        "x": 1.037256410256412,
+        "y": 2.6163589743589752
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8096115820060443,
-        "y": 6.146204570419889
+        "x": 1.276561700409364,
+        "y": 2.700829644693614
       },
       "isLocked": false,
-      "linkedName": "Climber-4_path_1end"
+      "linkedName": "auto 5 end"
     },
     {
       "anchor": {
-        "x": 1.2698205128263274,
-        "y": 6.807
+        "x": 1.037256410256412,
+        "y": 2.8
       },
       "prevControl": {
-        "x": 0.5625361587584667,
-        "y": 6.2818486286946245
+        "x": 0.7517550871429579,
+        "y": 2.7337108015557474
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-2_path_1end"
+      "linkedName": "Climber-1_Path_3end"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "shooter on",
-      "waypointRelativePos": 0.9020931802835922,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 3.5,
     "maxAcceleration": 2.0,
-    "maxAngularVelocity": 540.0,
+    "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.82
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Climber_path_4",
+  "folder": "Climber_path_6",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": false
 }

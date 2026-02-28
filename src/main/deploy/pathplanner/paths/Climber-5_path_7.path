@@ -3,48 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2698205128263274,
-        "y": 6.807
+        "x": 1.0605128205128216,
+        "y": 4.744320512820513
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.564562309683477,
-        "y": 6.812136831456591
+        "x": 1.3099920678561412,
+        "y": 4.760448288395922
       },
       "isLocked": false,
-      "linkedName": "Climber-2_path_1end"
+      "linkedName": "Climber-2_Path_2end"
     },
     {
       "anchor": {
         "x": 1.0605128205128216,
-        "y": 4.744320512820513
+        "y": 4.6
       },
       "prevControl": {
-        "x": 1.7618544935805986,
-        "y": 5.412967189728959
+        "x": 0.7778664180913893,
+        "y": 4.56486931158873
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-2_Path_2end"
+      "linkedName": "Climber-2_path_3end"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "shooter off",
-      "waypointRelativePos": 0.27008777852801136,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "climber on",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.5,
@@ -58,10 +45,10 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Climber_path_2",
+  "folder": "Climber_path_5",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 140.82
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

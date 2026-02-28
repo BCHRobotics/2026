@@ -3,51 +3,56 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6842225392296717,
-        "y": 0.7209615384538268
+        "x": 1.2698205128263274,
+        "y": 6.807
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5582468860154595,
-        "y": 1.9493851107274782
+        "x": 1.4675000000000014,
+        "y": 6.104820512820513
       },
       "isLocked": false,
-      "linkedName": "Climber-1_Path_1End"
+      "linkedName": "Climber-2_path_1end"
     },
     {
       "anchor": {
-        "x": 1.037256410256412,
-        "y": 2.6163589743589752
+        "x": 0.4674743589743602,
+        "y": 5.965282051282052
       },
       "prevControl": {
-        "x": 1.0903092597327264,
-        "y": 2.1687040542366125
+        "x": 1.874919566958662,
+        "y": 5.965282051282052
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "auto 5 end"
+      "linkedName": "Climber-4_path_1end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7964912280701715,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "shooter off",
-      "waypointRelativePos": 0.11883862255232855,
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
-      "name": "climber on",
-      "waypointRelativePos": 1.0,
+      "name": "intake on",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -55,13 +60,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Climber_path_3",
+  "folder": "Climber_path_6",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -133.01349770673585
+    "rotation": 140.82
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -5,9 +5,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.5
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Climber-4_path_1"
+            "pathName": "Climber-7_path_1"
           }
         },
         {
@@ -19,13 +31,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-4_path_2"
+            "pathName": "Climber-7_path_2"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 5.0
+            "name": "intake off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-7_path_3"
           }
         },
         {
@@ -35,9 +53,15 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.5
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Climber-4_path_3"
+            "pathName": "Climber-7_path_4"
           }
         },
         {
@@ -55,7 +79,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-4_path_4"
+            "pathName": "Climber-7_path_5"
           }
         }
       ]

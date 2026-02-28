@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4674743589743602,
-        "y": 5.965282051282052
+        "x": 2.0372820512820526,
+        "y": 2.5698461538461537
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8096115820060443,
-        "y": 6.146204570419889
+        "x": 1.5721538461538476,
+        "y": 2.3140256410256415
       },
       "isLocked": false,
-      "linkedName": "Climber-4_path_1end"
+      "linkedName": "Climber-8_path_2end"
     },
     {
       "anchor": {
-        "x": 1.2698205128263274,
-        "y": 6.807
+        "x": 1.037256410256412,
+        "y": 2.6163589743589752
       },
       "prevControl": {
-        "x": 0.5625361587584667,
-        "y": 6.2818486286946245
+        "x": 1.2584859658519072,
+        "y": 2.499922366150819
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-2_path_1end"
+      "linkedName": "auto 5 end"
     }
   ],
   "rotationTargets": [],
@@ -33,29 +33,35 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "shooter on",
-      "waypointRelativePos": 0.9020931802835922,
+      "name": "shooter off",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "climber on",
+      "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.82
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Climber_path_4",
+  "folder": "Climber_path_8",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -149.9
   },
   "useDefaultConstraints": false
 }

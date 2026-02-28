@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6842225392296717,
-        "y": 0.7209615384538268
+        "x": 1.9442564102564113,
+        "y": 2.0698333333333334
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5582468860154595,
-        "y": 1.9493851107274782
+        "x": 1.9210000000000012,
+        "y": 2.6279871794871794
       },
       "isLocked": false,
-      "linkedName": "Climber-1_Path_1End"
+      "linkedName": "Climber-5_path_3end"
     },
     {
       "anchor": {
-        "x": 1.037256410256412,
-        "y": 2.6163589743589752
+        "x": 1.2000512820512832,
+        "y": 5.965282051282052
       },
       "prevControl": {
-        "x": 1.0903092597327264,
-        "y": 2.1687040542366125
+        "x": 2.2700989110550673,
+        "y": 5.965282051282052
+      },
+      "nextControl": {
+        "x": 0.7000512820512852,
+        "y": 5.965282051282052
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.5023589743589756,
+        "y": 5.965282051282052
+      },
+      "prevControl": {
+        "x": 1.3279615384615397,
+        "y": 5.965282051282052
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "auto 5 end"
+      "linkedName": "Climber-5_path_4end"
     }
   ],
   "rotationTargets": [],
@@ -34,13 +50,13 @@
   "eventMarkers": [
     {
       "name": "shooter off",
-      "waypointRelativePos": 0.11883862255232855,
+      "waypointRelativePos": 0.12424037812289422,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "climber on",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.7778528021606974,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -55,13 +71,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Climber_path_3",
+  "folder": "Climber_path_5",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -133.01349770673585
+    "rotation": -143.53
   },
   "useDefaultConstraints": true
 }

@@ -81,7 +81,14 @@ public class RobotContainer {
         autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
         autoChooser.addOption("Circle Auto", new PathPlannerAuto("Circle Auto"));
         autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));  
-        
+        autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto")); 
+        autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
+        autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
+        autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
+        autoChooser.addOption("Climber-5_Auto", new PathPlannerAuto("Climber-5_Auto"));
+        autoChooser.addOption("Climber-6_Auto", new PathPlannerAuto("Climber-6_Auto"));
+        autoChooser.addOption("N_Climber-7_Auto", new PathPlannerAuto("N_Climber-7_Auto"));
+        autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
