@@ -267,6 +267,13 @@ public final class Constants {
     public static final double kMaxRotationSpeed = 0.3; // rad/s
   }
 
+  // Addressable LED Strip Constants
+  public static final class LEDConstants {
+    public static final int kPort = 9;             // PWM port on roboRIO
+    public static final int kLength = 30;          // Number of LEDs in strip
+    public static final double kFlashPeriod = 0.25; // Flash toggle interval (seconds) — 4 Hz
+  }
+
   // DISABLED: Ball Intake Subsystem Constants
   public static final class BallIntakeConstants {
     public static final int kMotorCanId = 99;  // Invalid CAN ID - DO NOT USE

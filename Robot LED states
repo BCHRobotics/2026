@@ -1,0 +1,8 @@
+# On-Robot RGB LED States (FRC 2026 – REBUILT)
+
+| State Category   | LED Pattern   | Color Sequence | Purpose                                                                                                             |
+|------------------|--------------|----------------|---------------------------------------------------------------------------------------------------------------------|
+| Robot Mode       | Solid        | Green          | Teleop enabled, ready for driver control. |
+| Robot Mode       | Solid        | Orange         | Autonomous running. |
+| Robot Mode       | Solid        | Red            | Disabled or e-stopped. |                                                                               |
+| Pose/Position    | Flash        | Lime           | On field target pose valid (e.g., AprilTag). |

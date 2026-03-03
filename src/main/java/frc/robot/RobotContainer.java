@@ -6,7 +6,9 @@ import frc.robot.commands.drivetrain.GoToPositionRelativeCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Vision;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.webserver.VisionWebServer;
 import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,9 +31,12 @@ import com.pathplanner.lib.config.PIDConstants;
 public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
-    
-    //Vision subsystem for AprilTag detection and pose estimation.
+
+    // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
+
+    // On-robot RGB LED strip.
+    private final LED led = new LED();
     
     // Web server for vision diagnostics running on RoboRIO port 8082.
     private final VisionWebServer webServer = new VisionWebServer(vision);
@@ -317,6 +322,25 @@ public class RobotContainer {
      * 
      * @return the autonomous command selected from dashboard
      */
+    /**
+     * Updates the LED strip to reflect the current robot state.
+     * Call once per {@code robotPeriodic()} loop.
+     */
+    public void updateLEDState() {
+        if (DriverStation.isDisabled()) {
+            led.setState(LED.State.DISABLED);
+        } else if (DriverStation.isAutonomous()) {
+            led.setState(LED.State.AUTO);
+        } else {
+            // Teleop: flash lime while we have a valid vision pose, otherwise solid green
+            if (vision.hasValidPose()) {
+                led.setState(LED.State.POSE_VALID);
+            } else {
+                led.setState(LED.State.TELEOP);
+            }
+        }
+    }
+
     public Command getAutonomousCommand() {
         PIDConstants translationConstants = ppTranslationPidChooser.getSelected();
         PIDConstants rotationConstants = ppRotationPidChooser.getSelected();

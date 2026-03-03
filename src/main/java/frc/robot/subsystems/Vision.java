@@ -83,6 +83,9 @@ public class Vision extends SubsystemBase {
     private final List<CameraModule> cameraModules = new ArrayList<>();
     private final AprilTagFieldLayout aprilTagFieldLayout;
 
+    // True if at least one camera produced a valid pose estimate this cycle
+    private boolean m_hasFreshPose = false;
+
     // Used to get current odometry pose and update pose estimator with vision measurements
     private final Drivetrain drivetrain;
     
@@ -172,6 +175,7 @@ public class Vision extends SubsystemBase {
         
         @Override
         public void periodic() {
+            m_hasFreshPose = false;
             //odometryField2d.setRobotPose(drivetrain.getOdometryPose());
         // Update ball detection (only if ballCamera is initialized)
         // if (ballCamera != null) {
@@ -188,6 +192,7 @@ public class Vision extends SubsystemBase {
             
             // If we have a valid vision measurement, update odometry
             if (result.isPresent()) {
+                m_hasFreshPose = true;
                 EstimatedRobotPose camPose = result.get();
                 
                 // Update field visualization with vision estimate (use first valid camera)
@@ -205,6 +210,14 @@ public class Vision extends SubsystemBase {
                 );
             }
         }
+    }
+
+    /**
+     * Returns true if at least one camera produced a valid, low-ambiguity pose
+     * estimate during the most recent periodic cycle.
+     */
+    public boolean hasValidPose() {
+        return m_hasFreshPose;
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
