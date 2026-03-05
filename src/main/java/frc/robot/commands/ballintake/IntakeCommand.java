@@ -24,7 +24,7 @@ public class IntakeCommand extends Command {
 
   @Override
   public void initialize() {
-    m_intake.intake();
+    m_intake.run();
   }
 
   @Override

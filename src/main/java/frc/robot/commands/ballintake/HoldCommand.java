@@ -24,7 +24,7 @@ public class HoldCommand extends Command {
 
   @Override
   public void initialize() {
-    m_intake.hold();
+    m_intake.stopRun();
   }
 
   @Override

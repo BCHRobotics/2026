@@ -5,6 +5,7 @@ import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.drivetrain.GoToPositionRelativeCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
+import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.webserver.VisionWebServer;
@@ -29,6 +30,7 @@ import com.pathplanner.lib.config.PIDConstants;
 public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
+    private final BallIntake m_ballIntake = new BallIntake();
     
     //Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
@@ -39,6 +41,8 @@ public class RobotContainer {
     // Controllers
     CommandPS5Controller driverPS5;
     CommandXboxController driverXbox;
+    // Operator controller (port 1) — always PS5, used for intake controls
+    CommandPS5Controller operatorPS5 = new CommandPS5Controller(OIConstants.kBackupControllerPort);
     
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -237,28 +241,25 @@ public class RobotContainer {
                     .withTimeout(5.0) // Safety timeout
         );
         
-        /* DISABLED: Ball Intake Control Buttons (Motor CAN ID 22 does not physically exist)
-        // ========== Ball Intake Control Buttons ==========
-        // L1 button: Intake balls (while held)
-        driverController.L1().whileTrue(
-            new frc.robot.commands.ballintake.IntakeCommand(m_ballIntake)
+        // ========== Ball Intake Control (Operator PS5, port 1) ==========
+        // Circle: Toggle run motor on/off
+        operatorPS5.circle().toggleOnTrue(
+            Commands.startEnd(m_ballIntake::run, m_ballIntake::stopRun, m_ballIntake)
         );
-        
-        // R1 button: Eject balls (while held)
-        driverController.R1().whileTrue(
-            new frc.robot.commands.ballintake.EjectCommand(m_ballIntake)
+
+        // Cross: Toggle extend/retract — runs motor for kExtendTimeoutSeconds then stops
+        final boolean[] armExtended = {false};
+        operatorPS5.cross().onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> {
+                    if (!armExtended[0]) m_ballIntake.extend();
+                    else m_ballIntake.retract();
+                    armExtended[0] = !armExtended[0];
+                }, m_ballIntake),
+                Commands.waitSeconds(BallIntakeConstants.kExtendTimeoutSeconds),
+                Commands.runOnce(m_ballIntake::stopExtend, m_ballIntake)
+            )
         );
-        
-        // Touchpad button: Hold balls (while held) - prevents balls from falling out
-        driverController.touchpad().whileTrue(
-            new frc.robot.commands.ballintake.HoldCommand(m_ballIntake)
-        );
-        
-        // PS button: Stop intake (momentary) - emergency stop
-        driverController.PS().onTrue(
-            new frc.robot.commands.ballintake.StopCommand(m_ballIntake)
-        );
-        */
     }
     
     

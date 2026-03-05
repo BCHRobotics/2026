@@ -272,14 +272,33 @@ public final class Constants {
     public static final double kMaxRotationSpeed = 0.3; // rad/s
   }
 
-  // DISABLED: Ball Intake Subsystem Constants
   public static final class BallIntakeConstants {
-    public static final int kMotorCanId = 99;  // Invalid CAN ID - DO NOT USE
-    public static final boolean kMotorInverted = false;
-    public static final int kCurrentLimit = 25;
-    public static final double kIntakeSpeed = 0.0;  // Disabled
-    public static final double kEjectSpeed = 0.0;   // Disabled
-    public static final double kHoldSpeed = 0.0;    // Disabled
-    public static final double kSpeedDeadband = 0.05;
+    // CAN IDs
+    public static final int kExtendMotorCanId = 4;
+    public static final int kRunMotorCanId = 6;
+
+    // Motor inversion
+    public static final boolean kExtendMotorInverted = false;
+    public static final boolean kRunMotorInverted = false;
+
+    // Current limits (amps)
+    public static final int kExtendCurrentLimit = 40;
+    public static final int kRunCurrentLimit = 40;
+
+    // Extend/retract speeds (positive = extend, negative = retract)
+    public static final double kExtendSpeed = 0.5;
+    public static final double kRetractSpeed = -0.5;
+
+    // Run motor speeds (positive = intake, negative = eject)
+    public static final double kRunSpeed = 0.8;
+    public static final double kEjectSpeed = -0.8;
+
+    // Calibration: slow retract until current spike or timeout
+    public static final double kCalibrateSpeed = -0.2;
+    public static final double kCalibrateCurrentThreshold = 15.0; // amps
+    public static final double kCalibrateTimeoutSeconds = 3.0;
+
+    // How long to drive extend/retract motor before auto-stopping (seconds)
+    public static final double kExtendTimeoutSeconds = 1.5;
   }
 }
