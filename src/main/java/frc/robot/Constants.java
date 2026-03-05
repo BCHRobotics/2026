@@ -277,4 +277,10 @@ public final class Constants {
     public static final double kHoldSpeed = 0.0;    // Disabled
     public static final double kSpeedDeadband = 0.05;
   }
+
+  public static final class ShooterConstants {
+    public static final int FEEDER_CAN_ID = 1;
+    public static final int SHOOTER1_CAN_ID = 3;
+    public static final int SHOOTER2_CAN_ID = 2;
+  }
 }
