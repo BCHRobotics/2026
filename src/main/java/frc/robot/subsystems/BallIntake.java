@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -16,8 +18,8 @@ import frc.robot.Constants.BallIntakeConstants;
  * Ball Intake subsystem with extend/retract and roller mechanisms.
  *
  * Hardware:
- *   - Extend/Retract: NEO motor, SPARK MAX, CAN ID 4
- *   - Run (roller):   NEO motor, SPARK MAX, CAN ID 6
+ *   - Extend/Retract: NEO Vortex, SPARK Flex, CAN ID 4
+ *   - Run (roller):   NEO motor,  SPARK MAX,  CAN ID 6
  *
  * The calibrate() function slowly retracts the arm until a current spike
  * indicates contact with the hard stop, or a timeout expires.
@@ -28,8 +30,8 @@ public class BallIntake extends SubsystemBase {
   private enum CalibrateState { IDLE, CALIBRATING, CALIBRATED, FAILED }
 
   // ── Motors ───────────────────────────────────────────────────────────────
-  private final SparkMax m_extendMotor;
-  private final SparkMax m_runMotor;
+  private final SparkFlex m_extendMotor;
+  private final SparkMax  m_runMotor;
 
   // ── Calibration tracking ─────────────────────────────────────────────────
   private CalibrateState m_calibrateState = CalibrateState.IDLE;
@@ -38,10 +40,10 @@ public class BallIntake extends SubsystemBase {
   // ─────────────────────────────────────────────────────────────────────────
 
   public BallIntake() {
-    m_extendMotor = new SparkMax(BallIntakeConstants.kExtendMotorCanId, MotorType.kBrushless);
-    m_runMotor    = new SparkMax(BallIntakeConstants.kRunMotorCanId,    MotorType.kBrushless);
+    m_extendMotor = new SparkFlex(BallIntakeConstants.kExtendMotorCanId, MotorType.kBrushless);
+    m_runMotor    = new SparkMax(BallIntakeConstants.kRunMotorCanId,     MotorType.kBrushless);
 
-    SparkMaxConfig extendConfig = new SparkMaxConfig();
+    SparkFlexConfig extendConfig = new SparkFlexConfig();
     extendConfig
         .inverted(BallIntakeConstants.kExtendMotorInverted)
         .idleMode(IdleMode.kBrake)
