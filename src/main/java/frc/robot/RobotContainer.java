@@ -172,24 +172,22 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger alignToTag, goToPosition, zeroHeading, autoScoring, goToSelectedPose;
+        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
-            alignToTag = driverPS5.square();
-            goToPosition = driverPS5.circle();
-            zeroHeading = driverPS5.triangle();
-            autoScoring = driverPS5.options();
-            goToSelectedPose = driverPS5.cross();
+            alignToTag   = driverPS5.square();
+            intakeToggle = driverPS5.circle();
+            zeroHeading  = driverPS5.triangle();
+            extendToggle = driverPS5.cross();
             
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
         } else {
-            alignToTag = driverXbox.x();
-            goToPosition = driverXbox.b();
-            zeroHeading = driverXbox.y();
-            autoScoring = driverXbox.start(); // Using Start button like Options
-            goToSelectedPose = driverXbox.a();
+            alignToTag   = driverXbox.x();
+            intakeToggle = driverXbox.b();
+            zeroHeading  = driverXbox.y();
+            extendToggle = driverXbox.a();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -203,9 +201,8 @@ public class RobotContainer {
                 leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-         goToPosition.whileTrue(
-             new GoToPositionCommand(robotDrive,10.0, 4.0,0.0)
-                     .withTimeout(10.0) // Safety timeout
+         intakeToggle.toggleOnTrue(
+             Commands.startEnd(m_ballIntake::run, m_ballIntake::stopRun, m_ballIntake)
          );
  
         // driverController.cross().whileTrue(
@@ -218,38 +215,9 @@ public class RobotContainer {
             Commands.runOnce(() -> robotDrive.zeroHeading())
         );
 
-        // Cross/A: Drive to the pose selected in the SmartDashboard "Field Pose" chooser.
-        // Uses alliance-relative coordinates — automatically mirrors for red alliance.
-        goToSelectedPose.whileTrue(
-            Commands.defer(() -> {
-                Pose2d pose = fieldPoseChooser.getSelected();
-                if (pose == null) return Commands.none();
-                return new GoToPositionRelativeCommand(
-                    robotDrive, pose.getX(), pose.getY(), pose.getRotation().getDegrees()
-                ).withTimeout(10.0);
-            }, Set.of(robotDrive))
-        );
-
-        // driverController.square().whileTrue(
-        //     new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
-        // );
-        
-        // ========== Vision Alignment Commands ==========
-        // Options/Start button: Align to nearest AprilTag for autonomous scoring
-        autoScoring.whileTrue(
-            new AlignToAprilTagCommand(vision, robotDrive, 4)
-                    .withTimeout(5.0) // Safety timeout
-        );
-        
-        // ========== Ball Intake Control (Operator PS5, port 1) ==========
-        // Circle: Toggle run motor on/off
-        operatorPS5.circle().toggleOnTrue(
-            Commands.startEnd(m_ballIntake::run, m_ballIntake::stopRun, m_ballIntake)
-        );
-
         // Cross: Toggle extend/retract — runs motor for kExtendTimeoutSeconds then stops
         final boolean[] armExtended = {false};
-        operatorPS5.cross().onTrue(
+        extendToggle.onTrue(
             Commands.sequence(
                 Commands.runOnce(() -> {
                     if (!armExtended[0]) m_ballIntake.extend();
