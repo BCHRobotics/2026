@@ -3,38 +3,79 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.886115384615386,
-        "y": 5.058282051282052
+        "x": 6.040746987951807,
+        "y": 4.339058487874465
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6216270381588598,
-        "y": 5.067712775286975
+        "x": 5.866199800629051,
+        "y": 4.82476933124796
       },
       "isLocked": false,
-      "linkedName": "Climber-5_path_5end"
+      "linkedName": "Climber-7_Path_3end"
     },
     {
       "anchor": {
-        "x": 1.0605128205128216,
-        "y": 4.744320512820513
+        "x": 5.723843373493976,
+        "y": 5.532096385542169
       },
       "prevControl": {
-        "x": 1.6959268830783834,
-        "y": 4.65550904976357
+        "x": 6.391507726551511,
+        "y": 5.532096385542169
+      },
+      "nextControl": {
+        "x": 5.05617902043644,
+        "y": 5.532096385542169
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.45681883024251,
+        "y": 5.532096385542169
+      },
+      "prevControl": {
+        "x": 4.155132043392712,
+        "y": 5.532096385542169
+      },
+      "nextControl": {
+        "x": 2.758505617092309,
+        "y": 5.532096385542169
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.886115384615386,
+        "y": 5.058282051282052
+      },
+      "prevControl": {
+        "x": 2.2199475611441537,
+        "y": 5.058282051282052
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-2_Path_2end"
+      "linkedName": "Climber-5_path_5end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "climber on",
-      "waypointRelativePos": 1.0,
+      "name": "shooter on",
+      "waypointRelativePos": 3.0,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -48,14 +89,14 @@
     "unlimited": true
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 90.0
+    "velocity": 0.0,
+    "rotation": 159.74
   },
   "reversed": false,
   "folder": "Climber_path_7",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 159.74
+    "velocity": 3.0,
+    "rotation": 111.05825411494587
   },
   "useDefaultConstraints": false
 }

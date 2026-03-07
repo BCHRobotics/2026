@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-8_path_1"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shooter on"
@@ -19,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-8_path_1"
+            "pathName": "Climber-8_path_2"
           }
         },
         {
@@ -31,7 +37,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-8_path_2"
+            "pathName": "Climber-8_path_3"
           }
         },
         {
@@ -55,7 +61,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-8_path_3"
+            "pathName": "Climber-8_path_4"
           }
         },
         {
@@ -73,7 +79,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-8_path_4"
+            "pathName": "Climber-8_path_5"
           }
         }
       ]

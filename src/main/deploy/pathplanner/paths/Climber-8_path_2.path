@@ -3,83 +3,69 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.014128205128206,
-        "y": 0.8139871794871807
+        "x": 3.5,
+        "y": 0.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.851410256410258,
-        "y": 0.34885897435897373
+        "x": 4.6552112718981835,
+        "y": 0.6547516937046386
       },
       "isLocked": false,
-      "linkedName": "Climber-8_path_1end"
+      "linkedName": "Climber_8_path_1end"
     },
     {
       "anchor": {
-        "x": 7.24671794871795,
-        "y": 3.4884743589743596
+        "x": 5.258294871794873,
+        "y": 0.65
       },
       "prevControl": {
-        "x": 7.701495204423548,
-        "y": 3.419269124410465
+        "x": 5.008345270630818,
+        "y": 0.6550196491839166
       },
       "nextControl": {
-        "x": 6.7118205128205135,
-        "y": 3.569871794871795
+        "x": 5.508244472958928,
+        "y": 0.6449803508160834
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.2,
-        "y": 2.5698461538461537
+        "x": 6.014128205128206,
+        "y": 0.8139871794871807
       },
       "prevControl": {
-        "x": 7.2,
-        "y": 2.5698461538461537
-      },
-      "nextControl": {
-        "x": 5.306442230550339,
-        "y": 2.5698461538461537
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.0372820512820526,
-        "y": 2.5698461538461537
-      },
-      "prevControl": {
-        "x": 2.4558974358974375,
-        "y": 2.5698461538461537
+        "x": 5.783719361343691,
+        "y": 0.7169729294726468
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-8_path_2end"
+      "linkedName": "Climber-8_path_1end"
     }
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 0.20175438596491052,
+      "rotationDegrees": 0.0
+    },
+    {
       "waypointRelativePos": 1.0,
-      "rotationDegrees": 111.80000000000001
-    },
-    {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 2.589473684210531,
-      "rotationDegrees": 180.0
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "intake off",
-      "waypointRelativePos": 1.9682382133995044,
+      "name": "shooter off",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "intake on",
+      "waypointRelativePos": 0.5,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -94,13 +80,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -149.9
+    "rotation": 73.323
   },
   "reversed": false,
   "folder": "Climber_path_8",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 73.32293763849982
+    "rotation": -108.25
   },
   "useDefaultConstraints": false
 }

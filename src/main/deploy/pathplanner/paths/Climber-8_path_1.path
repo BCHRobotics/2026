@@ -3,90 +3,52 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4,
+        "x": 3.5,
         "y": 0.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.555211271898183,
-        "y": 0.6547516937046386
-      },
-      "isLocked": false,
-      "linkedName": "Climber-8_path_1start"
-    },
-    {
-      "anchor": {
-        "x": 5.258294871794873,
-        "y": 0.65
-      },
-      "prevControl": {
-        "x": 5.008345270630818,
-        "y": 0.6550196491839166
-      },
-      "nextControl": {
-        "x": 5.508244472958928,
-        "y": 0.6449803508160834
+        "x": 3.741105262456852,
+        "y": 0.6339072438491736
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.014128205128206,
-        "y": 0.8139871794871807
+        "x": 3.5,
+        "y": 0.7
       },
       "prevControl": {
-        "x": 5.783719361343691,
-        "y": 0.7169729294726469
+        "x": 3.2299242109730923,
+        "y": 0.7745635236900157
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-8_path_1end"
+      "linkedName": "Climber_8_path_1end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.20175438596491052,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 0.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "shooter off",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "intake on",
-      "waypointRelativePos": 0.5,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": true
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 73.323
+    "rotation": -108.25
   },
   "reversed": false,
   "folder": "Climber_path_8",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -107.95
+    "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
