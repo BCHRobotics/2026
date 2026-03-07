@@ -5,6 +5,7 @@ import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.drivetrain.GoToPositionRelativeCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.vision.AlignToAprilTagCommand;
+import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.webserver.VisionWebServer;
@@ -29,6 +30,7 @@ import com.pathplanner.lib.config.PIDConstants;
 public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
+    private final BallIntake m_ballIntake = new BallIntake();
     
     //Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
@@ -39,6 +41,8 @@ public class RobotContainer {
     // Controllers
     CommandPS5Controller driverPS5;
     CommandXboxController driverXbox;
+    // Operator controller (port 1) — always PS5, used for intake controls
+    CommandPS5Controller operatorPS5 = new CommandPS5Controller(OIConstants.kBackupControllerPort);
     
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -168,24 +172,22 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger alignToTag, goToPosition, zeroHeading, autoScoring, goToSelectedPose;
+        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
-            alignToTag = driverPS5.square();
-            goToPosition = driverPS5.circle();
-            zeroHeading = driverPS5.triangle();
-            autoScoring = driverPS5.options();
-            goToSelectedPose = driverPS5.cross();
+            alignToTag   = driverPS5.square();
+            intakeToggle = driverPS5.circle();
+            zeroHeading  = driverPS5.triangle();
+            extendToggle = driverPS5.cross();
             
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
         } else {
-            alignToTag = driverXbox.x();
-            goToPosition = driverXbox.b();
-            zeroHeading = driverXbox.y();
-            autoScoring = driverXbox.start(); // Using Start button like Options
-            goToSelectedPose = driverXbox.a();
+            alignToTag   = driverXbox.x();
+            intakeToggle = driverXbox.b();
+            zeroHeading  = driverXbox.y();
+            extendToggle = driverXbox.a();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -199,9 +201,8 @@ public class RobotContainer {
                 leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-         goToPosition.whileTrue(
-             new GoToPositionCommand(robotDrive,10.0, 4.0,0.0)
-                     .withTimeout(10.0) // Safety timeout
+         intakeToggle.toggleOnTrue(
+             Commands.startEnd(m_ballIntake::run, m_ballIntake::stopRun, m_ballIntake)
          );
  
         // driverController.cross().whileTrue(
@@ -214,51 +215,19 @@ public class RobotContainer {
             Commands.runOnce(() -> robotDrive.zeroHeading())
         );
 
-        // Cross/A: Drive to the pose selected in the SmartDashboard "Field Pose" chooser.
-        // Uses alliance-relative coordinates — automatically mirrors for red alliance.
-        goToSelectedPose.whileTrue(
-            Commands.defer(() -> {
-                Pose2d pose = fieldPoseChooser.getSelected();
-                if (pose == null) return Commands.none();
-                return new GoToPositionRelativeCommand(
-                    robotDrive, pose.getX(), pose.getY(), pose.getRotation().getDegrees()
-                ).withTimeout(10.0);
-            }, Set.of(robotDrive))
+        // Cross: Toggle extend/retract — runs motor for kExtendTimeoutSeconds then stops
+        final boolean[] armExtended = {false};
+        extendToggle.onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> {
+                    if (!armExtended[0]) m_ballIntake.extend();
+                    else m_ballIntake.retract();
+                    armExtended[0] = !armExtended[0];
+                }, m_ballIntake),
+                Commands.waitSeconds(BallIntakeConstants.kExtendTimeoutSeconds),
+                Commands.runOnce(m_ballIntake::stopExtend, m_ballIntake)
+            )
         );
-
-        // driverController.square().whileTrue(
-        //     new PointToBallCommand(m_robotDrive, m_vision, () -> driverController.getLeftX(), () -> driverController.getLeftY())
-        // );
-        
-        // ========== Vision Alignment Commands ==========
-        // Options/Start button: Align to nearest AprilTag for autonomous scoring
-        autoScoring.whileTrue(
-            new AlignToAprilTagCommand(vision, robotDrive, 4)
-                    .withTimeout(5.0) // Safety timeout
-        );
-        
-        /* DISABLED: Ball Intake Control Buttons (Motor CAN ID 22 does not physically exist)
-        // ========== Ball Intake Control Buttons ==========
-        // L1 button: Intake balls (while held)
-        driverController.L1().whileTrue(
-            new frc.robot.commands.ballintake.IntakeCommand(m_ballIntake)
-        );
-        
-        // R1 button: Eject balls (while held)
-        driverController.R1().whileTrue(
-            new frc.robot.commands.ballintake.EjectCommand(m_ballIntake)
-        );
-        
-        // Touchpad button: Hold balls (while held) - prevents balls from falling out
-        driverController.touchpad().whileTrue(
-            new frc.robot.commands.ballintake.HoldCommand(m_ballIntake)
-        );
-        
-        // PS button: Stop intake (momentary) - emergency stop
-        driverController.PS().onTrue(
-            new frc.robot.commands.ballintake.StopCommand(m_ballIntake)
-        );
-        */
     }
     
     

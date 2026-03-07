@@ -1,148 +1,165 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.BallIntakeConstants;
 
 /**
- * Ball Intake subsystem for collecting and controlling game pieces.
- * 
- * This subsystem controls a variable speed motor for:
- * - Intaking balls at configurable speed
- * - Ejecting balls when needed
- * - Holding balls with low speed
- * - Stopping intake completely
- * 
- * Hardware: Single NEO motor with SPARK MAX controller
- * 
- * REVLib 2025+ Configuration Pattern:
- * - Uses SparkMaxConfig for all configuration
- * - Applies configuration with configure() method
- * - Uses ResetMode and PersistMode for reliability
+ * Ball Intake subsystem with extend/retract and roller mechanisms.
+ *
+ * Hardware:
+ *   - Extend/Retract: NEO Vortex, SPARK Flex, CAN ID 4
+ *   - Run (roller):   NEO motor,  SPARK MAX,  CAN ID 6
+ *
+ * The calibrate() function slowly retracts the arm until a current spike
+ * indicates contact with the hard stop, or a timeout expires.
  */
 public class BallIntake extends SubsystemBase {
-  /** SPARK MAX motor controller for the intake */
-  private final SparkMax m_motor;
 
-  /** Current intake speed (-1.0 to 1.0) */
-  private double m_currentSpeed = 0.0;
+  // ── Calibration state machine ────────────────────────────────────────────
+  private enum CalibrateState { IDLE, CALIBRATING, CALIBRATED, FAILED }
 
-  /**
-   * Creates a new BallIntake subsystem.
-   * 
-   * Configures the motor using REVLib 2025+ best practices:
-   * - Smart current limiting to prevent motor damage
-   * - Coast mode for smooth operation
-   * - Motor inversion based on constants
-   * - Persistent configuration across power cycles
-   */
+  // ── Motors ───────────────────────────────────────────────────────────────
+  private final SparkFlex m_extendMotor;
+  private final SparkMax  m_runMotor;
+
+  // ── Calibration tracking ─────────────────────────────────────────────────
+  private CalibrateState m_calibrateState = CalibrateState.IDLE;
+  private final Timer m_calibrateTimer = new Timer();
+
+  // ─────────────────────────────────────────────────────────────────────────
+
   public BallIntake() {
-    // Initialize motor
-    m_motor = new SparkMax(BallIntakeConstants.kMotorCanId, MotorType.kBrushless);
-    
-    /*
-     * Create a new SPARK MAX configuration object. This will store the
-     * configuration parameters for the SPARK MAX that we will set below.
-     */
-    SparkMaxConfig motorConfig = new SparkMaxConfig();
-    
-    /*
-     * Configure motor parameters using the new fluent API.
-     * This replaces the old direct method calls on the motor controller.
-     */
-    motorConfig
-        .inverted(BallIntakeConstants.kMotorInverted)
-        .idleMode(IdleMode.kCoast)  // Coast mode for smooth intake operation
-        .smartCurrentLimit(BallIntakeConstants.kCurrentLimit);
-    
-    /*
-     * Apply the configuration to the SPARK MAX.
-     *
-     * ResetMode: Resets the SPARK MAX to a known state, useful if replaced.
-     * PersistMode: Saves configuration to flash memory for power cycles.
-     */
-    m_motor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_extendMotor = new SparkFlex(BallIntakeConstants.kExtendMotorCanId, MotorType.kBrushless);
+    m_runMotor    = new SparkMax(BallIntakeConstants.kRunMotorCanId,     MotorType.kBrushless);
+
+    SparkFlexConfig extendConfig = new SparkFlexConfig();
+    extendConfig
+        .inverted(BallIntakeConstants.kExtendMotorInverted)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(BallIntakeConstants.kExtendCurrentLimit);
+
+    SparkMaxConfig runConfig = new SparkMaxConfig();
+    runConfig
+        .inverted(BallIntakeConstants.kRunMotorInverted)
+        .idleMode(IdleMode.kCoast)
+        .smartCurrentLimit(BallIntakeConstants.kRunCurrentLimit);
+
+    m_extendMotor.configure(extendConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_runMotor.configure(runConfig,    ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  /**
-   * Sets the intake motor speed.
-   * 
-   * @param speed Motor speed from -1.0 (full reverse) to 1.0 (full forward).
-   *              Values within deadband are treated as zero.
-   */
-  public void setSpeed(double speed) {
-    // Apply deadband to prevent motor creep
-    if (Math.abs(speed) < BallIntakeConstants.kSpeedDeadband) {
-      speed = 0.0;
-    }
-    
-    m_currentSpeed = speed;
-    m_motor.set(speed);
+  // ── Extend / Retract ─────────────────────────────────────────────────────
+
+  /** Extends the intake arm at the configured speed. */
+  public void extend() {
+    m_extendMotor.set(BallIntakeConstants.kExtendSpeed);
   }
 
-  /**
-   * Starts intaking balls at the configured intake speed.
-   */
-  public void intake() {
-    setSpeed(BallIntakeConstants.kIntakeSpeed);
+  /** Retracts the intake arm at the configured speed. */
+  public void retract() {
+    m_extendMotor.set(BallIntakeConstants.kRetractSpeed);
   }
 
-  /**
-   * Ejects balls at the configured eject speed.
-   */
+  /** Stops the extend/retract motor. */
+  public void stopExtend() {
+    m_extendMotor.set(0.0);
+  }
+
+  // ── Run (roller) ─────────────────────────────────────────────────────────
+
+  /** Runs the roller at the configured intake speed. */
+  public void run() {
+    m_runMotor.set(BallIntakeConstants.kRunSpeed);
+  }
+
+  /** Runs the roller in reverse to eject. */
   public void eject() {
-    setSpeed(BallIntakeConstants.kEjectSpeed);
+    m_runMotor.set(BallIntakeConstants.kEjectSpeed);
   }
 
-  /**
-   * Holds balls with low speed to prevent them from falling out.
-   */
-  public void hold() {
-    setSpeed(BallIntakeConstants.kHoldSpeed);
+  /** Stops the run motor. */
+  public void stopRun() {
+    m_runMotor.set(0.0);
   }
 
-  /**
-   * Stops the intake motor completely.
-   */
+  /** Stops both motors. */
   public void stop() {
-    setSpeed(0.0);
+    stopExtend();
+    stopRun();
   }
 
-  /**
-   * Gets the current motor speed.
-   * 
-   * @return Current speed setting (-1.0 to 1.0)
-   */
-  public double getSpeed() {
-    return m_currentSpeed;
-  }
+  // ── Calibration ──────────────────────────────────────────────────────────
 
   /**
-   * Gets the motor output current.
-   * 
-   * @return Current draw in amps
+   * Begins calibration: slowly retracts the arm until a current increase is
+   * detected on the extend motor (indicating the hard stop) or the timeout
+   * elapses. Monitor completion with {@link #isCalibrating()},
+   * {@link #isCalibrated()}, and {@link #isCalibrationFailed()}.
    */
-  public double getCurrent() {
-    return m_motor.getOutputCurrent();
+  public void calibrate() {
+    m_calibrateState = CalibrateState.CALIBRATING;
+    m_calibrateTimer.restart();
+    m_extendMotor.set(BallIntakeConstants.kCalibrateSpeed);
   }
 
-  /**
-   * Checks if the intake is currently running.
-   * 
-   * @return true if motor speed is above deadband threshold
-   */
-  public boolean isRunning() {
-    return Math.abs(m_currentSpeed) >= BallIntakeConstants.kSpeedDeadband;
+  /** @return true while calibration is actively running. */
+  public boolean isCalibrating() {
+    return m_calibrateState == CalibrateState.CALIBRATING;
   }
+
+  /** @return true if calibration completed successfully (current spike found). */
+  public boolean isCalibrated() {
+    return m_calibrateState == CalibrateState.CALIBRATED;
+  }
+
+  /** @return true if calibration ended due to timeout without detecting a stop. */
+  public boolean isCalibrationFailed() {
+    return m_calibrateState == CalibrateState.FAILED;
+  }
+
+  // ── Telemetry helpers ────────────────────────────────────────────────────
+
+  /** @return Output current of the extend/retract motor in amps. */
+  public double getExtendCurrent() {
+    return m_extendMotor.getOutputCurrent();
+  }
+
+  /** @return Output current of the run motor in amps. */
+  public double getRunCurrent() {
+    return m_runMotor.getOutputCurrent();
+  }
+
+  // ── Periodic ─────────────────────────────────────────────────────────────
 
   @Override
   public void periodic() {
+    // Calibration state machine
+    if (m_calibrateState == CalibrateState.CALIBRATING) {
+      boolean currentSpike  = m_extendMotor.getOutputCurrent() >= BallIntakeConstants.kCalibrateCurrentThreshold;
+      boolean timedOut      = m_calibrateTimer.hasElapsed(BallIntakeConstants.kCalibrateTimeoutSeconds);
+
+      if (currentSpike) {
+        m_extendMotor.set(0.0);
+        m_calibrateState = CalibrateState.CALIBRATED;
+      } else if (timedOut) {
+        m_extendMotor.set(0.0);
+        m_calibrateState = CalibrateState.FAILED;
+      }
+    }
+
+    SmartDashboard.putString("BallIntake/CalibrateState", m_calibrateState.toString());
+    SmartDashboard.putNumber("BallIntake/ExtendCurrent",  m_extendMotor.getOutputCurrent());
+    SmartDashboard.putNumber("BallIntake/RunCurrent",     m_runMotor.getOutputCurrent());
   }
 }
