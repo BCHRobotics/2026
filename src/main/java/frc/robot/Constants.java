@@ -293,7 +293,7 @@ public final class Constants {
     // Extend position control
     public static final double kExtendPositionConversionFactor = 1.0;
     public static final double kExtendVelocityConversionFactor = 1.0;
-    public static final double kExtendedPosition = 16.3;
+    public static final double kExtendedPosition = 16.8;
     public static final double kRetractedPosition = 0.0;
     public static final double kExtendPositionTolerance = 1.0;
     public static final double kExtendPositionP = 0.08;
@@ -307,7 +307,7 @@ public final class Constants {
 
     // Calibration: slow retract until current spike or timeout
     public static final double kCalibrateSpeed = -0.2;
-    public static final double kCalibrateCurrentThreshold = 30.0; // amps
+    public static final double kCalibrateCurrentThreshold = 35.0; // amps
     public static final double kCalibrateTimeoutSeconds = 3.0;
   }
 

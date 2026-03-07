@@ -43,7 +43,7 @@ public class BallIntake extends SubsystemBase {
   // ── Calibration tracking ─────────────────────────────────────────────────
   private CalibrateState m_calibrateState = CalibrateState.IDLE;
   private final Timer m_calibrateTimer = new Timer();
-  private final LinearFilter m_calibrateCurrentFilter = LinearFilter.movingAverage(5);
+  private final LinearFilter m_calibrateCurrentFilter = LinearFilter.movingAverage(20);
   private boolean m_extendEnabled = false;
   private boolean m_runEnabled = false;
   private double m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
@@ -269,7 +269,7 @@ public class BallIntake extends SubsystemBase {
       m_filteredExtendCurrent = m_calibrateCurrentFilter.calculate(extendCurrent);
       boolean currentSpike  = m_filteredExtendCurrent >= BallIntakeConstants.kCalibrateCurrentThreshold;
       boolean timedOut      = m_calibrateTimer.hasElapsed(BallIntakeConstants.kCalibrateTimeoutSeconds);
-      currentSpike = false;
+      // currentSpike = false;
 
       if (currentSpike) {
         m_extendMotor.set(0.0);
