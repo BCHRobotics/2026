@@ -70,6 +70,28 @@ These live in `Constants.BallIntakeConstants`.
 | `kCalibrateTimeoutSeconds` | 3.0 s | Max time allowed for homing |
 | `kRunSpeed` | 0.1 | Roller intake speed |
 
+## CAN ID Reference
+
+This table lists the CAN IDs currently defined in code.
+
+| CAN ID | Device | Motor Controller | Subsystem |
+|---:|---|---|---|
+| 1 | Shooter feeder motor | SPARK MAX | Shooter |
+| 2 | Shooter motor 2 | SPARK Flex | Shooter |
+| 3 | Shooter motor 1 | SPARK Flex | Shooter |
+| 4 | Ball intake extend motor | SPARK Flex | Ball Intake |
+| 6 | Ball intake roller motor | SPARK MAX | Ball Intake |
+| 10 | Rear left drive motor | SPARK Flex | Drivetrain |
+| 11 | Rear left turning motor | SPARK MAX | Drivetrain |
+| 12 | Front left drive motor | SPARK Flex | Drivetrain |
+| 13 | Front left turning motor | SPARK MAX | Drivetrain |
+| 14 | Front right drive motor | SPARK Flex | Drivetrain |
+| 15 | Front right turning motor | SPARK MAX | Drivetrain |
+| 16 | Rear right drive motor | SPARK Flex | Drivetrain |
+| 17 | Rear right turning motor | SPARK MAX | Drivetrain |
+
+IDs not listed above are not currently assigned in `Constants.java`.
+
 ## SmartDashboard Values To Watch
 
 During commissioning, watch these values:
