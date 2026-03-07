@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.config.PIDConstants;
+import com.revrobotics.spark.ClosedLoopSlot;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -289,6 +290,17 @@ public final class Constants {
     public static final double kExtendSpeed = 0.1;
     public static final double kRetractSpeed = -0.1;
 
+    // Extend position control
+    public static final double kExtendPositionConversionFactor = 1.0;
+    public static final double kExtendVelocityConversionFactor = 1.0;
+    public static final double kExtendedPosition = 25.0;
+    public static final double kRetractedPosition = 0.0;
+    public static final double kExtendPositionTolerance = 1.0;
+    public static final double kExtendPositionP = 0.08;
+    public static final double kExtendPositionI = 0.0;
+    public static final double kExtendPositionD = 0.0;
+    public static final ClosedLoopSlot kExtendClosedLoopSlot = ClosedLoopSlot.kSlot0;
+
     // Run motor speeds (positive = intake, negative = eject)
     public static final double kRunSpeed = 0.1;
     public static final double kEjectSpeed = -0.1;
@@ -297,9 +309,6 @@ public final class Constants {
     public static final double kCalibrateSpeed = -0.2;
     public static final double kCalibrateCurrentThreshold = 15.0; // amps
     public static final double kCalibrateTimeoutSeconds = 3.0;
-
-    // How long to drive extend/retract motor before auto-stopping (seconds)
-    public static final double kExtendTimeoutSeconds = 1.5;
   }
 
   public static final class ShooterConstants {

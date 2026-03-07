@@ -1,10 +1,7 @@
 package frc.robot;
 
 import frc.robot.commands.drivetrain.FacePointCommand;
-import frc.robot.commands.drivetrain.GoToPositionCommand;
-import frc.robot.commands.drivetrain.GoToPositionRelativeCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
-import frc.robot.commands.vision.AlignToAprilTagCommand;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -20,10 +17,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.Set;
 import java.util.function.DoubleSupplier;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 
@@ -80,6 +75,7 @@ public class RobotContainer {
 
         // Configure field pose chooser
         configureFieldPoseChooser();
+        configurePathPlannerPidChoosers();
 
         // NamedCommands.registerCommand("name", getAutonomousCommand());
 
@@ -202,8 +198,8 @@ public class RobotContainer {
                         leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-        intakeToggle.toggleOnTrue(
-                Commands.startEnd(m_ballIntake::run, m_ballIntake::stopRun, m_ballIntake));
+        intakeToggle.onTrue(
+            Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
 
         // driverController.cross().whileTrue(
         //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
@@ -215,59 +211,9 @@ public class RobotContainer {
             Commands.runOnce(() -> robotDrive.zeroHeading())
         );
 
-        // Cross: Toggle extend/retract — runs extend while held, retract when released
-        extendToggle.whileTrue(
-                Commands.startEnd(m_ballIntake::extend, m_ballIntake::retract, m_ballIntake));
-    }
-
-    // Configures the autonomous command chooser.
-
-    // Creates a dashboard selector for autonomous modes including:
-    // - Do Nothing (safe default)
-    // - Drive Forward (simple mobility)
-    // - Align to AprilTag 0 (vision-based positioning)
-
-    private void configureAutoChooser() {
-        // Default option: Do nothing (safe for testing)
-        autoChooser.setDefaultOption("Do Nothing", Commands.none());
-
-        // Simple autonomous: Drive forward 2 meters for mobility points
-        autoChooser.addOption("Drive Forward 2m",
-                Commands.sequence(
-                        // Reset odometry to start at origin
-                        Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
-
-                        // Drive forward at 30% speed until 2 meters traveled
-                        Commands.run(
-                                () -> robotDrive.drive(0.3, 0, 0, false, false),
-                    robotDrive
-                ).until(() -> robotDrive.getPose().getX() > 2.0),
-
-                        // Stop driving
-                Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
-            ).withName("Drive Forward Auto")
-        );
-
-        // Vision-based autonomous: Align to AprilTag 0
-        autoChooser.addOption("Align to AprilTag 0",
-                Commands.sequence(
-                        // Reset odometry
-                        Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
-
-                        // Wait briefly for vision to initialize
-                        Commands.waitSeconds(0.5),
-
-                        // Use vision to align to AprilTag 0 (first tag on field)
-                        new AlignToAprilTagCommand(vision, robotDrive, 1)
-                                .withTimeout(10.0), // 10 second timeout for safety
-
-                        // Stop when finished
-                Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
-            ).withName("Vision Align Auto")
-        );
-
-        // Put chooser on SmartDashboard for driver station selection
-        SmartDashboard.putData("Autonomous Mode", autoChooser);
+        // Cross: Toggle between retracted home and configured extended position.
+        extendToggle.onTrue(
+            Commands.runOnce(m_ballIntake::toggleExtendPosition, m_ballIntake));
     }
 
     /**
@@ -286,8 +232,18 @@ public class RobotContainer {
         }
         robotDrive.configureAutoBuilder(translationConstants, rotationConstants);
 
-        // return new PathPlannerAuto("Test 4 Auto");
-        return autoChooser.getSelected();
+        Command selectedAuto = autoChooser.getSelected();
+        if (selectedAuto == null) {
+            selectedAuto = Commands.none();
+        }
+
+        return Commands.sequence(
+                Commands.runOnce(m_ballIntake::restartCalibration, m_ballIntake),
+                Commands.waitUntil(() -> m_ballIntake.isCalibrated() || m_ballIntake.isCalibrationFailed()),
+                Commands.either(
+                        selectedAuto,
+                        Commands.print("BallIntake calibration failed; skipping autonomous command."),
+                        m_ballIntake::isCalibrated));
 
     }
 }
