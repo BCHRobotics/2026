@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 1.6842225392296717,
+        "x": 3.2,
         "y": 0.7209615384538268
       },
       "prevControl": {
-        "x": 1.1346352719616073,
+        "x": 2.650412732731936,
         "y": 0.7192301623874516
       },
       "nextControl": null,
@@ -49,7 +49,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -133.01349770673585
+    "rotation": -112.975
   },
   "reversed": false,
   "folder": "Climber_path_5",

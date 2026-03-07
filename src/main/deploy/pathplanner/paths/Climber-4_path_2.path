@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.2698205128263274,
-        "y": 6.807
+        "x": 3.1419615384615396,
+        "y": 7.2095
       },
       "prevControl": {
-        "x": 0.5625361587584667,
-        "y": 6.2818486286946245
+        "x": 2.4346771843936788,
+        "y": 6.684348628694624
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,15 +41,15 @@
   ],
   "globalConstraints": {
     "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
-    "maxAngularVelocity": 540.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 140.82
+    "velocity": 0.0,
+    "rotation": 114.775
   },
   "reversed": false,
   "folder": "Climber_path_4",
@@ -57,5 +57,5 @@
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

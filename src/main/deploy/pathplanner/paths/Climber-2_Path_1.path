@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.832249471793544,
-        "y": 7.228193387978493
+        "x": 3.0159976423606185,
+        "y": 7.024759066795035
       },
       "isLocked": false,
       "linkedName": "Climber-2_and_4_path_1start"
     },
     {
       "anchor": {
-        "x": 1.2698205128263274,
-        "y": 6.807
+        "x": 3.1419615384615396,
+        "y": 7.2095
       },
       "prevControl": {
-        "x": 2.66136769710974,
-        "y": 7.139737529066396
+        "x": 3.5371295602450634,
+        "y": 7.491680120482352
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +49,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 140.82
+    "rotation": 114.775
   },
   "reversed": false,
   "folder": "Climber_path_2",
