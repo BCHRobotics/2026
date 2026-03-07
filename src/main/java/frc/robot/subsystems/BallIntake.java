@@ -13,6 +13,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,9 +43,11 @@ public class BallIntake extends SubsystemBase {
   // ── Calibration tracking ─────────────────────────────────────────────────
   private CalibrateState m_calibrateState = CalibrateState.IDLE;
   private final Timer m_calibrateTimer = new Timer();
+  private final LinearFilter m_calibrateCurrentFilter = LinearFilter.movingAverage(5);
   private boolean m_extendEnabled = false;
   private boolean m_runEnabled = false;
   private double m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
+  private double m_filteredExtendCurrent = 0.0;
 
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -182,6 +185,8 @@ public class BallIntake extends SubsystemBase {
     m_calibrateState = CalibrateState.CALIBRATING;
     m_extendEnabled = false;
     m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
+    m_calibrateCurrentFilter.reset();
+    m_filteredExtendCurrent = 0.0;
     m_calibrateTimer.restart();
     m_extendMotor.set(BallIntakeConstants.kCalibrateSpeed);
   }
@@ -256,9 +261,13 @@ public class BallIntake extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double extendCurrent = m_extendMotor.getOutputCurrent();
+
     // Calibration state machine
     if (m_calibrateState == CalibrateState.CALIBRATING) {
-      boolean currentSpike  = m_extendMotor.getOutputCurrent() >= BallIntakeConstants.kCalibrateCurrentThreshold;
+      // 5 samples at the 20 ms robot loop gives a 100 ms moving average.
+      m_filteredExtendCurrent = m_calibrateCurrentFilter.calculate(extendCurrent);
+      boolean currentSpike  = m_filteredExtendCurrent >= BallIntakeConstants.kCalibrateCurrentThreshold;
       boolean timedOut      = m_calibrateTimer.hasElapsed(BallIntakeConstants.kCalibrateTimeoutSeconds);
 
       if (currentSpike) {
@@ -270,10 +279,13 @@ public class BallIntake extends SubsystemBase {
         m_extendMotor.set(0.0);
         m_calibrateState = CalibrateState.FAILED;
       }
+    } else {
+      m_filteredExtendCurrent = extendCurrent;
     }
 
     SmartDashboard.putString("BallIntake/CalibrateState", m_calibrateState.toString());
-    SmartDashboard.putNumber("BallIntake/ExtendCurrent",  m_extendMotor.getOutputCurrent());
+    SmartDashboard.putNumber("BallIntake/ExtendCurrent",  extendCurrent);
+    SmartDashboard.putNumber("BallIntake/FilteredExtendCurrent", m_filteredExtendCurrent);
     SmartDashboard.putNumber("BallIntake/ExtendPosition", getExtendPosition());
     SmartDashboard.putNumber("BallIntake/TargetExtendPosition", m_targetExtendPosition);
     SmartDashboard.putBoolean("BallIntake/ExtendEnabled", m_extendEnabled);
