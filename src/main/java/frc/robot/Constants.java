@@ -286,12 +286,12 @@ public final class Constants {
     public static final int kRunCurrentLimit = 40;
 
     // Extend/retract speeds (positive = extend, negative = retract)
-    public static final double kExtendSpeed = 0.5;
-    public static final double kRetractSpeed = -0.5;
+    public static final double kExtendSpeed = 0.1;
+    public static final double kRetractSpeed = -0.1;
 
     // Run motor speeds (positive = intake, negative = eject)
-    public static final double kRunSpeed = 0.8;
-    public static final double kEjectSpeed = -0.8;
+    public static final double kRunSpeed = 0.1;
+    public static final double kEjectSpeed = -0.1;
 
     // Calibration: slow retract until current spike or timeout
     public static final double kCalibrateSpeed = -0.2;

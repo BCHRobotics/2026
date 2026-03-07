@@ -31,10 +31,10 @@ public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
     private final BallIntake m_ballIntake = new BallIntake();
-    
-    //Vision subsystem for AprilTag detection and pose estimation.
+
+    // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
-    
+
     // Web server for vision diagnostics running on RoboRIO port 8082.
     private final VisionWebServer webServer = new VisionWebServer(vision);
 
@@ -43,16 +43,18 @@ public class RobotContainer {
     CommandXboxController driverXbox;
     // Operator controller (port 1) — always PS5, used for intake controls
     CommandPS5Controller operatorPS5 = new CommandPS5Controller(OIConstants.kBackupControllerPort);
-    
+
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-    // Field pose chooser — selects where the robot drives when the pose-nav button is held
+    // Field pose chooser — selects where the robot drives when the pose-nav button
+    // is held
     private final SendableChooser<Pose2d> fieldPoseChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
 
-    //The container for the robot, initializing everything and setting up the controller chooser
+    // The container for the robot, initializing everything and setting up the
+    // controller chooser
     public RobotContainer() {
         // Initialize Driver Controller based on Type
         if (OIConstants.kDriverControllerType == OIConstants.ControllerType.PS5) {
@@ -63,29 +65,29 @@ public class RobotContainer {
 
         // Start data logging for AdvantageScope
         DataLogManager.start();
-        
+
         // Connect Vision subsystem to Drivetrain for diagnostics
         robotDrive.setVision(vision);
-        
+
         // Start the web server for vision diagnostics
         webServer.start();
-        
+
         // Configure default commands
         configureDefaultCommands();
-        
+
         // Configure button bindings
         configureBindings();
 
         // Configure field pose chooser
         configureFieldPoseChooser();
 
-        //NamedCommands.registerCommand("name", getAutonomousCommand());
-        
+        // NamedCommands.registerCommand("name", getAutonomousCommand());
+
         autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
         autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
         autoChooser.addOption("Circle Auto", new PathPlannerAuto("Circle Auto"));
-        autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));  
-        autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto")); 
+        autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));
+        autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto"));
         autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
         autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
         autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
@@ -102,14 +104,14 @@ public class RobotContainer {
      *
      * Coordinates are blue-alliance-relative. GoToPositionRelativeCommand mirrors
      * them automatically when the DriverStation reports red alliance:
-     *   red_x = fieldLength - x,  red_y = fieldWidth - y,  red_heading = 180 - heading
+     * red_x = fieldLength - x, red_y = fieldWidth - y, red_heading = 180 - heading
      */
     private void configureFieldPoseChooser() {
         // Climber positions (final waypoints from PathPlanner paths, blue alliance)
         fieldPoseChooser.setDefaultOption("Climber 1", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
-        fieldPoseChooser.addOption(      "Climber 2", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees( 90.0)));
-        fieldPoseChooser.addOption(      "Climber 3", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
-        fieldPoseChooser.addOption(      "Climber 4", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees( 90.0)));
+        fieldPoseChooser.addOption("Climber 2", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees(90.0)));
+        fieldPoseChooser.addOption("Climber 3", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
+        fieldPoseChooser.addOption("Climber 4", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees(90.0)));
 
         SmartDashboard.putData("Field Pose", fieldPoseChooser);
     }
@@ -119,20 +121,20 @@ public class RobotContainer {
      */
     private void configurePathPlannerPidChoosers() {
         ppTranslationPidChooser.setDefaultOption(
-            "Default (2.0, 1.0, 0.0)",
+                "Default (2.0, 1.0, 0.0)",
             AutoConstants.translationConstants
         );
         ppTranslationPidChooser.addOption("Soft (1.2, 0.0, 0.0)", new PIDConstants(1.2, 0.0, 0.0));
         ppTranslationPidChooser.addOption("Aggressive (2.0, 0.0, 0.0)", new PIDConstants(2.0, 0.0, 0.0));
 
         ppRotationPidChooser.setDefaultOption(
-            "Default (1.0, 0.0, 0.0)",
+                "Default (1.0, 0.0, 0.0)",
             AutoConstants.rotationConstants
         );
         ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
         ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
     }
-    
+
     /**
      * Configures default commands for subsystems.
      * 
@@ -143,7 +145,7 @@ public class RobotContainer {
         // ========== Drivetrain Default Command: Teleop Drive ==========
         // Left stick controls translation (X/Y), right stick X controls rotation
         DoubleSupplier leftY, leftX, rightX;
-        
+
         if (driverPS5 != null) {
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
@@ -155,20 +157,19 @@ public class RobotContainer {
         }
 
         robotDrive.setDefaultCommand(
-            new TeleopDriveCommand(
-                robotDrive,
-                leftY,    // Forward/backward (inverted)
-                leftX,    // Left/right (inverted)
-                rightX,   // Rotation (inverted)
-                OIConstants.kFieldRelative,            // Field-relative driving
-                OIConstants.kRateLimited               // Enable slew rate limiting
-            )
-        );
-        
+                new TeleopDriveCommand(
+                        robotDrive,
+                        leftY, // Forward/backward (inverted)
+                        leftX, // Left/right (inverted)
+                        rightX, // Rotation (inverted)
+                        OIConstants.kFieldRelative, // Field-relative driving
+                        OIConstants.kRateLimited // Enable slew rate limiting
+                ));
+
         // CRITICAL: Set max speed for drivetrain (required for movement)
         robotDrive.setSpeedPercent();
     }
-    
+
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
@@ -176,35 +177,34 @@ public class RobotContainer {
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
-            alignToTag   = driverPS5.square();
+            alignToTag = driverPS5.square();
             intakeToggle = driverPS5.circle();
-            zeroHeading  = driverPS5.triangle();
+            zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
-            
+
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
         } else {
-            alignToTag   = driverXbox.x();
+            alignToTag = driverXbox.x();
             intakeToggle = driverXbox.b();
-            zeroHeading  = driverXbox.y();
+            zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
         }
-        
+
         // ========== Vision-Based Navigation Commands ==========
-        
+
         // Square/X button: Navigate to 1 meter in front of an AprilTag
         alignToTag.whileTrue(
-            new FacePointCommand(robotDrive, leftY,    // Forward/backward (inverted)
-                leftX, 11.945, 4.029, 2) // Safety timeout
+                new FacePointCommand(robotDrive, leftY, // Forward/backward (inverted)
+                        leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-         intakeToggle.toggleOnTrue(
-             Commands.startEnd(m_ballIntake::run, m_ballIntake::stopRun, m_ballIntake)
-         );
- 
+        intakeToggle.toggleOnTrue(
+                Commands.startEnd(m_ballIntake::run, m_ballIntake::stopRun, m_ballIntake));
+
         // driverController.cross().whileTrue(
         //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
         //             .withTimeout(10.0) // Safety timeout
@@ -215,68 +215,57 @@ public class RobotContainer {
             Commands.runOnce(() -> robotDrive.zeroHeading())
         );
 
-        // Cross: Toggle extend/retract — runs motor for kExtendTimeoutSeconds then stops
-        final boolean[] armExtended = {false};
-        extendToggle.onTrue(
-            Commands.sequence(
-                Commands.runOnce(() -> {
-                    if (!armExtended[0]) m_ballIntake.extend();
-                    else m_ballIntake.retract();
-                    armExtended[0] = !armExtended[0];
-                }, m_ballIntake),
-                Commands.waitSeconds(BallIntakeConstants.kExtendTimeoutSeconds),
-                Commands.runOnce(m_ballIntake::stopExtend, m_ballIntake)
-            )
-        );
+        // Cross: Toggle extend/retract — runs extend while held, retract when released
+        extendToggle.whileTrue(
+                Commands.startEnd(m_ballIntake::extend, m_ballIntake::retract, m_ballIntake));
     }
-    
-    
-    //   Configures the autonomous command chooser.
-      
-    //   Creates a dashboard selector for autonomous modes including:
-    //   - Do Nothing (safe default)
-    //   - Drive Forward (simple mobility)
-    //   - Align to AprilTag 0 (vision-based positioning)
-     
+
+    // Configures the autonomous command chooser.
+
+    // Creates a dashboard selector for autonomous modes including:
+    // - Do Nothing (safe default)
+    // - Drive Forward (simple mobility)
+    // - Align to AprilTag 0 (vision-based positioning)
+
     private void configureAutoChooser() {
         // Default option: Do nothing (safe for testing)
         autoChooser.setDefaultOption("Do Nothing", Commands.none());
-        
+
         // Simple autonomous: Drive forward 2 meters for mobility points
         autoChooser.addOption("Drive Forward 2m",
-            Commands.sequence(
-                // Reset odometry to start at origin
-                Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
-                
-                // Drive forward at 30% speed until 2 meters traveled
-                Commands.run(
-                    () -> robotDrive.drive(0.3, 0, 0, false, false),
+                Commands.sequence(
+                        // Reset odometry to start at origin
+                        Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
+
+                        // Drive forward at 30% speed until 2 meters traveled
+                        Commands.run(
+                                () -> robotDrive.drive(0.3, 0, 0, false, false),
                     robotDrive
                 ).until(() -> robotDrive.getPose().getX() > 2.0),
-                
-                // Stop driving
+
+                        // Stop driving
                 Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
             ).withName("Drive Forward Auto")
         );
-        
+
         // Vision-based autonomous: Align to AprilTag 0
         autoChooser.addOption("Align to AprilTag 0",
-            Commands.sequence(
-                // Reset odometry
-                Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
-                
-                // Wait briefly for vision to initialize
-                Commands.waitSeconds(0.5),
-                
-                // Use vision to align to AprilTag 0 (first tag on field)
-                new AlignToAprilTagCommand(vision, robotDrive, 1)
-                    .withTimeout(10.0), // 10 second timeout for safety
-                
-                // Stop when finished
+                Commands.sequence(
+                        // Reset odometry
+                        Commands.runOnce(() -> robotDrive.resetOdometry(new Pose2d()), robotDrive),
+
+                        // Wait briefly for vision to initialize
+                        Commands.waitSeconds(0.5),
+
+                        // Use vision to align to AprilTag 0 (first tag on field)
+                        new AlignToAprilTagCommand(vision, robotDrive, 1)
+                                .withTimeout(10.0), // 10 second timeout for safety
+
+                        // Stop when finished
                 Commands.runOnce(() -> robotDrive.drive(0, 0, 0, false, false), robotDrive)
             ).withName("Vision Align Auto")
         );
-        
+
         // Put chooser on SmartDashboard for driver station selection
         SmartDashboard.putData("Autonomous Mode", autoChooser);
     }
@@ -299,6 +288,6 @@ public class RobotContainer {
 
         // return new PathPlannerAuto("Test 4 Auto");
         return autoChooser.getSelected();
-    
+
     }
 }
