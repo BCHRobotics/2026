@@ -1,12 +1,13 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 
 /**
- * Subsystem managing a non-addressable 12V RGB LED strip.
+ * Subsystem managing the on-robot RGB LED strip.
  *
  * <p>State priority (highest to lowest):
  * <ol>
@@ -16,9 +17,8 @@ import frc.robot.Constants.LEDConstants;
  *   <li>DISABLED  – solid red, robot disabled or e-stopped</li>
  * </ol>
  *
- * Hardware: 12V RGB strip driven by three PWM-controlled MOSFET channels.
- * Each color channel is controlled independently using the DIO/PWM channels
- * defined in {@link LEDConstants}.
+ * Hardware: single WS2812B-compatible addressable LED strip wired to the
+ * PWM port defined by {@link LEDConstants#kPort}.
  */
 public class LED extends SubsystemBase {
 
@@ -36,9 +36,8 @@ public class LED extends SubsystemBase {
     private static final int[] LIME    = {130, 255, 0};
     private static final int[] OFF     = {0,   0,   0};
 
-    private final DigitalOutput m_redChannel;
-    private final DigitalOutput m_greenChannel;
-    private final DigitalOutput m_blueChannel;
+    private final AddressableLED m_led;
+    private final AddressableLEDBuffer m_buffer;
 
     private State m_state = State.DISABLED;
 
@@ -46,18 +45,10 @@ public class LED extends SubsystemBase {
     private boolean m_flashOn = true;
 
     public LED() {
-        m_redChannel = new DigitalOutput(LEDConstants.kRedChannel);
-        m_greenChannel = new DigitalOutput(LEDConstants.kGreenChannel);
-        m_blueChannel = new DigitalOutput(LEDConstants.kBlueChannel);
-
-        m_redChannel.setPWMRate(LEDConstants.kPwmRateHz);
-        m_greenChannel.setPWMRate(LEDConstants.kPwmRateHz);
-        m_blueChannel.setPWMRate(LEDConstants.kPwmRateHz);
-
-        m_redChannel.enablePWM(0.0);
-        m_greenChannel.enablePWM(0.0);
-        m_blueChannel.enablePWM(0.0);
-
+        m_led = new AddressableLED(LEDConstants.kPort);
+        m_buffer = new AddressableLEDBuffer(LEDConstants.kLength);
+        m_led.setLength(LEDConstants.kLength);
+        m_led.start();
         m_flashTimer.start();
     }
 
@@ -89,15 +80,12 @@ public class LED extends SubsystemBase {
                 break;
         }
 
+        m_led.setData(m_buffer);
     }
 
     private void setSolid(int[] rgb) {
-        m_redChannel.updateDutyCycle(toDutyCycle(rgb[0]));
-        m_greenChannel.updateDutyCycle(toDutyCycle(rgb[1]));
-        m_blueChannel.updateDutyCycle(toDutyCycle(rgb[2]));
-    }
-
-    private double toDutyCycle(int value) {
-        return Math.max(0.0, Math.min(1.0, value / 255.0));
+        for (int i = 0; i < m_buffer.getLength(); i++) {
+            m_buffer.setRGB(i, rgb[0], rgb[1], rgb[2]);
+        }
     }
 }
