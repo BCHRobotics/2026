@@ -269,7 +269,6 @@ public class BallIntake extends SubsystemBase {
       m_filteredExtendCurrent = m_calibrateCurrentFilter.calculate(extendCurrent);
       boolean currentSpike  = m_filteredExtendCurrent >= BallIntakeConstants.kCalibrateCurrentThreshold;
       boolean timedOut      = m_calibrateTimer.hasElapsed(BallIntakeConstants.kCalibrateTimeoutSeconds);
-      // currentSpike = false;
 
       if (currentSpike) {
         m_extendMotor.set(0.0);
