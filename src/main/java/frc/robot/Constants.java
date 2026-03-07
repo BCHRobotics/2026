@@ -56,7 +56,7 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
-    public static final double maxSpeedNormal = 3.3; // 3.3
+    public static final double maxSpeedNormal = 1.5; // 3.3
     public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
@@ -293,7 +293,7 @@ public final class Constants {
     // Extend position control
     public static final double kExtendPositionConversionFactor = 1.0;
     public static final double kExtendVelocityConversionFactor = 1.0;
-    public static final double kExtendedPosition = 25.0;
+    public static final double kExtendedPosition = 16.3;
     public static final double kRetractedPosition = 0.0;
     public static final double kExtendPositionTolerance = 1.0;
     public static final double kExtendPositionP = 0.08;
@@ -302,12 +302,12 @@ public final class Constants {
     public static final ClosedLoopSlot kExtendClosedLoopSlot = ClosedLoopSlot.kSlot0;
 
     // Run motor speeds (positive = intake, negative = eject)
-    public static final double kRunSpeed = 0.1;
+    public static final double kRunSpeed = 1.0;
     public static final double kEjectSpeed = -0.1;
 
     // Calibration: slow retract until current spike or timeout
     public static final double kCalibrateSpeed = -0.2;
-    public static final double kCalibrateCurrentThreshold = 15.0; // amps
+    public static final double kCalibrateCurrentThreshold = 30.0; // amps
     public static final double kCalibrateTimeoutSeconds = 3.0;
   }
 
