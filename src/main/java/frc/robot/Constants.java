@@ -267,11 +267,13 @@ public final class Constants {
     public static final double kMaxRotationSpeed = 0.3; // rad/s
   }
 
-  // Addressable LED Strip Constants
+  // 12V RGB LED Strip Constants
   public static final class LEDConstants {
-    public static final int kPort = 9;             // PWM port on roboRIO
-    public static final int kLength = 30;          // Number of LEDs in strip
-    public static final double kFlashPeriod = 0.25; // Flash toggle interval (seconds) — 4 Hz
+    public static final int kRedChannel = 0;        // DIO/PWM channel for red MOSFET gate
+    public static final int kGreenChannel = 1;      // DIO/PWM channel for green MOSFET gate
+    public static final int kBlueChannel = 2;       // DIO/PWM channel for blue MOSFET gate
+    public static final double kPwmRateHz = 500.0;  // PWM frequency for strip dimming
+    public static final double kFlashPeriod = 0.25; // Flash toggle interval (seconds) - 4 Hz
   }
 
   // DISABLED: Ball Intake Subsystem Constants
