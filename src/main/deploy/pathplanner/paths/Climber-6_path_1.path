@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5403565908126526,
-        "y": 7.136656605564036
+        "x": 3.32204324038319,
+        "y": 7.272894941216228
       },
       "isLocked": false,
       "linkedName": "Climber-2_and_4_path_1start"
@@ -20,8 +20,8 @@
         "y": 7.2095
       },
       "prevControl": {
-        "x": 3.7405402832883006,
-        "y": 7.410280975531759
+        "x": 3.36970252874402,
+        "y": 7.312621488280355
       },
       "nextControl": null,
       "isLocked": false,
