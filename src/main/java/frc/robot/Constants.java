@@ -301,4 +301,10 @@ public final class Constants {
     // How long to drive extend/retract motor before auto-stopping (seconds)
     public static final double kExtendTimeoutSeconds = 1.5;
   }
+
+  public static final class ShooterConstants {
+    public static final int FEEDER_CAN_ID = 1;
+    public static final int SHOOTER1_CAN_ID = 3;
+    public static final int SHOOTER2_CAN_ID = 2;
+  }
 }
