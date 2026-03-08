@@ -1,7 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
+import frc.robot.commands.drivetrain.ZeroHeadingCommand;
+import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
+import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
+import frc.robot.commands.ballintake.ToggleBallIntakeRunCommand;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -13,7 +18,8 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -198,8 +204,7 @@ public class RobotContainer {
                         leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-        intakeToggle.onTrue(
-            Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
+        intakeToggle.onTrue(new ToggleBallIntakeRunCommand(m_ballIntake));
 
         // driverController.cross().whileTrue(
         //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
@@ -207,13 +212,10 @@ public class RobotContainer {
         // );
 
         // Reset gyro heading to zero (forward)
-        zeroHeading.onTrue(
-            Commands.runOnce(() -> robotDrive.zeroHeading())
-        );
+        zeroHeading.onTrue(new ZeroHeadingCommand(robotDrive));
 
         // Cross: Toggle between retracted home and configured extended position.
-        extendToggle.onTrue(
-            Commands.runOnce(m_ballIntake::toggleExtendPosition, m_ballIntake));
+        extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
     }
 
     /**
@@ -234,15 +236,13 @@ public class RobotContainer {
 
         Command selectedAuto = autoChooser.getSelected();
         if (selectedAuto == null) {
-            selectedAuto = Commands.none();
+            selectedAuto = new InstantCommand();
         }
 
-        return Commands.sequence(
-                Commands.runOnce(m_ballIntake::restartCalibration, m_ballIntake),
-                Commands.waitUntil(() -> m_ballIntake.isCalibrated() || m_ballIntake.isCalibrationFailed()),
-                Commands.either(
+        return new CalibrateBallIntakeCommand(m_ballIntake)
+                .andThen(new ConditionalCommand(
                         selectedAuto,
-                        Commands.print("BallIntake calibration failed; skipping autonomous command."),
+                        new PrintCommand("BallIntake calibration failed; skipping autonomous command."),
                         m_ballIntake::isCalibrated));
 
     }
