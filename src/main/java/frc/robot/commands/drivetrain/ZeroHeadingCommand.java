@@ -9,6 +9,7 @@ public class ZeroHeadingCommand extends Command {
 
   public ZeroHeadingCommand(Drivetrain drivetrain) {
     m_drivetrain = drivetrain;
+    addRequirements(drivetrain);
   }
 
   @Override
