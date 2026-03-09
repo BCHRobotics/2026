@@ -348,6 +348,52 @@ Use this quick process in the pit or practice field.
 
 If one camera repeatedly causes issues, disable it rather than poisoning the whole fusion system.
 
+## Vision Repeatability Path
+
+There is now a SmartDashboard command named:
+- `VisionTuningPath`
+
+This command does not use PathPlanner.
+
+Behavior:
+- captures the robot's current heading when the command starts
+- holds that heading for the full run
+- drives the robot through `(14.2, 1.0) -> (14.2, 7.0) -> (14.2, 1.0)`
+- uses the fused robot pose to decide waypoint completion
+
+This is intended as a repeatability test for vision-based pose estimation.
+
+### Live speed control
+
+The path speed can be changed live from SmartDashboard using:
+- `VisionTuningPath/MaxSpeedMetersPerSecond`
+
+### Useful status keys
+
+The command also publishes:
+- `VisionTuningPath/Running`
+- `VisionTuningPath/HeldHeadingDegrees`
+- `VisionTuningPath/TargetIndex`
+- `VisionTuningPath/CurrentTargetX`
+- `VisionTuningPath/CurrentTargetY`
+- `VisionTuningPath/CurrentPoseX`
+- `VisionTuningPath/CurrentPoseY`
+- `VisionTuningPath/CurrentHeadingDegrees`
+- `VisionTuningPath/RequestedXSpeed`
+- `VisionTuningPath/RequestedYSpeed`
+- `VisionTuningPath/RequestedRotationSpeed`
+- `VisionTuningPath/LastResult`
+
+### Recommended use
+
+1. Rotate the robot to the heading you want to test.
+2. Place the robot near `(14.2, 1.0)`.
+3. Set `VisionTuningPath/MaxSpeedMetersPerSecond` to a conservative value such as `0.5` to `0.75`.
+4. Run `VisionTuningPath` from SmartDashboard.
+5. Repeat at different headings so different cameras and AprilTag geometries are exercised.
+
+If repeatability changes significantly with heading, that is a strong sign that one or more camera calibrations, transforms, or tag visibility geometries need attention.
+
 ## Recommended First Adjustments If Noise Persists
 
 If the SmartDashboard still shows noisy accepted vision after the current code changes, make these changes in order:
