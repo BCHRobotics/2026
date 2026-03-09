@@ -9,7 +9,9 @@ import com.revrobotics.spark.ClosedLoopSlot;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -271,6 +273,39 @@ public final class Constants {
 
     public static final double kYawTolerance = 3.0; // degrees
     public static final double kMaxRotationSpeed = 0.3; // rad/s
+  }
+
+  public static final class ClimbConstants {
+    public static final int kMotorCanId = 88;
+    public static final boolean kMotorInverted = false;
+    public static final int kMotorCurrentLimit = 40;
+    public static final double kClimbSpeed = 0.6;
+    // Set this based on which Spark MAX limit input the climber switch is wired into.
+    public static final boolean kUseForwardLimitSwitch = true;
+
+    // The requested starting locations are measured from the field walls, then converted to
+    // WPILib field coordinates so commands can use the same Pose2d math as the rest of the robot.
+    public static final double kStartDistanceFromEndWallMeters = Units.inchesToMeters(41.0);
+    public static final double kStartDistanceFromSideWallMeters = Units.inchesToMeters(60.0);
+    public static final double kDriveForwardDistanceMeters = Units.inchesToMeters(30.0);
+    public static final double kDriveMaxSpeedMetersPerSecond = 0.75;
+
+    public static final Pose2d kBlueLeftStartPose = new Pose2d(
+        kStartDistanceFromEndWallMeters,
+        NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
+        Rotation2d.fromDegrees(-90.0));
+    public static final Pose2d kBlueRightStartPose = new Pose2d(
+        kStartDistanceFromEndWallMeters,
+        kStartDistanceFromSideWallMeters,
+        Rotation2d.fromDegrees(90.0));
+    public static final Pose2d kRedLeftStartPose = new Pose2d(
+        NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
+        kStartDistanceFromSideWallMeters,
+        Rotation2d.fromDegrees(90.0));
+    public static final Pose2d kRedRightStartPose = new Pose2d(
+        NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
+        NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
+        Rotation2d.fromDegrees(-90.0));
   }
 
   public static final class BallIntakeConstants {

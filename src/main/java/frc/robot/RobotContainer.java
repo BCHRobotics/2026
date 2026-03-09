@@ -7,7 +7,9 @@ import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeRunCommand;
+import frc.robot.commands.climber.ClimbCommand;
 import frc.robot.subsystems.BallIntake;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.webserver.VisionWebServer;
@@ -32,6 +34,7 @@ public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
     private final BallIntake m_ballIntake = new BallIntake();
+    private final Climber climber = new Climber();
 
     // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
@@ -51,6 +54,7 @@ public class RobotContainer {
     // Field pose chooser — selects where the robot drives when the pose-nav button
     // is held
     private final SendableChooser<Pose2d> fieldPoseChooser = new SendableChooser<>();
+    private final SendableChooser<Pose2d> climbStartPoseChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
 
@@ -81,7 +85,9 @@ public class RobotContainer {
 
         // Configure field pose chooser
         configureFieldPoseChooser();
+        configureClimbStartPoseChooser();
         configurePathPlannerPidChoosers();
+        configureDashboardCommands();
 
         // NamedCommands.registerCommand("name", getAutonomousCommand());
 
@@ -118,6 +124,17 @@ public class RobotContainer {
         SmartDashboard.putData("Field Pose", fieldPoseChooser);
     }
 
+    private void configureClimbStartPoseChooser() {
+        // These poses are predefined constants so the team can place the robot at known climb
+        // test locations and select them from SmartDashboard before running the command.
+        climbStartPoseChooser.setDefaultOption("Blue Left", ClimbConstants.kBlueLeftStartPose);
+        climbStartPoseChooser.addOption("Blue Right", ClimbConstants.kBlueRightStartPose);
+        climbStartPoseChooser.addOption("Red Left", ClimbConstants.kRedLeftStartPose);
+        climbStartPoseChooser.addOption("Red Right", ClimbConstants.kRedRightStartPose);
+
+        SmartDashboard.putData("Climb Start Pose", climbStartPoseChooser);
+    }
+
     /**
      * Configures Shuffleboard choosers for PathPlanner translation/rotation PID presets.
      */
@@ -135,6 +152,16 @@ public class RobotContainer {
         );
         ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
         ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
+    }
+
+    private void configureDashboardCommands() {
+        // putData publishes a clickable command button to SmartDashboard.
+        SmartDashboard.putData("Climb Command", new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+    }
+
+    private Pose2d getSelectedClimbStartPose() {
+        Pose2d selectedPose = climbStartPoseChooser.getSelected();
+        return selectedPose != null ? selectedPose : ClimbConstants.kBlueLeftStartPose;
     }
 
     /**
