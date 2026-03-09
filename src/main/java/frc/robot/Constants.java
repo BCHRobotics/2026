@@ -153,11 +153,17 @@ public final class Constants {
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.35, 0.35, 0.45);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.1, 0.1, 0.15);
     public static final double kDistanceWeight = 0.01;
+    public static final double kRotationDistanceWeight = 0.03;
     
-  // Maximum distance (meters) at which we will accept a vision pose update.
-  //  Measurements from targets farther than this are ignored to avoid
-  //  using excessively noisy detections for pose fusion.
-  public static final double kMaxTargetDistance = 3.0;
+    // Maximum camera-to-tag distance (meters) at which we will accept vision updates.
+    public static final double kMaxSingleTagDistance = 2.5;
+    public static final double kMaxMultiTagDistance = 4.0;
+
+    // Reject measurements that jump too far from the current fused pose estimate.
+    public static final double kMaxSingleTagPoseDeltaMeters = 0.75;
+    public static final double kMaxMultiTagPoseDeltaMeters = 1.50;
+    public static final double kMaxSingleTagRotationDeltaDegrees = 15.0;
+    public static final double kMaxMultiTagRotationDeltaDegrees = 35.0;
     
     // Allowed error tolerances
     public static final double allowedXError = 0.025; // 5cm tolerance
