@@ -34,6 +34,7 @@ public class LED extends SubsystemBase {
     private static final int[] ORANGE  = {255, 80,  0};
     private static final int[] RED     = {255, 0,   0};
     private static final int[] LIME    = {130, 255, 0};
+    private static final int[] BLUE    = {0, 0, 255};
     private static final int[] OFF     = {0,   0,   0};
 
     private final AddressableLED m_led;
@@ -48,6 +49,12 @@ public class LED extends SubsystemBase {
         m_led = new AddressableLED(LEDConstants.kPort);
         m_buffer = new AddressableLEDBuffer(LEDConstants.kLength);
         m_led.setLength(LEDConstants.kLength);
+
+        //clears out previous runs buffer
+        for (int i = 0; i < LEDConstants.kLength; i++) {  
+            m_buffer.setRGB(i, OFF[0], OFF[1], OFF[2]);
+        }
+
         m_led.start();
         m_flashTimer.start();
     }
@@ -72,7 +79,9 @@ public class LED extends SubsystemBase {
                 setSolid(ORANGE);
                 break;
             case TELEOP:
-                setSolid(GREEN);
+                // setSolid(GREEN);
+                // setAlternate(RED, BLUE);
+                setAlternateFlash(GREEN, RED);
                 break;
             case DISABLED:
             default:
@@ -86,6 +95,28 @@ public class LED extends SubsystemBase {
     private void setSolid(int[] rgb) {
         for (int i = 0; i < m_buffer.getLength(); i++) {
             m_buffer.setRGB(i, rgb[0], rgb[1], rgb[2]);
+        }
+    }
+
+    private void setAlternate(int[] colour1, int[] colour2){
+        for (int i = 0; i < m_buffer.getLength(); i++) {
+            if (i % 2 == 0) {
+                m_buffer.setRGB(i, colour1[0], colour1[1], colour1[2]);
+            }
+            else {
+                m_buffer.setRGB(i, colour2[0], colour2[1], colour2[2]);
+            }
+        }
+    }
+    private void setAlternateFlash(int[] colour1, int[] colour2){
+        for (int i = 0; i < m_buffer.getLength(); i+= 2) {
+            if (m_flashOn) {
+                m_buffer.setRGB(i, colour1[0], colour1[1], colour1[2]);
+                m_buffer.setRGB(i + 1, colour2[0], colour2[1], colour2[2]);
+            }else{
+                m_buffer.setRGB(i, colour2[0], colour2[1], colour2[2]);
+                m_buffer.setRGB(i + 1, colour1[0], colour1[1], colour1[2]);
+            }
         }
     }
 }

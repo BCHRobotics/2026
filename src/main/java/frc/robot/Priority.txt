@@ -1,0 +1,55 @@
+Priority
+1	PENDING	Has Game Piece / No Game Piece	One color = holding, another = empty. The single most critical state in a match.	Essential Driver Signals	PRIORITY	HIGH
+2	DONE	Mechanism Ready to Score	Green when flywheel or arm is at the correct setpoint. Don't fire until this is on.	Essential Driver Signals	PRIORITY	HIGH
+3	PENDING	Alliance Color on Enable	Confirms the robot enabled correctly on the right alliance. One glance at match start.	Essential Driver Signals	PRIORITY	HIGH
+4	DONE	Endgame Warning	Hard flash at 30 seconds. Driver's head is down — this is the nudge to start climbing.	Essential Driver Signals	PRIORITY	HIGH
+5	PENDING	Robot Fault / Brownout	Urgent red flash reserved for critical failures only. "Stop what you're doing."	Essential Driver Signals	PRIORITY	HIGH
+6	DONE	Intake Active	Confirms intake is running, especially when it's outside the driver's line of sight.	Essential Driver Signals	PRIORITY	MED
+7	PENDING	Front / Back Orientation	Fixed color difference between front and rear. Lifesaver after a pushing match or spin.	Essential Driver Signals	PRIORITY	HIGH
+8	DONE	Gyro Drift / Field-Relative Off	Always visible. Driver hits reset button immediately instead of 10 seconds of confusion.	Essential Driver Signals	PRIORITY	HIGH
+9	PENDING	Gyro Calibrating / Not Ready	Boot-only warning. Prevents enabling into broken field-relative drive.	Essential Driver Signals	PRIORITY	MED
+10	DONE	Auto-Assist Active	Steady distinct color meaning "the robot is partially driving." Prevents fighting the assist.	Essential Driver Signals	PRIORITY	MED
+11	DONE	Auto-Assist Overridden / Lost	Confirms driver has full control. Prevents under-steering when assist silently drops out.	Essential Driver Signals	PRIORITY	MED
+12	DONE	Vision target lock	Solid color when AprilTag or game piece is aligned and locked on.	Game State & Targeting	DRIVER	MED
+13	DONE	Distance indicator	Color gradient shifts as robot approaches scoring zone (red → yellow → green).	Game State & Targeting	DRIVER	LOW
+14	PENDING	Auto-aim active	Pulsing glow when vision alignment is actively tracking a target.	Game State & Targeting	DRIVER	MED
+15	PENDING	Shooter/mechanism ready	Green light when flywheel or arm is at the correct setpoint.	Game State & Targeting	DRIVER	HIGH
+16	PENDING	Has game piece / no game piece	Distinct color for intake state (e.g. orange = holding, white = empty).	Game Piece Status	DRIVER	HIGH
+17	PENDING	Game piece type detection	Different colors for different game objects if applicable.	Game Piece Status	DRIVER	LOW
+18	DONE	Intake active	Animated sweeping pattern while intake is running.	Game Piece Status	DRIVER	MED
+19	PENDING	Arm/elevator position zones	Color changes at low, mid, and high positions.	Mechanism Feedback	DRIVER	LOW
+20	PENDING	Mechanism at setpoint	Solid vs. blinking to show "still moving" vs. "arrived".	Mechanism Feedback	DRIVER	MED
+21	DONE	Climber deployed/locked	Dedicated color when climb mechanism is fully engaged.	Mechanism Feedback	DRIVER	HIGH
+22	PENDING	Mechanism fault or stall	Flashing red if a motor is stalling or a limit switch is tripped.	Mechanism Feedback	DRIVER	HIGH
+23	PENDING	Battery voltage	Green/yellow/red based on battery level thresholds.	Robot Health	DRIVER	MED
+24	PENDING	CAN bus errors / brownout warning	Rapid red flash when CAN communication degrades.	Robot Health	DRIVER	HIGH
+25	PENDING	Compressor status	Shows when pneumatics are fully pressurized and ready.	Robot Health	DRIVER	LOW
+26	PENDING	Rio/system fault indicator	Unique blink pattern for critical RoboRIO errors.	Robot Health	DRIVER	HIGH
+27	DONE	Endgame alert	LED strips flash at the 30-second mark to signal time to climb.	Match Timing	DRIVER	HIGH
+28	PENDING	Auto vs. Teleop mode	Distinct ambient color for each phase of the match.	Match Timing	DRIVER	MED
+29	DONE	Match end warning	Countdown pulse sequence in final 10 seconds.	Match Timing	DRIVER	LOW
+30	PENDING	Alliance color display	Show red or blue on enable to confirm correct alliance assignment.	Alliance & Communication	DRIVER	HIGH
+31	PENDING	Driver requested action	Signal to human player (e.g. "need game piece").	Alliance & Communication	DRIVER	MED
+32	PENDING	Co-driver confirmation	One driver triggers a blink to confirm a command to the other.	Alliance & Communication	DRIVER	LOW
+33	DONE	Robot orientation indicator	Front vs. back LEDs in different colors — which end is forward.	Defense & Awareness	DRIVER	HIGH
+34	PENDING	Tipping/tilt warning	Flash when gyro detects a dangerous lean angle.	Defense & Awareness	DRIVER	MED
+35	PENDING	Collision/impact detected	Brief flash on the side where an impact was sensed via accelerometer.	Defense & Awareness	DRIVER	LOW
+36	PENDING	Auto routine selected	Each auto path mapped to a unique color — confirms correct routine before match.	Code & Control Flow	PROGRAMMER	HIGH
+37	PENDING	Command scheduler state	Distinct pattern per command group — shows which step of a sequence is running.	Code & Control Flow	PROGRAMMER	MED
+38	PENDING	Loop overrun indicator	Flashes when the robot code loop is taking too long to execute.	Code & Control Flow	PROGRAMMER	MED
+39	DONE	Robot mode confirmation	Clear visual distinction between disabled, auto, teleop, and test modes.	Code & Control Flow	PROGRAMMER	HIGH
+40	PENDING	Limit switch triggered	Lights up in real time when each limit switch is hit — great for wiring checks.	Sensor Validation	PROGRAMMER	MED
+41	PENDING	Encoder/sensor connected	Green at startup if all sensors detected, red if any are missing.	Sensor Validation	PROGRAMMER	HIGH
+42	PENDING	Vision pipeline active	Indicates whether the camera is streaming and a target is in frame.	Sensor Validation	PROGRAMMER	HIGH
+43	PENDING	Gyro calibrated	Steady light once gyro finishes calibration on boot; flashing if it failed.	Sensor Validation	PROGRAMMER	HIGH
+44	PENDING	Individual subsystem status	Assign strip segment to each subsystem (intake, shooter, climber) to isolate issues.	Motor & Subsystem Debugging	PROGRAMMER	MED
+45	PENDING	Motor controller faults	Blink a unique pattern when Spark MAX, TalonFX, etc. reports a sticky fault.	Motor & Subsystem Debugging	PROGRAMMER	HIGH
+46	PENDING	Closed-loop error	Color intensity reflects how far a PID loop is from its setpoint — useful for tuning.	Motor & Subsystem Debugging	PROGRAMMER	MED
+47	PENDING	Output clamping active	Signals when a motor's commanded output is being capped — hints at scaling bugs.	Motor & Subsystem Debugging	PROGRAMMER	LOW
+48	PENDING	NetworkTables connected	Solid light when robot is talking to Driver Station/dashboard successfully.	Networking & Boot	PROGRAMMER	HIGH
+49	PENDING	Limelight/coprocessor heartbeat	Pulses once per second to confirm vision coprocessor is alive.	Networking & Boot	PROGRAMMER	HIGH
+50	PENDING	CAN utilization warning	Color shifts when CAN bus utilization climbs too high before dropped frames.	Networking & Boot	PROGRAMMER	MED
+51	DONE	Code deploy confirmed	Brief animation after new code deploys — confirms RoboRIO booted the new version.	Networking & Boot	PROGRAMMER	MED
+52	PENDING	Initialization sequence progress	Steps through colors as each subsystem initializes — shows which one hangs.	Networking & Boot	PROGRAMMER	HIGH
+53	PENDING	Brownout recovery	Unique pattern after recovering from a brownout, even if no one was watching.	Networking & Boot	PROGRAMMER	MED
+54	DONE	Shift changes			DRIVER	WANTED
