@@ -256,4 +256,11 @@ public class RobotContainer {
                         m_ballIntake::isCalibrated));
 
     }
+
+    public Command getTeleopInitCommand() {
+        return new ConditionalCommand(
+                Commands.none(),
+                new CalibrateBallIntakeCommand(m_ballIntake),
+                m_ballIntake::isCalibrated);
+    }
 }
