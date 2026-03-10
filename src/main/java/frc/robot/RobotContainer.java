@@ -4,12 +4,14 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
+import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeRunCommand;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Shooter;
 import frc.robot.webserver.VisionWebServer;
 import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -32,6 +35,7 @@ public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
     private final BallIntake m_ballIntake = new BallIntake();
+    private final Shooter m_shooter = new Shooter();
 
     // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
@@ -175,7 +179,7 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle;
+        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, shootTrigger;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -183,6 +187,7 @@ public class RobotContainer {
             intakeToggle = driverPS5.circle();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
+            shootTrigger = driverPS5.R2().or(driverPS5.L2());
 
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
@@ -191,6 +196,7 @@ public class RobotContainer {
             intakeToggle = driverXbox.b();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
+            shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -204,7 +210,8 @@ public class RobotContainer {
                         leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-        intakeToggle.onTrue(new ToggleBallIntakeRunCommand(m_ballIntake));
+        intakeToggle.onTrue(
+            Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
 
         // driverController.cross().whileTrue(
         //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
@@ -216,6 +223,9 @@ public class RobotContainer {
 
         // Cross: Toggle between retracted home and configured extended position.
         extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
+
+        // R2 and L2: Shoot while held
+        shootTrigger.whileTrue(new ShootCommand(m_shooter));
     }
 
     /**

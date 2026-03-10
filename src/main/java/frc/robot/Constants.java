@@ -56,12 +56,12 @@ public final class Constants {
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
-    public static final double maxSpeedNormal = 1.5; // 3.3
+    public static final double maxSpeedNormal = 5.0; // 3.3
     public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
     public static final double kDirectionSlewRate = 3; // rad/s
-    public static final double kMagnitudeSlewRate = 3.5; // percent/sec (1 = 100%) 
+    public static final double kMagnitudeSlewRate = 7.0; // percent/sec (1 = 100%) 
     public static final double kRotationalSlewRate = 2; // percent/sec (1 = 100%) 
 
     // Chassis dimensions
@@ -312,8 +312,8 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
-    public static final int FEEDER_CAN_ID = 1;
-    public static final int SHOOTER1_CAN_ID = 3;
-    public static final int SHOOTER2_CAN_ID = 2;
+    public static final int FEEDER_CAN_ID = 21;
+    public static final int SHOOTER1_CAN_ID = 22;
+    public static final int SHOOTER2_CAN_ID = 23;
   }
 }

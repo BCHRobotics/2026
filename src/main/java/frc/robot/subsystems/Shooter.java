@@ -87,7 +87,7 @@ import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Shooter2 extends SubsystemBase {
+public class Shooter extends SubsystemBase {
 
     // Shooter tuning
     private double targetRpm   = 3000.0;
@@ -117,7 +117,7 @@ public class Shooter2 extends SubsystemBase {
     private boolean isShooterActive  = false;
     private double  currentFeederSpeed = 0.0;
 
-    public Shooter2() {
+    public Shooter() {
         feederMotor   = new SparkMax(ShooterConstants.FEEDER_CAN_ID,   MotorType.kBrushless);
         shooterMotor1 = new SparkFlex(ShooterConstants.SHOOTER1_CAN_ID, MotorType.kBrushless);
         shooterMotor2 = new SparkFlex(ShooterConstants.SHOOTER2_CAN_ID, MotorType.kBrushless);

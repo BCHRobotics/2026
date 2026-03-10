@@ -1,7 +1,7 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter2;
+import frc.robot.subsystems.Shooter;
 
 /**
  * Command to run the feeder and shoot game pieces.
@@ -18,14 +18,14 @@ import frc.robot.subsystems.Shooter2;
  * Example: driverController.R1().whileTrue(new ShootCommand(m_shooter))
  */
 public class ShootCommand extends Command {
-    private final Shooter2 m_shooter;
+    private final Shooter m_shooter;
 
     /**
      * Creates a new ShootCommand.
      *
      * @param shooter The shooter subsystem to control
      */
-    public ShootCommand(Shooter2 shooter) {
+    public ShootCommand(Shooter shooter) {
         m_shooter = shooter;
         addRequirements(shooter);
     }
