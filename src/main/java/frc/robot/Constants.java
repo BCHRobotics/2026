@@ -332,7 +332,6 @@ public final class Constants {
     public static double feederSpeed = 0.5;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
-
     // Closed-loop velocity PID gains (tune these on the physical robot)
     public static double kP = 0.00025;
     public static double kI = 0.000002;

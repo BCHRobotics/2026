@@ -179,6 +179,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, shootTrigger;
+        Trigger killshooter, killIntake, goToClimb, climbtoggle;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -201,6 +202,22 @@ public class RobotContainer {
             leftX = () -> -driverXbox.getLeftX();
         }
 
+        if (operatorPS5 !=null) {
+            killshooter = operatorPS5.square();
+            killIntake = operatorPS5.circle();
+            goToClimb = operatorPS5.triangle();
+            climbtoggle = operatorPS5.cross();
+
+            killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
+            killIntake.onTrue(Commands.runOnce(m_ballIntake::stop, m_ballIntake));
+            // goToClimb.onTrue(
+            //     new GoToPositionCommand(robotDrive, 10.0, 7.0, 0.0)
+            //             .withTimeout(10.0) // Safety timeout
+            // );
+            // climbtoggle.onTrue(new ToggleClimberExtendCommand(m_climber));
+
+        }
+
         // ========== Vision-Based Navigation Commands ==========
 
         // Square/X button: Navigate to 1 meter in front of an AprilTag
@@ -209,8 +226,7 @@ public class RobotContainer {
                         leftX, 11.945, 4.029, 2) // Safety timeout
         );
 
-        intakeToggle.onTrue(
-            Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
+        intakeToggle.onTrue(Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
 
         // driverController.cross().whileTrue(
         //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
