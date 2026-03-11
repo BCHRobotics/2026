@@ -90,8 +90,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
 
     // Shooter tuning
+    private double distance     = 2.0;      // Distance from target (meters); replace with vision measurement
     private double targetRpm   = 3000.0;
-    private double readyRpm    = 2900.0;   // Minimum RPM before feeder activates
+    private double readyRpm    = 2980.0;   // Minimum RPM before feeder activates
     private double feederSpeed = 0.5;      // Feeder open-loop duty cycle [0, 1]
     private double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
@@ -131,7 +132,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/I", kI);
         SmartDashboard.putNumber("Shooter/D", kD);
         SmartDashboard.putNumber("Shooter/MaxOutput", maxOutput);
-        SmartDashboard.putNumber("Shooter/TargetRPM", targetRpm);
+        SmartDashboard.putNumber("Shooter/Distance", distance);
         SmartDashboard.putNumber("Shooter/ReadyRPM", readyRpm);
         SmartDashboard.putNumber("Shooter/FeederSpeed", feederSpeed);
 
@@ -142,7 +143,7 @@ public class Shooter extends SubsystemBase {
         // --- Feeder motor ---
         SparkMaxConfig feederConfig = new SparkMaxConfig();
         feederConfig
-            .inverted(false)
+            .inverted(true)
             .idleMode(IdleMode.kBrake);  // Hard-stop when commanded to 0
 
         // --- Primary flywheel motor (closed-loop velocity) ---
@@ -169,7 +170,7 @@ public class Shooter extends SubsystemBase {
         // which physically makes both wheels shoot in the same direction.
         SparkFlexConfig shooter2Config = new SparkFlexConfig();
         shooter2Config
-            .idleMode(IdleMode.kCoast)
+            //.idleMode(IdleMode.kCoast)
             .follow(ShooterConstants.SHOOTER1_CAN_ID, true); //Invert to match direction of motor 1
 
         feederMotor.configure(
@@ -216,6 +217,29 @@ public class Shooter extends SubsystemBase {
         currentFeederSpeed = 0.0;
     }
 
+    /**
+     * Calculates the target RPM based on the distance from the center of the hub.
+     * 
+     * @param distanceFromHub the distance in meters from the center of the hub
+     * @return the target RPM for the shooter flywheel
+     */
+    public double calculateRpmFromDistance(double distanceFromHub) {
+        // Linear interpolation model: RPM increases with distance
+        // Adjust these constants based on your shooter's ballistics
+        final double MIN_DISTANCE = 1.0;      // Minimum shooting distance (meters)
+        final double MAX_DISTANCE = 3.0;     // Maximum shooting distance (meters)
+        final double MIN_RPM = 1500.0;         // RPM at minimum distance
+        final double MAX_RPM = 4500.0;         // RPM at maximum distance
+
+        // Clamp distance to valid range
+        double clampedDistance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distanceFromHub));
+
+        // Linear interpolation
+        double rpm = MIN_RPM + (clampedDistance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE) * (MAX_RPM - MIN_RPM);
+
+        return rpm;
+    }
+
     @Override
     public void periodic() {
         updateTunables();
@@ -233,12 +257,14 @@ public class Shooter extends SubsystemBase {
         double i = SmartDashboard.getNumber("Shooter/I", kI);
         double d = SmartDashboard.getNumber("Shooter/D", kD);
         double max = SmartDashboard.getNumber("Shooter/MaxOutput", maxOutput);
-        double target = SmartDashboard.getNumber("Shooter/TargetRPM", targetRpm);
+
+        double hubdistance = SmartDashboard.getNumber("Shooter/Distance", distance);
         double ready = SmartDashboard.getNumber("Shooter/ReadyRPM", readyRpm);
         double feeder = SmartDashboard.getNumber("Shooter/FeederSpeed", feederSpeed);
 
         // Update local variables
-        targetRpm = target;
+        //distance = 2.0; // Replace with actual distance measurement from vision or sensors
+        targetRpm = calculateRpmFromDistance(hubdistance);
         readyRpm = ready;
         feederSpeed = feeder;
 

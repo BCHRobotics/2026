@@ -486,7 +486,10 @@ public class Drivetrain extends SubsystemBase {
     // I'm multiplying the navx heading by -1 
     // because WPILib uses CCW as the positive direction
     // and NavX uses CW as the positive direction
-    return Rotation2d.fromDegrees(-gyro.getAngle()).getDegrees();
+
+    // (03/10/2026) edit - normally this is fine, but our 2026 robot has the gyro upside-down
+    // this has the effect of flipping the gyro convention, essentially back to CCW
+    return Rotation2d.fromDegrees(gyro.getAngle()).getDegrees();
   }
 
   // Updated the max speed of the robot based on what mode is enabled
