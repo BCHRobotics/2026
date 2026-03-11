@@ -113,31 +113,31 @@ public final class Constants {
     
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
-      true,  // Left_Camera
-      true,  // Front_Camera
-      true,  // Rear_Left_Camera
-      true,   // Rear_Right_Camera
+      true,  // ShooterLeft_Camera
+      true,  // ShooterRight_Camera
+      false,  // Rear_Left_Camera
+      false,   // Rear_Right_Camera
     };
     
     // Camera names
     public static final String[] kCameraNames = {
-      "Left_Camera",  // Left_Camera
-      "Front_Camera",  // Front_Camera
+      "ShooterLeft_Camera",  // Left_Camera
+      "ShooterRight_Camera",  // Front_Camera
       "Rear_Left_Camera",  // Rear_Left_Camera
       "Rear_Right_Camera"   // Rear_Right_Camera
     };
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      // Left camera - Side
+      //ShooterLeft_Camera
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(5.00), Units.inchesToMeters(11.5), Units.inchesToMeters(32)),
-        new Rotation3d(0, 0, Math.PI/2)
+        new Translation3d(Units.inchesToMeters(11.475), Units.inchesToMeters(11.253), Units.inchesToMeters(20.783)),
+        new Rotation3d(0, 0, Math.toRadians(60))
       ),
-      // Top_Camera - Front
+      //ShooterRight_Camera
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(6.5), Units.inchesToMeters(0), Units.inchesToMeters(36)),
-        new Rotation3d(0, 0, Math.toRadians(0))
+        new Translation3d(Units.inchesToMeters(-4.612), Units.inchesToMeters(0.095), Units.inchesToMeters(21.102)),
+        new Rotation3d(0, 0, Math.toRadians(60))
       ),
       // Rear_Left_Camera 
       new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(4.25), Units.inchesToMeters(36)),

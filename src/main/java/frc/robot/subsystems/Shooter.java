@@ -185,6 +185,37 @@ public class Shooter extends SubsystemBase {
 
     /** Spins up the flywheel to {@link #targetRpm} */
     public void activateShooter() {
+        // Return shooter motors to coast mode for normal operation
+        shooter1Config
+            .inverted(true)
+            .idleMode(IdleMode.kCoast);
+
+        shooter1Config.closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .p(ShooterConstants.kP)
+            .i(ShooterConstants.kI)
+            .d(ShooterConstants.kD)
+            .outputRange(0, ShooterConstants.maxOutput);
+
+        shooter1Config.closedLoop.feedForward
+            .kV(ShooterConstants.kF);
+
+        shooterMotor1.configure(
+            shooter1Config,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters);
+
+        // Restore shooterMotor2 to follow mode with coast
+        SparkFlexConfig shooter2Config = new SparkFlexConfig();
+        shooter2Config
+            .idleMode(IdleMode.kCoast)
+            .follow(ShooterConstants.SHOOTER1_CAN_ID, true);
+
+        shooterMotor2.configure(
+            shooter2Config,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters);
+
         isShooterActive = true;
     }
 
@@ -194,6 +225,25 @@ public class Shooter extends SubsystemBase {
     /** Coasts the flywheel to a stop */
     public void killShooter() {
         isShooterActive = false;
+    }
+    public void stopShooter() {
+        shooter1Config
+            .idleMode(IdleMode.kBrake); // Brake mode for a hard stop
+        shooterMotor1.configure(
+            shooter1Config,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters);
+
+        SparkFlexConfig shooter2Config = new SparkFlexConfig();
+        shooter2Config
+            .follow(ShooterConstants.SHOOTER1_CAN_ID, true); //Invert to match direction of motor 1
+        shooterMotor2.configure(
+            shooter2Config,
+            ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters);
+        
+        shooterMotor1.stopMotor();
+        shooterMotor2.stopMotor();
     }
 
     /** Runs the feeder belt at {@link #feederSpeed} */
@@ -258,15 +308,16 @@ public class Shooter extends SubsystemBase {
         double d = SmartDashboard.getNumber("Shooter/D", ShooterConstants.kD);
         double max = SmartDashboard.getNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
         double hubdistance = getHubDistance();
-        double ready = SmartDashboard.getNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
         double feeder = SmartDashboard.getNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
         // Update local variables
         ShooterConstants.distance = hubdistance;
         SmartDashboard.putNumber("Shooter/Distance", ShooterConstants.distance);
-        ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
+        //ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
+        ShooterConstants.targetRpm = 3000;
         //readyRpm = ready;
-        ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.99; // Set ready RPM to 98% of target RPM for a small buffer
+        //ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.99; // Set ready RPM to 98% of target RPM for a small buffer
+        ShooterConstants.readyRpm = 2980;
         ShooterConstants.feederSpeed = feeder;
 
         // Check if PIDF or MaxOutput changed
