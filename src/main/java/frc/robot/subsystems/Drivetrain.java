@@ -83,13 +83,14 @@ public class Drivetrain extends SubsystemBase {
   // Odometry class for tracking robot pose (basic wheel odometry)
   SwerveDriveOdometry odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
+      getRotation2d(),
       new SwerveModulePosition[] {
           frontLeftModule.getPosition(),
           frontRightModule.getPosition(),
           rearLeftModule.getPosition(),
           rearRightModule.getPosition()
-      });
+      }
+  );
   
   /**
    * Pose estimator that fuses wheel odometry with vision measurements using Kalman filtering.
@@ -97,7 +98,7 @@ public class Drivetrain extends SubsystemBase {
    */
   private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0)),
+      getRotation2d(),
       new SwerveModulePosition[] {
           frontLeftModule.getPosition(),
           frontRightModule.getPosition(),
@@ -106,6 +107,58 @@ public class Drivetrain extends SubsystemBase {
       },
       new Pose2d()
   );
+
+  /** Resets only the gyro heading while preserving current translation. */
+  public void zeroHeadingOnly() {
+      Rotation2d currentRotation = getRotation2d();
+      gyro.reset(); // NavX now treats current direction as zero
+      // offset rotation back to preserve translation
+      odometry.resetPosition(
+          new Rotation2d(0.0),
+          new SwerveModulePosition[] {
+              frontLeftModule.getPosition(),
+              frontRightModule.getPosition(),
+              rearLeftModule.getPosition(),
+              rearRightModule.getPosition()
+          },
+          odometry.getPoseMeters()
+      );
+
+      poseEstimator.resetPosition(
+          new Rotation2d(0.0),
+          new SwerveModulePosition[] {
+              frontLeftModule.getPosition(),
+              frontRightModule.getPosition(),
+              rearLeftModule.getPosition(),
+              rearRightModule.getPosition()
+          },
+          poseEstimator.getEstimatedPosition()
+      );
+  }
+
+  public void resetPose(Pose2d pose) {
+      odometry.resetPosition(getRotation2d(), 
+          new SwerveModulePosition[] {
+              frontLeftModule.getPosition(),
+              frontRightModule.getPosition(),
+              rearLeftModule.getPosition(),
+              rearRightModule.getPosition()
+          }, pose);
+
+      poseEstimator.resetPosition(getRotation2d(),
+          new SwerveModulePosition[] {
+              frontLeftModule.getPosition(),
+              frontRightModule.getPosition(),
+              rearLeftModule.getPosition(),
+              rearRightModule.getPosition()
+          }, pose);
+  }
+
+  // ----- Updated zeroHeading binding (driver triangle) -----
+  public void zeroHeading() {
+      // Only reset rotation, preserve translation
+      zeroHeadingOnly();
+  }
 
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
@@ -162,7 +215,7 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     // Update odometry with latest wheel positions
     odometry.update(
-        Rotation2d.fromDegrees(getHeading()),
+        getRotation2d(),
         new SwerveModulePosition[] {
             frontLeftModule.getPosition(),
             frontRightModule.getPosition(),
@@ -173,7 +226,7 @@ public class Drivetrain extends SubsystemBase {
     // Update pose estimator with latest wheel positions
     // Vision measurements are added separately via addVisionMeasurement()
     poseEstimator.update(
-        Rotation2d.fromDegrees(getHeading()),
+        getRotation2d(),
         new SwerveModulePosition[] {
             frontLeftModule.getPosition(),
             frontRightModule.getPosition(),
@@ -290,36 +343,6 @@ public class Drivetrain extends SubsystemBase {
   }
   
   /**
-   * Resets the pose estimator to the specified pose.
-   * 
-   * This is the method used by PathPlanner AutoBuilder.
-   * Also updates the basic odometry for consistency.
-   * 
-   * @param pose The pose to which to reset
-   */
-  public void resetPose(Pose2d pose) {
-    odometry.resetPosition(
-        Rotation2d.fromDegrees(getHeading()),
-        new SwerveModulePosition[] {
-            frontLeftModule.getPosition(),
-            frontRightModule.getPosition(),
-            rearLeftModule.getPosition(),
-            rearRightModule.getPosition()
-        },
-        pose);
-    
-    poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(getHeading()),
-        new SwerveModulePosition[] {
-            frontLeftModule.getPosition(),
-            frontRightModule.getPosition(),
-            rearLeftModule.getPosition(),
-            rearRightModule.getPosition()
-        },
-        pose);
-  }
-  
-  /**
    * Adds a vision measurement to the Kalman filter pose estimator.
    * 
    * This is called by the Vision subsystem when it has a new AprilTag-based
@@ -424,7 +447,7 @@ public class Drivetrain extends SubsystemBase {
     SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(getHeading()))
+                getRotation2d())
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
  
     this.setModuleStates(swerveModuleStates);
@@ -468,28 +491,15 @@ public class Drivetrain extends SubsystemBase {
     rearRightModule.resetEncoders();
   }
 
-  /**
-   * tell the gyro to treat the current direction as zero
-   * this will make the robot treat how its facing as field forward
-   */
-  public void zeroHeading() {
-    gyro.reset();
-    // Change this after
-    resetOdometry(new Pose2d(0, 0, new Rotation2d()));
+  /** Returns the robot heading as a Rotation2d. Always authoritative source. */
+  public Rotation2d getRotation2d() {
+      // NavX upside-down mounting already corrects for CCW
+      return Rotation2d.fromDegrees(gyro.getAngle());
   }
 
-  /**
-   * Returns the heading of the robot.
-   * @return the robot's heading in degrees, from -Infinity to Infinity
-   */
+  /** Returns the robot heading in degrees. */
   public double getHeading() {
-    // I'm multiplying the navx heading by -1 
-    // because WPILib uses CCW as the positive direction
-    // and NavX uses CW as the positive direction
-
-    // (03/10/2026) edit - normally this is fine, but our 2026 robot has the gyro upside-down
-    // this has the effect of flipping the gyro convention, essentially back to CCW
-    return Rotation2d.fromDegrees(gyro.getAngle()).getDegrees();
+      return getRotation2d().getDegrees();
   }
 
   // Updated the max speed of the robot based on what mode is enabled
