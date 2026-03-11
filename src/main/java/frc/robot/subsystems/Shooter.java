@@ -295,7 +295,7 @@ public class Shooter extends SubsystemBase {
             kD = d;
             maxOutput = max;
 
-            kF=targetRpm*0.0000016; //tuned value
+            kF=0.0000016; //tuned value.  not rpm dependent
 
             // Update configuration object
             shooter1Config.closedLoop
