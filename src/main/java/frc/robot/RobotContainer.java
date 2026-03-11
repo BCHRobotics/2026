@@ -7,7 +7,6 @@ import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
-import frc.robot.commands.ballintake.ToggleBallIntakeRunCommand;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
@@ -35,7 +34,7 @@ public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
     private final BallIntake m_ballIntake = new BallIntake();
-    private final Shooter m_shooter = new Shooter();
+    private final Shooter m_shooter = new Shooter(robotDrive);
 
     // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);

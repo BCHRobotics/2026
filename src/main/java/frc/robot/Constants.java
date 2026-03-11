@@ -258,6 +258,19 @@ public final class Constants {
 
     public static final double kFieldLength = 16.54; // meters (54.27 feet)
     public static final double kFieldWidth = 8.21; // meters (26.94 feet)
+
+    // 2026 Rebuilt hub centers in field coordinates (blue-origin).
+    // Red hub center is provided by measurement; blue hub center is mirrored using
+    // the 2026 field layout length from APRILTAG_FIELD_LAYOUT.md (16.518 m).
+    public static final double kRedAllianceHubCenterX = 11.945;
+    public static final double kRedAllianceHubCenterY = 4.029;
+    public static final double kBlueAllianceHubCenterX = 16.518 - kRedAllianceHubCenterX;
+    public static final double kBlueAllianceHubCenterY = kRedAllianceHubCenterY;
+
+    public static final Translation2d kRedAllianceHubCenter =
+      new Translation2d(kRedAllianceHubCenterX, kRedAllianceHubCenterY);
+    public static final Translation2d kBlueAllianceHubCenter =
+      new Translation2d(kBlueAllianceHubCenterX, kBlueAllianceHubCenterY);
   }
 
   /**

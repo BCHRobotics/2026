@@ -82,8 +82,12 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import frc.robot.Constants.NavigationConstants;
 import frc.robot.Constants.ShooterConstants;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -110,6 +114,7 @@ public class Shooter extends SubsystemBase {
     private final SparkFlex shooterMotor1;
     private final SparkFlex shooterMotor2;
     private final SparkFlexConfig shooter1Config;
+    private final Drivetrain drivetrain;
 
     // On-board closed-loop controller runs the PID at 1 kHz on the SPARK MAX
     // (vs. 50 Hz if run on the RoboRIO with WPILib PIDController)
@@ -118,7 +123,8 @@ public class Shooter extends SubsystemBase {
     private boolean isShooterActive  = false;
     private double  currentFeederSpeed = 0.0;
 
-    public Shooter() {
+    public Shooter(Drivetrain drivetrain) {
+        this.drivetrain = drivetrain;
         feederMotor   = new SparkMax(ShooterConstants.FEEDER_CAN_ID,   MotorType.kBrushless);
         shooterMotor1 = new SparkFlex(ShooterConstants.SHOOTER1_CAN_ID, MotorType.kBrushless);
         shooterMotor2 = new SparkFlex(ShooterConstants.SHOOTER2_CAN_ID, MotorType.kBrushless);
@@ -240,6 +246,17 @@ public class Shooter extends SubsystemBase {
         return rpm;
     }
 
+    private Translation2d getAllianceHubCenter() {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        return alliance == Alliance.Red
+            ? NavigationConstants.kRedAllianceHubCenter
+            : NavigationConstants.kBlueAllianceHubCenter;
+    }
+
+    private double getHubDistance() {
+        return drivetrain.getPose().getTranslation().getDistance(getAllianceHubCenter());
+    }
+
     @Override
     public void periodic() {
         updateTunables();
@@ -258,14 +275,16 @@ public class Shooter extends SubsystemBase {
         double d = SmartDashboard.getNumber("Shooter/D", kD);
         double max = SmartDashboard.getNumber("Shooter/MaxOutput", maxOutput);
 
-        double hubdistance = SmartDashboard.getNumber("Shooter/Distance", distance);
+        double hubdistance = getHubDistance();
         double ready = SmartDashboard.getNumber("Shooter/ReadyRPM", readyRpm);
         double feeder = SmartDashboard.getNumber("Shooter/FeederSpeed", feederSpeed);
 
         // Update local variables
-        //distance = 2.0; // Replace with actual distance measurement from vision or sensors
+        distance = hubdistance;
+        SmartDashboard.putNumber("Shooter/Distance", distance);
         targetRpm = calculateRpmFromDistance(hubdistance);
-        readyRpm = ready;
+        //readyRpm = ready;
+        readyRpm=targetRpm * 0.99; // Set ready RPM to 98% of target RPM for a small buffer
         feederSpeed = feeder;
 
         // Check if PIDF or MaxOutput changed
@@ -275,6 +294,8 @@ public class Shooter extends SubsystemBase {
             kI = i;
             kD = d;
             maxOutput = max;
+
+            kF=targetRpm*0.0000016; //tuned value
 
             // Update configuration object
             shooter1Config.closedLoop
