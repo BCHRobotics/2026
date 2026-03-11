@@ -93,23 +93,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-    // Shooter tuning
-    private double distance     = 2.0;      // Distance from target (meters); replace with vision measurement
-    private double targetRpm   = 3000.0;
-    private double readyRpm    = 2980.0;   // Minimum RPM before feeder activates
-    private double feederSpeed = 0.5;      // Feeder open-loop duty cycle [0, 1]
-    private double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
-
-
-    // Closed-loop velocity PID gains (tune these on the physical robot)
-    private double kP = 0.00025;
-    private double kI = 0.000002;
-    private double kD = 0.0064;
-
-    // kV(aka kF) feedforward (volts per RPM). Set to ~1/maxRPM for a first estimate.
-    private double kF = 0.0000016;//12/targetRpm;  // Tune this on the physical robot
-
-
     private final SparkMax feederMotor;
     private final SparkFlex shooterMotor1;
     private final SparkFlex shooterMotor2;
@@ -133,14 +116,14 @@ public class Shooter extends SubsystemBase {
         flywheelController = shooterMotor1.getClosedLoopController();
 
         // Push initial values to SmartDashboard
-        SmartDashboard.putNumber("Shooter/F", kF);
-        SmartDashboard.putNumber("Shooter/P", kP);
-        SmartDashboard.putNumber("Shooter/I", kI);
-        SmartDashboard.putNumber("Shooter/D", kD);
-        SmartDashboard.putNumber("Shooter/MaxOutput", maxOutput);
-        SmartDashboard.putNumber("Shooter/Distance", distance);
-        SmartDashboard.putNumber("Shooter/ReadyRPM", readyRpm);
-        SmartDashboard.putNumber("Shooter/FeederSpeed", feederSpeed);
+        SmartDashboard.putNumber("Shooter/F", ShooterConstants.kF);
+        SmartDashboard.putNumber("Shooter/P", ShooterConstants.kP);
+        SmartDashboard.putNumber("Shooter/I", ShooterConstants.kI);
+        SmartDashboard.putNumber("Shooter/D", ShooterConstants.kD);
+        SmartDashboard.putNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
+        SmartDashboard.putNumber("Shooter/Distance", ShooterConstants.distance);
+        SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
+        SmartDashboard.putNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
         configureMotors();
     }
@@ -163,13 +146,13 @@ public class Shooter extends SubsystemBase {
 
         shooter1Config.closedLoop
             .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .p(kP)
-            .i(kI)
-            .d(kD)
-            .outputRange(0, maxOutput);  // Flywheel only spins forward
+            .p(ShooterConstants.kP)
+            .i(ShooterConstants.kI)
+            .d(ShooterConstants.kD)
+            .outputRange(0, ShooterConstants.maxOutput);  // Flywheel only spins forward
 
         shooter1Config.closedLoop.feedForward
-            .kV(kF);  // Velocity feedforward (Volts per RPM); tune on robot
+            .kV(ShooterConstants.kF);  // Velocity feedforward (Volts per RPM); tune on robot
 
         // --- Follower flywheel motor ---
         // follow(id, inverted=true) → spins opposite direction to motor1,
@@ -197,7 +180,7 @@ public class Shooter extends SubsystemBase {
 
     /** @return true when the flywheel has reached the ready RPM threshold */
     public boolean isCharged() {
-        return shooterMotor1.getEncoder().getVelocity() >= readyRpm;
+        return shooterMotor1.getEncoder().getVelocity() >= ShooterConstants.readyRpm;
     }
 
     /** Spins up the flywheel to {@link #targetRpm} */
@@ -215,7 +198,7 @@ public class Shooter extends SubsystemBase {
 
     /** Runs the feeder belt at {@link #feederSpeed} */
     public void activateFeeder() {
-        currentFeederSpeed = feederSpeed;
+        currentFeederSpeed = ShooterConstants.feederSpeed;
     }
 
     /** Stops the feeder belt */
@@ -269,42 +252,40 @@ public class Shooter extends SubsystemBase {
     }
 
     private void updateTunables() {
-        double f = SmartDashboard.getNumber("Shooter/F", kF);
-        double p = SmartDashboard.getNumber("Shooter/P", kP);
-        double i = SmartDashboard.getNumber("Shooter/I", kI);
-        double d = SmartDashboard.getNumber("Shooter/D", kD);
-        double max = SmartDashboard.getNumber("Shooter/MaxOutput", maxOutput);
-
+        double f = SmartDashboard.getNumber("Shooter/F", ShooterConstants.kF);
+        double p = SmartDashboard.getNumber("Shooter/P", ShooterConstants.kP);
+        double i = SmartDashboard.getNumber("Shooter/I", ShooterConstants.kI);
+        double d = SmartDashboard.getNumber("Shooter/D", ShooterConstants.kD);
+        double max = SmartDashboard.getNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
         double hubdistance = getHubDistance();
-        double ready = SmartDashboard.getNumber("Shooter/ReadyRPM", readyRpm);
-        double feeder = SmartDashboard.getNumber("Shooter/FeederSpeed", feederSpeed);
+        double ready = SmartDashboard.getNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
+        double feeder = SmartDashboard.getNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
         // Update local variables
-        distance = hubdistance;
-        SmartDashboard.putNumber("Shooter/Distance", distance);
-        targetRpm = calculateRpmFromDistance(hubdistance);
+        ShooterConstants.distance = hubdistance;
+        SmartDashboard.putNumber("Shooter/Distance", ShooterConstants.distance);
+        ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
         //readyRpm = ready;
-        readyRpm=targetRpm * 0.99; // Set ready RPM to 98% of target RPM for a small buffer
-        feederSpeed = feeder;
+        ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.99; // Set ready RPM to 98% of target RPM for a small buffer
+        ShooterConstants.feederSpeed = feeder;
 
         // Check if PIDF or MaxOutput changed
-        if (f != kF || p != kP || i != kI || d != kD || max != maxOutput) {
-            kF = f;
-            kP = p;
-            kI = i;
-            kD = d;
-            maxOutput = max;
-
-            kF=0.0000016; //tuned value.  not rpm dependent
+        if (f != ShooterConstants.kF || p != ShooterConstants.kP || i != ShooterConstants.kI || d != ShooterConstants.kD || max != ShooterConstants.maxOutput) {
+            ShooterConstants.kF = f;
+            ShooterConstants.kP = p;
+            ShooterConstants.kI = i;
+            ShooterConstants.kD = d;
+            ShooterConstants.maxOutput = max;
+            ShooterConstants.kF = 0.0000016; //tuned value.  not rpm dependent
 
             // Update configuration object
             shooter1Config.closedLoop
-                .p(kP)
-                .i(kI)
-                .d(kD)
-                .outputRange(0, maxOutput);
+                .p(ShooterConstants.kP)
+                .i(ShooterConstants.kI)
+                .d(ShooterConstants.kD)
+                .outputRange(0, ShooterConstants.maxOutput);
             shooter1Config.closedLoop.feedForward
-                .kV(kF);
+                .kV(ShooterConstants.kF);
 
             // Re-apply configuration to the motor controller
             // We use kNoResetSafeParameters to avoid resetting other settings
@@ -319,7 +300,7 @@ public class Shooter extends SubsystemBase {
     private void updateMotors() {
         if (isShooterActive) {
             // Delegate PID calculation to the SPARK MAX (runs at 1 kHz on-board)
-            flywheelController.setSetpoint(targetRpm, ControlType.kVelocity);
+            flywheelController.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
         } else {
             shooterMotor1.set(0);
         }

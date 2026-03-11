@@ -326,19 +326,20 @@ public final class Constants {
 
   public static final class ShooterConstants {
     // Shooter tuning
+    public static double distance = 2.0;     // Distance to target (for feedforward compensation)
     public static double targetRpm   = 3000.0;
     public static double readyRpm    = 2980.0;   // Minimum RPM before feeder activates
     public static double feederSpeed = 0.5;      // Feeder open-loop duty cycle [0, 1]
-    public static final double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
+    public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
 
     // Closed-loop velocity PID gains (tune these on the physical robot)
-    public static final double kP = 0.00025;
-    public static final double kI = 0.000002;
-    public static final double kD = 0.0064;
+    public static double kP = 0.00025;
+    public static double kI = 0.000002;
+    public static double kD = 0.0064;
 
     // kV(aka kF) feedforward (volts per RPM). Set to ~1/maxRPM for a first estimate.
-    public double kF = 0.0000016;//12/targetRpm;  // Tune this on the physical robot
+    public static double kF = 0.0000016;//12/targetRpm;  // Tune this on the physical robot
     public static final int FEEDER_CAN_ID = 21;
     public static final int SHOOTER1_CAN_ID = 22;
     public static final int SHOOTER2_CAN_ID = 23;
