@@ -110,11 +110,10 @@ public class Drivetrain extends SubsystemBase {
 
   /** Resets only the gyro heading while preserving current translation. */
   public void zeroHeadingOnly() {
-      Rotation2d currentRotation = getRotation2d();
       gyro.reset(); // NavX now treats current direction as zero
       // offset rotation back to preserve translation
       odometry.resetPosition(
-          new Rotation2d(0.0),
+          Rotation2d.fromDegrees(0.0),
           new SwerveModulePosition[] {
               frontLeftModule.getPosition(),
               frontRightModule.getPosition(),
@@ -125,7 +124,7 @@ public class Drivetrain extends SubsystemBase {
       );
 
       poseEstimator.resetPosition(
-          new Rotation2d(0.0),
+          Rotation2d.fromDegrees(0.0),
           new SwerveModulePosition[] {
               frontLeftModule.getPosition(),
               frontRightModule.getPosition(),

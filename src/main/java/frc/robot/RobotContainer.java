@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
+import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
@@ -212,7 +213,7 @@ public class RobotContainer {
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
 
             // goToClimb.onTrue(
-            //     new GoToPositionCommand(robotDrive, 10.0, 7.0, 0.0)
+            //     new GoToPositionCommand(robotDrive, 1.061, 4.600, 0.0)
             //             .withTimeout(10.0) // Safety timeout
             // );
             // climbtoggle.onTrue(new ToggleClimberExtendCommand(m_climber));
@@ -266,10 +267,12 @@ public class RobotContainer {
         }
 
         return new CalibrateBallIntakeCommand(m_ballIntake)
+                //.withTimeout(2.0) // Safety timeout for calibration - only use if necessary
                 .andThen(new ConditionalCommand(
-                        selectedAuto,
-                        new PrintCommand("BallIntake calibration failed; skipping autonomous command."),
-                        m_ballIntake::isCalibrated));
+                        Commands.none(),
+                        new PrintCommand("BallIntake calibration failed."),
+                        m_ballIntake::isCalibrated))
+                .andThen(selectedAuto);
 
     }
 
