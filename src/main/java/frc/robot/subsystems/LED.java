@@ -62,7 +62,7 @@ public class LED extends SubsystemBase {
     }
 
     // ── Colors [R, G, B] ──────────────────────────────────────────────────────
-    private static final int[] WHITE      = {255, 255, 255};  // DEPLOY
+    private static final int[] WHITE      = {100, 100, 100};  // DEPLOY
     private static final int[] GREEN      = {  0, 200,   0};  // TELEOP
     private static final int[] ORANGE     = {255,  80,   0};  // AUTO, INTAKE
     private static final int[] RED        = {255,   0,   0};  // DISABLED
@@ -73,7 +73,7 @@ public class LED extends SubsystemBase {
     private static final int[] BLUE       = {  0,  80, 255};  // AUTO_ASSIST
     private static final int[] PURPLE     = {160,   0, 200};  // TEST
     private static final int[] TEAL       = {  0, 180, 130};  // CLIMBER
-    private static final int[] RED_ORANGE = {255,  50,   0};  // GYRO_FAULT (flashing alt)
+    //private static final int[] RED_ORANGE = {255,  50,   0};  // GYRO_FAULT (flashing alt)
     private static final int[] OFF        = {  0,   0,   0};  // Flash "dark" half
 
     // ── Hardware ──────────────────────────────────────────────────────────────
@@ -186,16 +186,17 @@ public class LED extends SubsystemBase {
                 setSolid(WHITE);
                 break;
 
-            case GYRO_FAULT:
+            //case GYRO_FAULT:
                 // Flashing red-orange ↔ red at 4 Hz.
                 // NavX disconnected — field-relative steering is broken.
-                setSolid(m_flashOn ? RED_ORANGE : RED);
-                break;
+                //setSolid(m_flashOn ? RED_ORANGE : RED);
+                //break;
 
             case DISABLED:
                 // Solid red — robot is disabled or e-stopped.
                 setSolid(RED);
                 break;
+
 
             case AUTO:
                 // Solid orange — autonomous period is running.

@@ -271,10 +271,10 @@ public final class Constants {
     // ── Addressable LED Strip Constants ───────────────────────────────────────
     public static final class LEDConstants {
         /** PWM port on the roboRIO where the LED data wire is connected. */
-        public static final int kPort   = 9;
+        public static final int kPort   = 0;
 
         /** Total number of individually addressable LEDs on the strip. */
-        public static final int kLength = 30;
+        public static final int kLength = 300;
 
         /**
          * Flash toggle interval in seconds (0.25 s = 4 Hz).

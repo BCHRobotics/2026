@@ -59,8 +59,8 @@ public class PointToBallCommand extends Command {
 
         // Get ball yaw angle (negative = left, positive = right)
         double ballYaw = vision.getBallPosition().yaw;
-        double ballPitch = vision.getBallPosition().pitch;
-        double ballArea = vision.getBallPosition().area;
+      // (uncomment)  double ballPitch = vision.getBallPosition().pitch;
+      // (uncomment)  double ballArea = vision.getBallPosition().area;
         
         // Calculate rotation speed using PID
         // PID output is based on error (ball yaw - setpoint of 0)
