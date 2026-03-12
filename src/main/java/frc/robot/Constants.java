@@ -113,39 +113,39 @@ public final class Constants {
     
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
-      true,  // Left_Camera
-      true,  // Front_Camera
-      true,  // Rear_Left_Camera
-      true,   // Rear_Right_Camera
+      true,  // ShooterLeft_Camera
+      true,  // ShooterRight_Camera
+      // true,  // Rear_Left_Camera
+      // true,   // Rear_Right_Camera
     };
     
     // Camera names
     public static final String[] kCameraNames = {
-      "Left_Camera",  // Left_Camera
-      "Front_Camera",  // Front_Camera
-      "Rear_Left_Camera",  // Rear_Left_Camera
-      "Rear_Right_Camera"   // Rear_Right_Camera
+      "ShooterLeft_Camera",  //ShooterLeft_Camera; facing robot forward, intake side
+      "ShooterRight_Camera",  //ShooterRight_Camera
+      // "Rear_Left_Camera",  // Rear_Left_Camera
+      // "Rear_Right_Camera"   // Rear_Right_Camera
     };
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      // Left camera - Side
+      // ShooterLeft_Camera
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(5.00), Units.inchesToMeters(11.5), Units.inchesToMeters(32)),
-        new Rotation3d(0, 0, Math.PI/2)
+        new Translation3d(Units.inchesToMeters(-11.475), Units.inchesToMeters(11.253), Units.inchesToMeters(20.783)),
+        new Rotation3d(0, 30, Math.toRadians(150))
       ),
-      // Top_Camera - Front
+      // ShooterRight_Camera
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(6.5), Units.inchesToMeters(0), Units.inchesToMeters(36)),
-        new Rotation3d(0, 0, Math.toRadians(0))
+        new Translation3d(Units.inchesToMeters(-11.475), Units.inchesToMeters(-11.253), Units.inchesToMeters(20.783)),
+        new Rotation3d(0, 30, Math.toRadians(-150))
       ),
-      // Rear_Left_Camera 
-      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(4.25), Units.inchesToMeters(36)),
-                      new Rotation3d(0, 0, Math.toRadians(180))),
+      // // Rear_Left_Camera 
+      // new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(4.25), Units.inchesToMeters(36)),
+      //                 new Rotation3d(0, 0, Math.toRadians(180))),
 
-      // Rear_Right_Camera
-      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(-4), Units.inchesToMeters(36)),
-                      new Rotation3d(0, 0, Math.toRadians(180)))
+      // // Rear_Right_Camera
+      // new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(-4), Units.inchesToMeters(36)),
+      //                 new Rotation3d(0, 0, Math.toRadians(180)))
     };
     
     // Pose estimation tuning
@@ -161,9 +161,9 @@ public final class Constants {
 
     // Reject measurements that jump too far from the current fused pose estimate.
     public static final double kMaxSingleTagPoseDeltaMeters = 0.75;
-    public static final double kMaxMultiTagPoseDeltaMeters = 1.50;
+    public static final double kMaxMultiTagPoseDeltaMeters = 99.0;
     public static final double kMaxSingleTagRotationDeltaDegrees = 15.0;
-    public static final double kMaxMultiTagRotationDeltaDegrees = 35.0;
+    public static final double kMaxMultiTagRotationDeltaDegrees = 300.0;
     
     // Allowed error tolerances
     public static final double allowedXError = 0.025; // 5cm tolerance
@@ -244,9 +244,9 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 1.0;
+    public static final double kPositionP = 0.8;
     public static final double kPositionI = 0.00;
-    public static final double kPositionD = 0.01;
+    public static final double kPositionD = 0.02;
     
     /**
      * PID gains for rotation control.
