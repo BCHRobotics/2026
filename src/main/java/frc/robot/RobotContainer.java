@@ -208,7 +208,7 @@ public class RobotContainer {
             goToClimb = operatorPS5.triangle();
             climbtoggle = operatorPS5.cross();
 
-            killshooter.onTrue(Commands.runOnce(m_shooter::stopShooter, m_shooter));
+            killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
 
             // goToClimb.onTrue(

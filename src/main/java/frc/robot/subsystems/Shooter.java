@@ -184,75 +184,47 @@ public class Shooter extends SubsystemBase {
     }
 
     /** Spins up the flywheel to {@link #targetRpm} */
-    public void activateShooter() {
-        // Return shooter motors to coast mode for normal operation
-        shooter1Config
-            .inverted(true)
-            .idleMode(IdleMode.kCoast);
-
-        shooter1Config.closedLoop
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .p(ShooterConstants.kP)
-            .i(ShooterConstants.kI)
-            .d(ShooterConstants.kD)
-            .outputRange(0, ShooterConstants.maxOutput);
-
-        shooter1Config.closedLoop.feedForward
-            .kV(ShooterConstants.kF);
-
-        shooterMotor1.configure(
-            shooter1Config,
-            ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters);
-
-        // Restore shooterMotor2 to follow mode with coast
-        SparkFlexConfig shooter2Config = new SparkFlexConfig();
-        shooter2Config
-            .idleMode(IdleMode.kCoast)
-            .follow(ShooterConstants.SHOOTER1_CAN_ID, true);
-
-        shooterMotor2.configure(
-            shooter2Config,
-            ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters);
-
+    public void startShooter() {
         isShooterActive = true;
+
+        // Restore coast mode
+        setShooterIdleMode(IdleMode.kCoast);
     }
 
     /** No-op; subsystem state is already initialized in the constructor */
     public void initialize() {}
 
     /** Coasts the flywheel to a stop */
-    public void killShooter() {
+    public void stopShooter() {
         isShooterActive = false;
     }
-    public void stopShooter() {
-        shooter1Config
-            .idleMode(IdleMode.kBrake); // Brake mode for a hard stop
-        shooterMotor1.configure(
-            shooter1Config,
-            ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters);
+    public void killShooter() {
+        isShooterActive = false;
 
-        SparkFlexConfig shooter2Config = new SparkFlexConfig();
-        shooter2Config
-            .follow(ShooterConstants.SHOOTER1_CAN_ID, true); //Invert to match direction of motor 1
-        shooterMotor2.configure(
-            shooter2Config,
-            ResetMode.kResetSafeParameters,
-            PersistMode.kPersistParameters);
-        
+        // Switch to brake mode and stop motors
+        setShooterIdleMode(IdleMode.kBrake);
         shooterMotor1.stopMotor();
         shooterMotor2.stopMotor();
     }
 
+    private void setShooterIdleMode(IdleMode mode) {
+        // Only change idle mode; reuse the existing config
+        shooter1Config.idleMode(mode);
+
+        SparkFlexConfig shooter2Config = new SparkFlexConfig();
+        shooter2Config.follow(ShooterConstants.SHOOTER1_CAN_ID, true); // keep follower
+
+        shooterMotor1.configure(shooter1Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        shooterMotor2.configure(shooter2Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
     /** Runs the feeder belt at {@link #feederSpeed} */
-    public void activateFeeder() {
+    public void startFeeder() {
         currentFeederSpeed = ShooterConstants.feederSpeed;
     }
 
     /** Stops the feeder belt */
-    public void killFeeder() {
+    public void stopFeeder() {
         currentFeederSpeed = 0.0;
     }
 
@@ -281,7 +253,7 @@ public class Shooter extends SubsystemBase {
 
     private Translation2d getAllianceHubCenter() {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        return alliance == Alliance.Red
+        return (alliance == Alliance.Red)
             ? NavigationConstants.kRedAllianceHubCenter
             : NavigationConstants.kBlueAllianceHubCenter;
     }
@@ -308,17 +280,13 @@ public class Shooter extends SubsystemBase {
         double d = SmartDashboard.getNumber("Shooter/D", ShooterConstants.kD);
         double max = SmartDashboard.getNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
         double hubdistance = getHubDistance();
-        double feeder = SmartDashboard.getNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
-
         // Update local variables
         ShooterConstants.distance = hubdistance;
         SmartDashboard.putNumber("Shooter/Distance", ShooterConstants.distance);
         //ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
-        ShooterConstants.targetRpm = 3000;
+        ShooterConstants.targetRpm = 3000; //Uncomment line above once tuning is done to enable distance-based RPM adjustment
         //readyRpm = ready;
-        //ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.99; // Set ready RPM to 98% of target RPM for a small buffer
-        ShooterConstants.readyRpm = 2980;
-        ShooterConstants.feederSpeed = feeder;
+        ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.99; // Set ready RPM to 99% of target RPM for a larger buffer during testing
 
         // Check if PIDF or MaxOutput changed
         if (f != ShooterConstants.kF || p != ShooterConstants.kP || i != ShooterConstants.kI || d != ShooterConstants.kD || max != ShooterConstants.maxOutput) {
@@ -327,8 +295,7 @@ public class Shooter extends SubsystemBase {
             ShooterConstants.kI = i;
             ShooterConstants.kD = d;
             ShooterConstants.maxOutput = max;
-            ShooterConstants.kF = 0.0000016; //tuned value.  not rpm dependent
-
+            
             // Update configuration object
             shooter1Config.closedLoop
                 .p(ShooterConstants.kP)
