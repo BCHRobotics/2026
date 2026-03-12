@@ -286,8 +286,8 @@ public final class Constants {
 
     // The requested starting locations are measured from the field walls, then converted to
     // WPILib field coordinates so commands can use the same Pose2d math as the rest of the robot.
-    public static final double kStartDistanceFromEndWallMeters = Units.inchesToMeters(41.0);
-    public static final double kStartDistanceFromSideWallMeters = Units.inchesToMeters(60.0);
+    public static final double kStartDistanceFromEndWallMeters = Units.inchesToMeters(41.5);
+    public static final double kStartDistanceFromSideWallMeters = Units.inchesToMeters(120.0);
     public static final double kDriveForwardDistanceMeters = Units.inchesToMeters(30.0);
     public static final double kDriveMaxSpeedMetersPerSecond = 0.5;
 
