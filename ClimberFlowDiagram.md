@@ -28,6 +28,99 @@ The command gets its start pose from the SmartDashboard chooser:
 - `getSelectedClimbStartPose()` returns the currently selected climb pose.
 - If nothing is selected, it defaults to `ClimbConstants.kBlueLeftStartPose`.
 
+## Constants Used By The Climber Command
+
+The climb flow depends on constants from two places:
+
+- `src/main/java/frc/robot/Constants.java`
+- `src/main/java/frc/robot/commands/climber/ClimbCommand.java`
+
+### Constants from `Constants.ClimbConstants`
+
+- `kBlueLeftStartPose`, `kBlueRightStartPose`, `kRedLeftStartPose`, `kRedRightStartPose`
+    Used as selectable climb start locations. The command defaults to `kBlueLeftStartPose` if the chooser returns `null`.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+- `kDriveForwardDistanceMeters`
+    Used in `ClimbCommand.initialize()` to compute `targetPose` by moving forward from `startPose`.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+- `kDriveMaxSpeedMetersPerSecond`
+    Used in `ClimbCommand.driveToPose()` to clamp commanded translation speed while driving to `startPose` or `targetPose`.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+- `kExtendSpeed`
+    Used indirectly by `climber.extendClimber()` during `EXTENDING_AT_START`.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+- `kRetractSpeed`
+    Used indirectly by `climber.retractClimber()` during `CLIMBING`.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+- `kCurrentSpikeThresholdAmps`
+    Used indirectly by the `Climber` subsystem to decide whether extend or retract has hit a hard stop based on current draw.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+- `kCurrentAverageWindowSeconds`
+    Used indirectly by the `Climber` subsystem to define the moving-average window for current spike detection.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+- `kMotorCanId`, `kMotorInverted`, `kMotorCurrentLimit`
+    Used indirectly by the `Climber` subsystem to configure the climber motor controller.
+    Location: `src/main/java/frc/robot/Constants.java` in `ClimbConstants`.
+
+### Constants from `Constants.NavigationConstants`
+
+- `kPositionP`, `kPositionI`, `kPositionD`
+    Used to create the X and Y PID controllers in `ClimbCommand`.
+    Location: `src/main/java/frc/robot/Constants.java` in `NavigationConstants`.
+
+- `kRotationP`, `kRotationI`, `kRotationD`
+    Used to create the rotation PID controller in `ClimbCommand`.
+    Location: `src/main/java/frc/robot/Constants.java` in `NavigationConstants`.
+
+- `kPositionTolerance`
+    Used in two places:
+    as the PID controller tolerance, and in `isAtPose(...)` as part of the translation arrival test.
+    Location: `src/main/java/frc/robot/Constants.java` in `NavigationConstants`.
+
+- `kRotationTolerance`
+    Used in two places:
+    as the PID controller tolerance, and in `isAtPose(...)` as the heading arrival test.
+    Location: `src/main/java/frc/robot/Constants.java` in `NavigationConstants`.
+
+- `kMaxAngularSpeed`
+    Used in `driveToPose(...)` to clamp rotation speed while driving to a pose.
+    Location: `src/main/java/frc/robot/Constants.java` in `NavigationConstants`.
+
+- `kFieldLength`, `kFieldWidth`
+    Used indirectly when the predefined climb start poses are constructed in `ClimbConstants`.
+    Location: `src/main/java/frc/robot/Constants.java` in `NavigationConstants`.
+
+### Constant local to `ClimbCommand`
+
+- `kMinTranslationErrorForArrivalMeters`
+    Defined inside `ClimbCommand` as `Units.inchesToMeters(1.0)`.
+    Used in `isAtPose(...)` to enforce a minimum arrival threshold even if the navigation position tolerance is set smaller.
+    Location: `src/main/java/frc/robot/commands/climber/ClimbCommand.java`.
+
+### SmartDashboard keys written by `ClimbCommand`
+
+These are not motion-tuning constants, but they are fixed string values used by the command for telemetry:
+
+- `ClimbCommand/Running`
+- `ClimbCommand/Phase`
+- `ClimbCommand/InitialPose`
+- `ClimbCommand/SelectedStartPose`
+- `ClimbCommand/TargetPose`
+- `ClimbCommand/AtStartPose`
+- `ClimbCommand/CurrentPoseX`
+- `ClimbCommand/CurrentPoseY`
+- `ClimbCommand/CurrentHeadingDegrees`
+- `ClimbCommand/LastResult`
+
+Location: `src/main/java/frc/robot/commands/climber/ClimbCommand.java`.
+
 ## Sequence Overview
 
 When the command is scheduled, it runs through these phases:
@@ -83,12 +176,12 @@ Once extended:
 
 - the climber motor is stopped
 - the phase changes to `APPROACHING_CLIMB`
-- the drive PID target is changed to `targetPose`
 
 ### 4. APPROACHING_CLIMB
 
 If the phase is `APPROACHING_CLIMB`:
 
+- the command calls `setDriveTarget(targetPose)`
 - the robot drives toward `targetPose` using `driveToPose(targetPose)`
 - this continues until `isAtPose(currentPose, targetPose)` is true
 
