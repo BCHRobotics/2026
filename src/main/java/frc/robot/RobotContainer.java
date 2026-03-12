@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 
@@ -88,8 +89,7 @@ public class RobotContainer {
         configureClimbStartPoseChooser();
         configurePathPlannerPidChoosers();
         configureDashboardCommands();
-
-        // NamedCommands.registerCommand("name", getAutonomousCommand());
+        registerPathPlannerCommands();
 
         autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
         autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
@@ -159,6 +159,12 @@ public class RobotContainer {
         SmartDashboard.putData("Climb Command", new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
     }
 
+    private void registerPathPlannerCommands() {
+        NamedCommands.registerCommand(
+                "RunClimb",
+                new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+    }
+
     private Pose2d getSelectedClimbStartPose() {
         Pose2d selectedPose = climbStartPoseChooser.getSelected();
         return selectedPose != null ? selectedPose : ClimbConstants.kBlueLeftStartPose;
@@ -202,7 +208,7 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle;
+        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, climbTrigger;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -210,6 +216,7 @@ public class RobotContainer {
             intakeToggle = driverPS5.circle();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
+            climbTrigger = driverPS5.L1();
 
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
@@ -218,6 +225,7 @@ public class RobotContainer {
             intakeToggle = driverXbox.b();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
+            climbTrigger = driverXbox.leftBumper();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -243,6 +251,9 @@ public class RobotContainer {
 
         // Cross: Toggle between retracted home and configured extended position.
         extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
+
+        // Left bumper: run the climb sequence using the currently selected climb start pose.
+        climbTrigger.onTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
     }
 
     /**
