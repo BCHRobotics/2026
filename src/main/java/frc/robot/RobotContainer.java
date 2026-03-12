@@ -11,6 +11,7 @@ import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Vision;
 import frc.robot.webserver.VisionWebServer;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.OIConstants;
 
 import java.util.List;
@@ -224,9 +225,18 @@ public class RobotContainer {
         //   Elapsed 50– 75 s → window 2 → SHIFT_ON  (cyan)      — shoot
         //   …
         if (matchTime >= 0) {
-            double elapsed    = kTeleopDuration - matchTime;
-            int    shiftIndex = (int)(elapsed / kShiftDuration);
-            led.setState((shiftIndex % 2 == 0) ? LED.State.SHIFT_ON : LED.State.SHIFT_OFF);
+            double elapsed       = kTeleopDuration - matchTime;
+            int    shiftIndex    = (int)(elapsed / kShiftDuration);
+            double timeIntoShift = elapsed - (shiftIndex * kShiftDuration);
+            double timeLeftInShift = kShiftDuration - timeIntoShift;
+            boolean shiftOn      = (shiftIndex % 2 == 0);
+
+            if (timeLeftInShift <= LEDConstants.kShiftWarningSeconds) {
+                // Warning: about to flip — flash the NEXT window's color
+                led.setState(shiftOn ? LED.State.SHIFT_OFF_WARNING : LED.State.SHIFT_ON_WARNING);
+            } else {
+                led.setState(shiftOn ? LED.State.SHIFT_ON : LED.State.SHIFT_OFF);
+            }
             return;
         }
 

@@ -56,6 +56,8 @@ public class LED extends SubsystemBase {
         INTAKE,
         SHIFT_ON,
         SHIFT_OFF,
+        SHIFT_ON_WARNING,  
+        SHIFT_OFF_WARNING,
         CLIMBER,
         MECHANISM_READY,
         TELEOP
@@ -240,7 +242,15 @@ public class LED extends SubsystemBase {
                 // INTAKE only fires during teleop (after all mode checks pass).
                 setSolid(ORANGE);
                 break;
+            case SHIFT_ON_WARNING:
+                // Flashing cyan ↔ off — shift is about to open. Get ready to shoot.
+                setSolid(m_flashOn ? CYAN : OFF);
+                break;
 
+            case SHIFT_OFF_WARNING:
+                // Flashing dark-blue ↔ off — shift is about to close. Stop shooting.
+                setSolid(m_flashOn ? DARK_BLUE : OFF);
+                break;
             case SHIFT_ON:
                 // Solid cyan — the current 25-second window is the shooting window.
                 setSolid(CYAN);

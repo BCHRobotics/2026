@@ -281,6 +281,7 @@ public final class Constants {
          * Controls all flashing states: GYRO_FAULT, ENDGAME, MATCH_END, POSE_VALID fallback.
          */
         public static final double kFlashPeriod = 0.25;
+        public static final double kShiftWarningSeconds = 3.0;
 
         /**
          * Distance (metres) at which the POSE_VALID distance-gradient shows solid red.
