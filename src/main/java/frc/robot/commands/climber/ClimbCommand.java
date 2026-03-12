@@ -133,8 +133,8 @@ public class ClimbCommand extends Command {
       return;
     }
 
-    // In the climbing phase we simply run until the Spark MAX limit input is pressed.
-    climber.runClimber();
+    // In the climbing phase we extend until we hit the end stop or see a sustained current spike.
+    climber.extendClimber();
   }
 
   @Override
@@ -148,8 +148,7 @@ public class ClimbCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    // The limit switch is the safety stop for this command.
-    return phase == Phase.CLIMBING && climber.isLimitSwitchPressed();
+    return phase == Phase.CLIMBING && climber.isExtendLimitReached();
   }
 
   private String poseToString(Pose2d pose) {

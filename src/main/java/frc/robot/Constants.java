@@ -279,9 +279,10 @@ public final class Constants {
     public static final int kMotorCanId = 88;
     public static final boolean kMotorInverted = false;
     public static final int kMotorCurrentLimit = 40;
-    public static final double kClimbSpeed = 0.6;
-    // Set this based on which Spark MAX limit input the climber switch is wired into.
-    public static final boolean kUseForwardLimitSwitch = true;
+    public static final double kExtendSpeed = 0.6;
+    public static final double kRetractSpeed = -0.6;
+    public static final double kCurrentSpikeThresholdAmps = 39.0;
+    public static final double kCurrentAverageWindowSeconds = 0.1;
 
     // The requested starting locations are measured from the field walls, then converted to
     // WPILib field coordinates so commands can use the same Pose2d math as the rest of the robot.
