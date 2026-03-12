@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
+import frc.robot.commands.drivetrain.VisionTuningPath;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.shooter.ShootCommand;
@@ -86,6 +87,7 @@ public class RobotContainer {
         // Configure field pose chooser
         configureFieldPoseChooser();
         configurePathPlannerPidChoosers();
+        configureVisionTuning();
 
         // NamedCommands.registerCommand("name", getAutonomousCommand());
 
@@ -139,6 +141,10 @@ public class RobotContainer {
         );
         ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
         ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
+    }
+
+    private void configureVisionTuning() {
+        SmartDashboard.putData("VisionTuningPath", new VisionTuningPath(robotDrive));
     }
 
     /**

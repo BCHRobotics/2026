@@ -115,37 +115,37 @@ public final class Constants {
     public static final boolean[] kCamerasEnabled = {
       true,  // ShooterLeft_Camera
       true,  // ShooterRight_Camera
-      false,  // Rear_Left_Camera
-      false,   // Rear_Right_Camera
+      // true,  // Rear_Left_Camera
+      // true,   // Rear_Right_Camera
     };
     
     // Camera names
     public static final String[] kCameraNames = {
-      "ShooterLeft_Camera",  // Left_Camera
-      "ShooterRight_Camera",  // Front_Camera
-      "Rear_Left_Camera",  // Rear_Left_Camera
-      "Rear_Right_Camera"   // Rear_Right_Camera
+      "ShooterLeft_Camera",  //ShooterLeft_Camera; facing robot forward, intake side
+      "ShooterRight_Camera",  //ShooterRight_Camera
+      // "Rear_Left_Camera",  // Rear_Left_Camera
+      // "Rear_Right_Camera"   // Rear_Right_Camera
     };
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      //ShooterLeft_Camera
+      // ShooterLeft_Camera
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(11.475), Units.inchesToMeters(11.253), Units.inchesToMeters(20.783)),
-        new Rotation3d(0, 0, Math.toRadians(60))
+        new Translation3d(Units.inchesToMeters(-11.475), Units.inchesToMeters(11.253), Units.inchesToMeters(20.783)),
+        new Rotation3d(0, 30, Math.toRadians(150))
       ),
-      //ShooterRight_Camera
+      // ShooterRight_Camera
       new Transform3d(
-        new Translation3d(Units.inchesToMeters(-4.612), Units.inchesToMeters(0.095), Units.inchesToMeters(21.102)),
-        new Rotation3d(0, 0, Math.toRadians(60))
+        new Translation3d(Units.inchesToMeters(-11.475), Units.inchesToMeters(-11.253), Units.inchesToMeters(20.783)),
+        new Rotation3d(0, 30, Math.toRadians(-150))
       ),
-      // Rear_Left_Camera 
-      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(4.25), Units.inchesToMeters(36)),
-                      new Rotation3d(0, 0, Math.toRadians(180))),
+      // // Rear_Left_Camera 
+      // new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(4.25), Units.inchesToMeters(36)),
+      //                 new Rotation3d(0, 0, Math.toRadians(180))),
 
-      // Rear_Right_Camera
-      new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(-4), Units.inchesToMeters(36)),
-                      new Rotation3d(0, 0, Math.toRadians(180)))
+      // // Rear_Right_Camera
+      // new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(-4), Units.inchesToMeters(36)),
+      //                 new Rotation3d(0, 0, Math.toRadians(180)))
     };
     
     // Pose estimation tuning
@@ -153,11 +153,17 @@ public final class Constants {
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.35, 0.35, 0.45);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.1, 0.1, 0.15);
     public static final double kDistanceWeight = 0.01;
+    public static final double kRotationDistanceWeight = 0.03;
     
-  // Maximum distance (meters) at which we will accept a vision pose update.
-  //  Measurements from targets farther than this are ignored to avoid
-  //  using excessively noisy detections for pose fusion.
-  public static final double kMaxTargetDistance = 3.0;
+    // Maximum camera-to-tag distance (meters) at which we will accept vision updates.
+    public static final double kMaxSingleTagDistance = 2.5;
+    public static final double kMaxMultiTagDistance = 4.0;
+
+    // Reject measurements that jump too far from the current fused pose estimate.
+    public static final double kMaxSingleTagPoseDeltaMeters = 0.75;
+    public static final double kMaxMultiTagPoseDeltaMeters = 99.0;
+    public static final double kMaxSingleTagRotationDeltaDegrees = 15.0;
+    public static final double kMaxMultiTagRotationDeltaDegrees = 300.0;
     
     // Allowed error tolerances
     public static final double allowedXError = 0.025; // 5cm tolerance
@@ -238,9 +244,9 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 1.0;
+    public static final double kPositionP = 0.8;
     public static final double kPositionI = 0.00;
-    public static final double kPositionD = 0.01;
+    public static final double kPositionD = 0.02;
     
     /**
      * PID gains for rotation control.
