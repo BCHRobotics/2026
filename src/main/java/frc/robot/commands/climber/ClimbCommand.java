@@ -104,7 +104,6 @@ public class ClimbCommand extends Command {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         if (climber.isExtendLimitReached()) {
           phase = Phase.APPROACHING_CLIMB;
-          setDriveTarget(targetPose);
         } else {
           phase = Phase.EXTENDING_AT_START;
         }
@@ -121,7 +120,6 @@ public class ClimbCommand extends Command {
       if (climber.isExtendLimitReached()) {
         climber.stop();
         phase = Phase.APPROACHING_CLIMB;
-        setDriveTarget(targetPose);
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       } else {
         climber.extendClimber();
@@ -131,6 +129,8 @@ public class ClimbCommand extends Command {
     }
 
     if (phase == Phase.APPROACHING_CLIMB) {
+      setDriveTarget(targetPose);
+
       if (driveToPose(targetPose)) {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         phase = Phase.CLIMBING;

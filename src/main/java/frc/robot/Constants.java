@@ -289,7 +289,7 @@ public final class Constants {
     public static final double kStartDistanceFromEndWallMeters = Units.inchesToMeters(41.0);
     public static final double kStartDistanceFromSideWallMeters = Units.inchesToMeters(60.0);
     public static final double kDriveForwardDistanceMeters = Units.inchesToMeters(30.0);
-    public static final double kDriveMaxSpeedMetersPerSecond = 0.75;
+    public static final double kDriveMaxSpeedMetersPerSecond = 0.5;
 
     public static final Pose2d kBlueLeftStartPose = new Pose2d(
         kStartDistanceFromEndWallMeters,
