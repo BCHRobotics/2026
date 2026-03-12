@@ -5,11 +5,9 @@ import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.drivetrain.VisionTuningPath;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
-import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
-import frc.robot.commands.ballintake.ToggleBallIntakeRunCommand;
 import frc.robot.commands.climber.ClimbCommand;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Climber;
@@ -220,7 +218,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
-        Trigger killshooter, killIntake, goToClimb, climbtoggle;
+        Trigger killshooter, killIntake, climberExtend, climberRetract;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -248,17 +246,14 @@ public class RobotContainer {
         if (operatorPS5 !=null) {
             killshooter = operatorPS5.square();
             killIntake = operatorPS5.circle();
-            goToClimb = operatorPS5.triangle();
-            climbtoggle = operatorPS5.cross();
+            climberExtend = operatorPS5.triangle();
+            climberRetract = operatorPS5.cross();
 
             killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
 
-            // goToClimb.onTrue(
-            //     new GoToPositionCommand(robotDrive, 1.061, 4.600, 0.0)
-            //             .withTimeout(10.0) // Safety timeout
-            // );
-            // climbtoggle.onTrue(new ToggleClimberExtendCommand(m_climber));
+            climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
+            climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
 
         }
 
