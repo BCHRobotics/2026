@@ -23,6 +23,7 @@ public class ClimbCommand extends Command {
     ALIGNING_TO_START,
     EXTENDING_AT_START,
     APPROACHING_CLIMB,
+    CLIMBING,
     FINISHED
   }
 
@@ -109,6 +110,20 @@ public class ClimbCommand extends Command {
       return;
     }
 
+    if (phase == Phase.CLIMBING) {
+      drivetrain.setChassisSpeeds(new ChassisSpeeds());
+
+      if (climber.isRetractLimitReached()) {
+        climber.stop();
+        phase = Phase.FINISHED;
+        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
+      } else {
+        climber.retractClimber();
+      }
+
+      return;
+    }
+
     if (phase != Phase.FINISHED) {
       Pose2d currentPose = drivetrain.getPose();
       double xSpeed = xController.calculate(currentPose.getX());
@@ -150,7 +165,7 @@ public class ClimbCommand extends Command {
             phase = Phase.EXTENDING_AT_START;
           }
         } else {
-          phase = Phase.FINISHED;
+          phase = Phase.CLIMBING;
         }
 
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
