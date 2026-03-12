@@ -16,11 +16,14 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 
 public class ClimbCommand extends Command {
-  // The command has two phases: first drive into the climb position, then run the motor
-  // until the hard-stop/limit input says we have reached the end of travel.
+  // The command first drives from the robot's current estimated pose to the selected climb
+  // start pose, extends the climber there if needed, and then advances to the final climb
+  // approach point.
   private enum Phase {
-    DRIVING,
-    CLIMBING
+    ALIGNING_TO_START,
+    EXTENDING_AT_START,
+    APPROACHING_CLIMB,
+    FINISHED
   }
 
   private static final String DASHBOARD_KEY_PREFIX = "ClimbCommand/";
@@ -41,7 +44,7 @@ public class ClimbCommand extends Command {
       NavigationConstants.kRotationI,
       NavigationConstants.kRotationD);
 
-  private Phase phase = Phase.DRIVING;
+  private Phase phase = Phase.ALIGNING_TO_START;
   private Pose2d startPose = ClimbConstants.kBlueLeftStartPose;
   private Pose2d targetPose = ClimbConstants.kBlueLeftStartPose;
 
@@ -56,7 +59,7 @@ public class ClimbCommand extends Command {
     rotationController.enableContinuousInput(-180.0, 180.0);
 
     SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", false);
-    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", Phase.DRIVING.name());
+    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", Phase.ALIGNING_TO_START.name());
 
     addRequirements(drivetrain, climber);
   }
@@ -65,6 +68,8 @@ public class ClimbCommand extends Command {
   public void initialize() {
     Pose2d selectedPose = selectedStartPoseSupplier.get();
     startPose = selectedPose != null ? selectedPose : ClimbConstants.kBlueLeftStartPose;
+    Pose2d currentPose = drivetrain.getPose();
+
     // transformBy() applies motion in the robot's local frame, so this moves the robot
     // 30 inches "forward" relative to the heading stored in the selected start pose.
     targetPose = startPose.transformBy(new Transform2d(
@@ -72,21 +77,16 @@ public class ClimbCommand extends Command {
         0.0,
         new Rotation2d()));
 
-    phase = Phase.DRIVING;
-
-    // Resetting pose here makes the command repeatable for testing as long as the robot is
-    // physically placed at the chosen start location before pressing the dashboard button.
-    drivetrain.resetPose(startPose);
+    phase = Phase.ALIGNING_TO_START;
     climber.stop();
 
     xController.reset();
     yController.reset();
     rotationController.reset();
-    xController.setSetpoint(targetPose.getX());
-    yController.setSetpoint(targetPose.getY());
-    rotationController.setSetpoint(startPose.getRotation().getDegrees());
+    setDriveTarget(startPose);
 
     SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
+    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "InitialPose", poseToString(currentPose));
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "SelectedStartPose", poseToString(startPose));
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "TargetPose", poseToString(targetPose));
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
@@ -94,7 +94,22 @@ public class ClimbCommand extends Command {
 
   @Override
   public void execute() {
-    if (phase == Phase.DRIVING) {
+    if (phase == Phase.EXTENDING_AT_START) {
+      drivetrain.setChassisSpeeds(new ChassisSpeeds());
+
+      if (climber.isExtendLimitReached()) {
+        climber.stop();
+        phase = Phase.APPROACHING_CLIMB;
+        setDriveTarget(targetPose);
+        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
+      } else {
+        climber.extendClimber();
+      }
+
+      return;
+    }
+
+    if (phase != Phase.FINISHED) {
       Pose2d currentPose = drivetrain.getPose();
       double xSpeed = xController.calculate(currentPose.getX());
       double ySpeed = yController.calculate(currentPose.getY());
@@ -127,14 +142,21 @@ public class ClimbCommand extends Command {
       // Only switch to the climb motor once translation and heading are both within tolerance.
       if (xController.atSetpoint() && yController.atSetpoint() && rotationController.atSetpoint()) {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
-        phase = Phase.CLIMBING;
+        if (phase == Phase.ALIGNING_TO_START) {
+          if (climber.isExtendLimitReached()) {
+            phase = Phase.APPROACHING_CLIMB;
+            setDriveTarget(targetPose);
+          } else {
+            phase = Phase.EXTENDING_AT_START;
+          }
+        } else {
+          phase = Phase.FINISHED;
+        }
+
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       }
       return;
     }
-
-    // In the climbing phase we extend until we hit the end stop or see a sustained current spike.
-    climber.extendClimber();
   }
 
   @Override
@@ -148,7 +170,13 @@ public class ClimbCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return phase == Phase.CLIMBING && climber.isExtendLimitReached();
+    return phase == Phase.FINISHED;
+  }
+
+  private void setDriveTarget(Pose2d pose) {
+    xController.setSetpoint(pose.getX());
+    yController.setSetpoint(pose.getY());
+    rotationController.setSetpoint(pose.getRotation().getDegrees());
   }
 
   private String poseToString(Pose2d pose) {
