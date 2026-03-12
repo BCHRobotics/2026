@@ -33,7 +33,8 @@ public class ShootCommand extends Command {
     /** Resets state and starts the flywheel spinning */
     @Override
     public void initialize() {
-        m_shooter.startFeeder();
+        m_shooter.startShooter();
+        m_shooter.stopFeeder();
     }
 
     /** Feeds game pieces when flywheel reaches threshold RPM, otherwise waits */

@@ -332,7 +332,7 @@ public final class Constants {
 
   public static final class ShooterConstants {
     // Shooter tuning
-    public static double distance = 2.0;     // Distance to target (for feedforward compensation)
+    //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
     public static double targetRpm   = 3000.0;
     public static double readyRpm    = 2980.0;   // Minimum RPM before feeder activates
     public static double feederSpeed = 0.5;      // Feeder open-loop duty cycle [0, 1]

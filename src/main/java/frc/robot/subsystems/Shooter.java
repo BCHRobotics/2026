@@ -121,7 +121,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/I", ShooterConstants.kI);
         SmartDashboard.putNumber("Shooter/D", ShooterConstants.kD);
         SmartDashboard.putNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
-        SmartDashboard.putNumber("Shooter/Distance", ShooterConstants.distance);
+        SmartDashboard.putNumber("Shooter/Distance", getHubDistance());
         SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
         SmartDashboard.putNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
@@ -281,10 +281,10 @@ public class Shooter extends SubsystemBase {
         double max = SmartDashboard.getNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
         double hubdistance = getHubDistance();
         // Update local variables
-        ShooterConstants.distance = hubdistance;
-        SmartDashboard.putNumber("Shooter/Distance", ShooterConstants.distance);
-        //ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
-        ShooterConstants.targetRpm = 3000; //Uncomment line above once tuning is done to enable distance-based RPM adjustment
+        //ShooterConstants.distance = hubdistance;
+        //SmartDashboard.putNumber("Shooter/Distance", getHubDistance());
+        ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
+        //ShooterConstants.targetRpm = 3000; //Uncomment line above once tuning is done to enable distance-based RPM adjustment
         //readyRpm = ready;
         ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.99; // Set ready RPM to 99% of target RPM for a larger buffer during testing
 
