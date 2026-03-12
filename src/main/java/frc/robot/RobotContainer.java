@@ -9,7 +9,10 @@ import frc.robot.commands.drivetrain.GoToPositionCommand;
 import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
+import frc.robot.commands.ballintake.ToggleBallIntakeRunCommand;
+import frc.robot.commands.climber.ClimbCommand;
 import frc.robot.subsystems.BallIntake;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Shooter;
@@ -29,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 
@@ -36,6 +40,7 @@ public class RobotContainer {
     // Subsystems
     private final Drivetrain robotDrive = new Drivetrain();
     private final BallIntake m_ballIntake = new BallIntake();
+    private final Climber climber = new Climber();
     private final Shooter m_shooter = new Shooter(robotDrive);
 
     // Vision subsystem for AprilTag detection and pose estimation.
@@ -56,6 +61,7 @@ public class RobotContainer {
     // Field pose chooser — selects where the robot drives when the pose-nav button
     // is held
     private final SendableChooser<Pose2d> fieldPoseChooser = new SendableChooser<>();
+    private final SendableChooser<Pose2d> climbStartPoseChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
 
@@ -86,10 +92,11 @@ public class RobotContainer {
 
         // Configure field pose chooser
         configureFieldPoseChooser();
+        configureClimbStartPoseChooser();
         configurePathPlannerPidChoosers();
         configureVisionTuning();
-
-        // NamedCommands.registerCommand("name", getAutonomousCommand());
+        configureDashboardCommands();
+        registerPathPlannerCommands();
 
         autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
         autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
@@ -124,6 +131,17 @@ public class RobotContainer {
         SmartDashboard.putData("Field Pose", fieldPoseChooser);
     }
 
+    private void configureClimbStartPoseChooser() {
+        // These poses are predefined constants so the team can place the robot at known climb
+        // test locations and select them from SmartDashboard before running the command.
+        climbStartPoseChooser.setDefaultOption("Blue Left", ClimbConstants.kBlueLeftStartPose);
+        climbStartPoseChooser.addOption("Blue Right", ClimbConstants.kBlueRightStartPose);
+        climbStartPoseChooser.addOption("Red Left", ClimbConstants.kRedLeftStartPose);
+        climbStartPoseChooser.addOption("Red Right", ClimbConstants.kRedRightStartPose);
+
+        SmartDashboard.putData("Climb Start Pose", climbStartPoseChooser);
+    }
+
     /**
      * Configures Shuffleboard choosers for PathPlanner translation/rotation PID presets.
      */
@@ -141,6 +159,22 @@ public class RobotContainer {
         );
         ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
         ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
+    }
+
+    private void configureDashboardCommands() {
+        // putData publishes a clickable command button to SmartDashboard.
+        SmartDashboard.putData("Climb Command", new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+    }
+
+    private void registerPathPlannerCommands() {
+        NamedCommands.registerCommand(
+                "RunClimb",
+                new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+    }
+
+    private Pose2d getSelectedClimbStartPose() {
+        Pose2d selectedPose = climbStartPoseChooser.getSelected();
+        return selectedPose != null ? selectedPose : ClimbConstants.kBlueLeftStartPose;
     }
 
     private void configureVisionTuning() {
@@ -185,7 +219,7 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, shootTrigger;
+        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
         Trigger killshooter, killIntake, goToClimb, climbtoggle;
         DoubleSupplier leftY, leftX;
 
@@ -194,6 +228,7 @@ public class RobotContainer {
             intakeToggle = driverPS5.circle();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
+            climbTrigger = driverPS5.L1();
             shootTrigger = driverPS5.R2().or(driverPS5.L2());
 
             leftY = () -> -driverPS5.getLeftY();
@@ -203,6 +238,7 @@ public class RobotContainer {
             intakeToggle = driverXbox.b();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
+            climbTrigger = driverXbox.leftBumper();
             shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
 
             leftY = () -> -driverXbox.getLeftY();
@@ -246,6 +282,9 @@ public class RobotContainer {
 
         // Cross: Toggle between retracted home and configured extended position.
         extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
+
+        // Left bumper: run the climb sequence using the currently selected climb start pose.
+        climbTrigger.onTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
 
         // R2 and L2: Shoot while held
         shootTrigger.whileTrue(new ShootCommand(m_shooter));
