@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ClimbConstants;
@@ -16,6 +17,8 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 
 public class ClimbCommand extends Command {
+  private static final double kMinTranslationErrorForArrivalMeters = Units.inchesToMeters(1.0);
+
   // The command first drives from the robot's current estimated pose to the selected climb
   // start pose, extends the climber there if needed, and then advances to the final climb
   // approach point.
@@ -90,11 +93,28 @@ public class ClimbCommand extends Command {
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "InitialPose", poseToString(currentPose));
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "SelectedStartPose", poseToString(startPose));
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "TargetPose", poseToString(targetPose));
+    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", false);
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
   }
 
   @Override
   public void execute() {
+    if (phase == Phase.ALIGNING_TO_START) {
+      if (driveToPose(startPose)) {
+        drivetrain.setChassisSpeeds(new ChassisSpeeds());
+        if (climber.isExtendLimitReached()) {
+          phase = Phase.APPROACHING_CLIMB;
+          setDriveTarget(targetPose);
+        } else {
+          phase = Phase.EXTENDING_AT_START;
+        }
+
+        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
+      }
+
+      return;
+    }
+
     if (phase == Phase.EXTENDING_AT_START) {
       drivetrain.setChassisSpeeds(new ChassisSpeeds());
 
@@ -105,6 +125,16 @@ public class ClimbCommand extends Command {
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       } else {
         climber.extendClimber();
+      }
+
+      return;
+    }
+
+    if (phase == Phase.APPROACHING_CLIMB) {
+      if (driveToPose(targetPose)) {
+        drivetrain.setChassisSpeeds(new ChassisSpeeds());
+        phase = Phase.CLIMBING;
+        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       }
 
       return;
@@ -121,55 +151,6 @@ public class ClimbCommand extends Command {
         climber.retractClimber();
       }
 
-      return;
-    }
-
-    if (phase != Phase.FINISHED) {
-      Pose2d currentPose = drivetrain.getPose();
-      double xSpeed = xController.calculate(currentPose.getX());
-      double ySpeed = yController.calculate(currentPose.getY());
-      double rotationSpeed = rotationController.calculate(currentPose.getRotation().getDegrees());
-
-      double translationMagnitude = Math.hypot(xSpeed, ySpeed);
-      if (translationMagnitude > ClimbConstants.kDriveMaxSpeedMetersPerSecond && translationMagnitude > 1e-6) {
-        double scale = ClimbConstants.kDriveMaxSpeedMetersPerSecond / translationMagnitude;
-        xSpeed *= scale;
-        ySpeed *= scale;
-      }
-
-      rotationSpeed = MathUtil.clamp(
-          rotationSpeed,
-          -NavigationConstants.kMaxAngularSpeed,
-          NavigationConstants.kMaxAngularSpeed);
-
-        // The PID controllers compute field-relative X/Y speeds. We convert those into the
-        // robot-relative wheel commands that the swerve drivetrain actually needs.
-      drivetrain.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
-          xSpeed,
-          ySpeed,
-          rotationSpeed,
-          Rotation2d.fromDegrees(drivetrain.getHeading())));
-
-      SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseX", currentPose.getX());
-      SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseY", currentPose.getY());
-      SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentHeadingDegrees", currentPose.getRotation().getDegrees());
-
-      // Only switch to the climb motor once translation and heading are both within tolerance.
-      if (xController.atSetpoint() && yController.atSetpoint() && rotationController.atSetpoint()) {
-        drivetrain.setChassisSpeeds(new ChassisSpeeds());
-        if (phase == Phase.ALIGNING_TO_START) {
-          if (climber.isExtendLimitReached()) {
-            phase = Phase.APPROACHING_CLIMB;
-            setDriveTarget(targetPose);
-          } else {
-            phase = Phase.EXTENDING_AT_START;
-          }
-        } else {
-          phase = Phase.CLIMBING;
-        }
-
-        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
-      }
       return;
     }
   }
@@ -192,6 +173,56 @@ public class ClimbCommand extends Command {
     xController.setSetpoint(pose.getX());
     yController.setSetpoint(pose.getY());
     rotationController.setSetpoint(pose.getRotation().getDegrees());
+  }
+
+  private boolean driveToPose(Pose2d desiredPose) {
+    Pose2d currentPose = drivetrain.getPose();
+    double xSpeed = xController.calculate(currentPose.getX());
+    double ySpeed = yController.calculate(currentPose.getY());
+    double rotationSpeed = rotationController.calculate(currentPose.getRotation().getDegrees());
+
+    double translationMagnitude = Math.hypot(xSpeed, ySpeed);
+    if (translationMagnitude > ClimbConstants.kDriveMaxSpeedMetersPerSecond && translationMagnitude > 1e-6) {
+      double scale = ClimbConstants.kDriveMaxSpeedMetersPerSecond / translationMagnitude;
+      xSpeed *= scale;
+      ySpeed *= scale;
+    }
+
+    rotationSpeed = MathUtil.clamp(
+        rotationSpeed,
+        -NavigationConstants.kMaxAngularSpeed,
+        NavigationConstants.kMaxAngularSpeed);
+
+    // The PID controllers compute field-relative X/Y speeds. We convert those into the
+    // robot-relative wheel commands that the swerve drivetrain actually needs.
+    drivetrain.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
+        xSpeed,
+        ySpeed,
+        rotationSpeed,
+        Rotation2d.fromDegrees(drivetrain.getHeading())));
+
+    SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseX", currentPose.getX());
+    SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseY", currentPose.getY());
+    SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentHeadingDegrees", currentPose.getRotation().getDegrees());
+    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", isAtPose(currentPose, startPose));
+
+    return isAtPose(currentPose, desiredPose);
+  }
+
+  private boolean isAtPose(Pose2d currentPose, Pose2d desiredPose) {
+    double translationError = currentPose.getTranslation().getDistance(desiredPose.getTranslation());
+    double headingErrorDegrees = Math.abs(
+        MathUtil.inputModulus(
+            currentPose.getRotation().getDegrees() - desiredPose.getRotation().getDegrees(),
+            -180.0,
+            180.0));
+
+    double translationTolerance = Math.max(
+        NavigationConstants.kPositionTolerance,
+        kMinTranslationErrorForArrivalMeters);
+
+    return translationError <= translationTolerance
+        && headingErrorDegrees <= NavigationConstants.kRotationTolerance;
   }
 
   private String poseToString(Pose2d pose) {
