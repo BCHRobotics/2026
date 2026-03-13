@@ -4,13 +4,11 @@
 
 package frc.robot.subsystems;
 
-import com.studica.frc.AHRS;
-import com.studica.frc.AHRS.NavXComType;
+import com.studica.frc.Navx;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -56,7 +54,7 @@ public class Drivetrain extends SubsystemBase {
       DriveConstants.kBackRightChassisAngularOffset);
 
   // The gyro sensor
-  public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+  public final Navx gyro = new Navx(88);
 
   // Slew rate filter variables for controlling lateral acceleration
   private double slew_currentRotation = 0.0;
@@ -110,7 +108,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Resets only the gyro heading while preserving current translation. */
   public void zeroHeadingOnly() {
-      gyro.reset(); // NavX now treats current direction as zero
+      gyro.resetYaw(); // NavX now treats current direction as zero
       // offset rotation back to preserve translation
       odometry.resetPosition(
           Rotation2d.fromDegrees(0.0),
@@ -493,7 +491,7 @@ public class Drivetrain extends SubsystemBase {
   /** Returns the robot heading as a Rotation2d. Always authoritative source. */
   public Rotation2d getRotation2d() {
       // NavX upside-down mounting already corrects for CCW
-      return Rotation2d.fromDegrees(gyro.getAngle());
+      return gyro.getRotation2d();
   }
 
   /** Returns the robot heading in degrees. */
