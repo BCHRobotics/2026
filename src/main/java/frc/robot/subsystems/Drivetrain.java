@@ -10,7 +10,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.DriveFeedforwards;
+//import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -236,16 +236,15 @@ public class Drivetrain extends SubsystemBase {
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
 
-    // Print comprehensive diagnostics once per second
+    // Print comprehensive diagnostics once every 5 seconds
     double currentTime = WPIUtilJNI.now() * 1e-6;
-    if (currentTime - lastPrintTime >= 1.0) {
+    if (currentTime - lastPrintTime >= 5.0) {
       printDiagnostics();
       lastPrintTime = currentTime;
     }
   }
   
 
-  // TODO: remove this
   /**
    * Prints comprehensive diagnostic information to console.
    * Includes robot position, heading, visible AprilTags, and motor currents.
@@ -259,26 +258,7 @@ public class Drivetrain extends SubsystemBase {
     diagnostics.append(String.format("Position: X=%.2fm, Y=%.2fm, Heading=%.1f°\n", 
         pose.getX(), pose.getY(), getHeading()));
     
-    // Navigation to specific AprilTags
-    if (vision != null) {
-     // Vision.TagNavigationInfo tag3 = m_vision.getTagNavigationInfo(3);
-     // Vision.TagNavigationInfo tag4 = m_vision.getTagNavigationInfo(4);
-      
-    //   diagnostics.append("Target AprilTags:\n");
-    //   if (tag3.tagExists) {
-    //    // diagnostics.append(String.format("  Tag 3: Distance=%.2fm, Heading=%.1f°\n",
-    //         tag3.distance, tag3.heading));
-    //   } else {
-    //  //   diagnostics.append("  Tag 3: NOT IN FIELD LAYOUT\n");
-    //   }
-      
-    //   if (tag4.tagExists) {
-    //   //  diagnostics.append(String.format("  Tag 4: Distance=%.2fm, Heading=%.1f°\n",
-    //         tag4.distance, tag4.heading));
-    //   } else {
-    //     //diagnostics.append("  Tag 4: NOT IN FIELD LAYOUT\n");
-    //   }
-    }
+    
     
     // Vision - AprilTags with detailed information
     if (vision != null) {
