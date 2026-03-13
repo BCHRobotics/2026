@@ -295,12 +295,12 @@ public final class Constants {
   }
 
   public static final class ClimbConstants {
-    public static final int kMotorCanId = 88;
+    public static final int kMotorCanId = 40;
     public static final boolean kMotorInverted = false;
-    public static final int kMotorCurrentLimit = 40;
-    public static final double kExtendSpeed = 0.6;
+    public static final int kMotorCurrentLimit = 60;
+    public static final double kExtendSpeed = 1.0;
     public static final double kRetractSpeed = -0.6;
-    public static final double kCurrentSpikeThresholdAmps = 39.0;
+    public static final double kCurrentSpikeThresholdAmps = 40.0;
     public static final double kCurrentAverageWindowSeconds = 0.1;
 
     // The requested starting locations are measured from the field walls, then converted to

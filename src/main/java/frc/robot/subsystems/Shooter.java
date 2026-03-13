@@ -97,11 +97,13 @@ public class Shooter extends SubsystemBase {
     private final SparkFlex shooterMotor1;
     private final SparkFlex shooterMotor2;
     private final SparkFlexConfig shooter1Config;
+    private final SparkFlexConfig shooter2Config;
     private final Drivetrain drivetrain;
 
     // On-board closed-loop controller runs the PID at 1 kHz on the SPARK MAX
     // (vs. 50 Hz if run on the RoboRIO with WPILib PIDController)
-    private final SparkClosedLoopController flywheelController;
+    private final SparkClosedLoopController flywheelController1;
+    private final SparkClosedLoopController flywheelController2;
 
     private boolean isShooterActive  = false;
     private double  currentFeederSpeed = 0.0;
@@ -112,8 +114,11 @@ public class Shooter extends SubsystemBase {
         shooterMotor1 = new SparkFlex(ShooterConstants.SHOOTER1_CAN_ID, MotorType.kBrushless);
         shooterMotor2 = new SparkFlex(ShooterConstants.SHOOTER2_CAN_ID, MotorType.kBrushless);
         shooter1Config = new SparkFlexConfig();
+        shooter2Config = new SparkFlexConfig();
 
-        flywheelController = shooterMotor1.getClosedLoopController();
+        flywheelController1 = shooterMotor1.getClosedLoopController();
+        flywheelController2 = shooterMotor2.getClosedLoopController();
+
 
         // Push initial values to SmartDashboard
         SmartDashboard.putNumber("Shooter/F", ShooterConstants.kF);
@@ -157,10 +162,22 @@ public class Shooter extends SubsystemBase {
         // --- Follower flywheel motor ---
         // follow(id, inverted=true) → spins opposite direction to motor1,
         // which physically makes both wheels shoot in the same direction.
-        SparkFlexConfig shooter2Config = new SparkFlexConfig();
         shooter2Config
-            //.idleMode(IdleMode.kCoast)
-            .follow(ShooterConstants.SHOOTER1_CAN_ID, true); //Invert to match direction of motor 1
+            .inverted(true)//set to true
+            .idleMode(IdleMode.kCoast);  // Coast so the flywheel spins down naturally
+
+        shooter2Config.encoder
+            .velocityConversionFactor(1.0);  // RPM (native NEO units)
+
+        shooter2Config.closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .p(ShooterConstants.kP)
+            .i(ShooterConstants.kI)
+            .d(ShooterConstants.kD)
+            .outputRange(0, ShooterConstants.maxOutput);  // Flywheel only spins forward
+
+        shooter2Config.closedLoop.feedForward
+            .kV(ShooterConstants.kF);  // Velocity feedforward (Volts per RPM); tune on robot
 
         feederMotor.configure(
             feederConfig,
@@ -180,7 +197,7 @@ public class Shooter extends SubsystemBase {
 
     /** @return true when the flywheel has reached the ready RPM threshold */
     public boolean isCharged() {
-        return shooterMotor1.getEncoder().getVelocity() >= ShooterConstants.readyRpm;
+        return shooterMotor1.getEncoder().getVelocity() >= ShooterConstants.readyRpm && shooterMotor2.getEncoder().getVelocity() >= ShooterConstants.targetRpm;
     }
 
     /** Spins up the flywheel to {@link #targetRpm} */
@@ -210,9 +227,7 @@ public class Shooter extends SubsystemBase {
     private void setShooterIdleMode(IdleMode mode) {
         // Only change idle mode; reuse the existing config
         shooter1Config.idleMode(mode);
-
-        SparkFlexConfig shooter2Config = new SparkFlexConfig();
-        shooter2Config.follow(ShooterConstants.SHOOTER1_CAN_ID, true); // keep follower
+        shooter2Config.idleMode(mode);
 
         shooterMotor1.configure(shooter1Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         shooterMotor2.configure(shooter2Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -312,15 +327,34 @@ public class Shooter extends SubsystemBase {
                 shooter1Config,
                 ResetMode.kNoResetSafeParameters,
                 PersistMode.kNoPersistParameters);
+
+            // Update configuration object
+            shooter2Config.closedLoop
+                .p(ShooterConstants.kP)
+                .i(ShooterConstants.kI)
+                .d(ShooterConstants.kD)
+                .outputRange(0, ShooterConstants.maxOutput);
+            shooter2Config.closedLoop.feedForward
+                .kV(ShooterConstants.kF);
+
+            // Re-apply configuration to the motor controller
+            // We use kNoResetSafeParameters to avoid resetting other settings
+            // We use kNoPersistParameters to avoid wearing out flash memory during tuning
+            shooterMotor2.configure(
+                shooter2Config,
+                ResetMode.kNoResetSafeParameters,
+                PersistMode.kNoPersistParameters);
         }
     }
 
     private void updateMotors() {
         if (isShooterActive) {
             // Delegate PID calculation to the SPARK MAX (runs at 1 kHz on-board)
-            flywheelController.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
+            flywheelController1.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
+            flywheelController2.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
         } else {
             shooterMotor1.set(0);
+            shooterMotor2.set(0);
         }
         feederMotor.set(currentFeederSpeed);
     }
