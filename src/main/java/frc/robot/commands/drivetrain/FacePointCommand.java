@@ -2,21 +2,25 @@ package frc.robot.commands.drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.NavigationConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
-import frc.utils.dto.m.Vector2;
 
 /**
- * Command to drive the robot to a specified position on the field.
- * Uses PID control to navigate to the target X, Y coordinates with a specified rotation.
- * 
- * This command is field-relative and uses the robot's odometry to determine position.
+ * Holds the robot at a fixed radius from a point while facing away from it.
+ *
+ * Translation PID maintains the requested standoff distance along the current
+ * radial line from the point through the robot. Driver translation input is
+ * projected onto the tangent of that circle so the operator can slide around
+ * the point without disturbing the radius lock.
  */
 public class FacePointCommand extends Command {
+    private static final double kMinimumRadiusForDirection = 1e-6;
+
     private final Drivetrain m_drivetrain;
     private final double x;
     private final double y;
@@ -46,9 +50,9 @@ public class FacePointCommand extends Command {
      * Creates a new FacePointCommand.
      *
      * @param drivetrain The drivetrain subsystem
-     * @param x Target X coordinate in meters (field-relative)
-     * @param y Target Y coordinate in meters (field-relative)
-     * @param distance Target rotation in degrees (field-relative)
+     * @param x Anchor point X coordinate in meters (field-relative)
+     * @param y Anchor point Y coordinate in meters (field-relative)
+     * @param distance Desired radial distance from the anchor point in meters
      */
     public FacePointCommand(Drivetrain drivetrain, DoubleSupplier joystickX, DoubleSupplier joystickY, double x, double y, double distance) {
         m_drivetrain = drivetrain;
@@ -60,55 +64,61 @@ public class FacePointCommand extends Command {
         this.joystickX = joystickX;
         this.joystickY = joystickY;
 
+        m_xController.setTolerance(NavigationConstants.kPositionTolerance);
+        m_yController.setTolerance(NavigationConstants.kPositionTolerance);
+        m_rotController.setTolerance(NavigationConstants.kRotationTolerance);
+        m_rotController.enableContinuousInput(-180, 180);
+
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
-        // For debugging purposes
-        // System.out.println("GoToPosition: Navigating to position " + m_targetPose);
-        // System.out.println("  Current pose: " + m_drivetrain.getPose());
+        m_xController.reset();
+        m_yController.reset();
+        m_rotController.reset();
     }
 
     @Override
     public void execute() {
         Pose2d robotPose = m_drivetrain.getPose();
 
-        Vector2 pointToRobot = new Vector2(robotPose.getX() - x, robotPose.getY() - y);
-        pointToRobot = Vector2.normalize(pointToRobot);
-        pointToRobot = new Vector2(pointToRobot.x * distance, pointToRobot.y * distance);
+        double radialX = robotPose.getX() - x;
+        double radialY = robotPose.getY() - y;
+        double radius = Math.hypot(radialX, radialY);
 
-        Vector2 closestPoint = new Vector2(x - pointToRobot.x, y - pointToRobot.y);
+        if (radius < kMinimumRadiusForDirection) {
+            radialX = robotPose.getRotation().getCos();
+            radialY = robotPose.getRotation().getSin();
+            radius = 0.0;
+        } else {
+            radialX /= radius;
+            radialY /= radius;
+        }
 
-        // Set PID setpoints
-        m_xController.setSetpoint(closestPoint.x);
-        m_yController.setSetpoint(closestPoint.y);
-        double desiredAngle = Math.atan2(pointToRobot.y, pointToRobot.x) / Math.PI * 180;
-        double otherAngle = desiredAngle > 0 ? desiredAngle - 360 : desiredAngle + 360;
+        double targetX = x + (radialX * distance);
+        double targetY = y + (radialY * distance);
+        double targetHeadingDegrees = Math.toDegrees(Math.atan2(radialY, radialX));
 
-        double currentAngle = robotPose.getRotation().getDegrees();
-        
-        double angle = Math.abs(currentAngle - desiredAngle) < Math.abs(currentAngle - otherAngle) ? desiredAngle : otherAngle;
+        double xSpeed = m_xController.calculate(robotPose.getX(), targetX);
+        double ySpeed = m_yController.calculate(robotPose.getY(), targetY);
+        double rotation = m_rotController.calculate(robotPose.getRotation().getDegrees(), targetHeadingDegrees);
 
-        m_rotController.setSetpoint(angle);
-        
-        // Calculate drive commands using PID
-        double xSpeed = m_xController.calculate(robotPose.getX());
-        double ySpeed = m_yController.calculate(robotPose.getY());
-        double rotation = m_rotController.calculate(robotPose.getRotation().getDegrees());
-        
-        // Limit speeds for safety
-        xSpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, xSpeed));
-        ySpeed = Math.max(-NavigationConstants.kMaxLinearSpeed, Math.min(NavigationConstants.kMaxLinearSpeed, ySpeed));
-        rotation = Math.max(-NavigationConstants.kMaxAngularSpeed, Math.min(NavigationConstants.kMaxAngularSpeed, rotation));
+        xSpeed = MathUtil.clamp(xSpeed, -NavigationConstants.kMaxLinearSpeed, NavigationConstants.kMaxLinearSpeed);
+        ySpeed = MathUtil.clamp(ySpeed, -NavigationConstants.kMaxLinearSpeed, NavigationConstants.kMaxLinearSpeed);
+        rotation = MathUtil.clamp(rotation, -NavigationConstants.kMaxAngularSpeed, NavigationConstants.kMaxAngularSpeed);
 
-        Vector2 joystickInput = new Vector2(joystickX.getAsDouble(), joystickY.getAsDouble());
-        Vector2 projectedJoystickInput = Vector2.project(joystickInput, new Vector2(x - robotPose.getX(), y - robotPose.getY()));
+        double rawJoystickX = MathUtil.applyDeadband(joystickX.getAsDouble(), OIConstants.kDriveDeadband);
+        double rawJoystickY = MathUtil.applyDeadband(joystickY.getAsDouble(), OIConstants.kDriveDeadband);
 
-        joystickInput = Vector2.add(joystickInput, new Vector2(projectedJoystickInput.x * -1, projectedJoystickInput.y * -1));
-        
-        // Drive field-relative
-        m_drivetrain.drive(xSpeed + joystickInput.x, ySpeed + joystickInput.y, rotation, true, false);
+        double tangentX = -radialY;
+        double tangentY = radialX;
+        double tangentialCommand = (rawJoystickX * tangentX) + (rawJoystickY * tangentY);
+
+        double manualX = tangentX * tangentialCommand;
+        double manualY = tangentY * tangentialCommand;
+
+        m_drivetrain.drive(xSpeed + manualX, ySpeed + manualY, rotation, true, false);
     }
 
     @Override
