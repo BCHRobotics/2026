@@ -14,7 +14,6 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Shooter;
-import frc.robot.webserver.VisionWebServer;
 import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -44,9 +43,7 @@ public class RobotContainer {
     // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
 
-    // Web server for vision diagnostics running on RoboRIO port 8082.
-    private final VisionWebServer webServer = new VisionWebServer(vision);
-
+    
     // Controllers
     CommandPS5Controller driverPS5;
     CommandXboxController driverXbox;
@@ -79,9 +76,7 @@ public class RobotContainer {
         // Connect Vision subsystem to Drivetrain for diagnostics
         robotDrive.setVision(vision);
 
-        // Start the web server for vision diagnostics
-        webServer.start();
-
+    
         // Configure default commands
         configureDefaultCommands();
 
