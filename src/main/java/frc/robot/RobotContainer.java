@@ -262,7 +262,7 @@ public class RobotContainer {
         // Square/X button: Navigate to 1 meter in front of an AprilTag
         alignToTag.whileTrue(
                 new FacePointCommand(robotDrive, leftY, // Forward/backward (inverted)
-                        leftX, 11.945, 4.029, 2) // Safety timeout
+                        leftX, 11.945, 4.029, 2.8) // Safety timeout
         );
 
         intakeToggle.onTrue(Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));

@@ -78,12 +78,12 @@ public class FacePointCommand extends Command {
         pointToRobot = Vector2.normalize(pointToRobot);
         pointToRobot = new Vector2(pointToRobot.x * distance, pointToRobot.y * distance);
 
-        Vector2 closestPoint = new Vector2(x + pointToRobot.x, y + pointToRobot.y);
+        Vector2 closestPoint = new Vector2(x - pointToRobot.x, y - pointToRobot.y);
 
         // Set PID setpoints
         m_xController.setSetpoint(closestPoint.x);
         m_yController.setSetpoint(closestPoint.y);
-        double desiredAngle = Math.atan2(-pointToRobot.y, -pointToRobot.x) / Math.PI * 180;
+        double desiredAngle = Math.atan2(pointToRobot.y, pointToRobot.x) / Math.PI * 180;
         double otherAngle = desiredAngle > 0 ? desiredAngle - 360 : desiredAngle + 360;
 
         double currentAngle = robotPose.getRotation().getDegrees();

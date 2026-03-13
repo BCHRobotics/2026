@@ -357,7 +357,7 @@ public final class Constants {
     public static final ClosedLoopSlot kExtendClosedLoopSlot = ClosedLoopSlot.kSlot0;
 
     // Run motor speeds (positive = intake, negative = eject)
-    public static final double kRunSpeed = 0.5;
+    public static final double kRunSpeed = 1.0;
     public static final double kEjectSpeed = -0.1;
 
     // Calibration: slow retract until current spike or timeout
@@ -370,7 +370,7 @@ public final class Constants {
     // Shooter tuning
     //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
     public static double targetRpm   = 3000.0;
-    public static double readyRpm    = 2980.0;   // Minimum RPM before feeder activates
+    public static double readyRpm;   // Minimum RPM before feeder activates
     public static double feederSpeed = 0.5;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 

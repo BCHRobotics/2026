@@ -128,6 +128,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
         SmartDashboard.putNumber("Shooter/Distance", getHubDistance());
         SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
+        SmartDashboard.putNumber("Shooter/Shooter1RPM", shooterMotor1.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Shooter/Shooter2RPM", shooterMotor2.getEncoder().getVelocity());
         SmartDashboard.putNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
         configureMotors();
@@ -163,7 +165,7 @@ public class Shooter extends SubsystemBase {
         // follow(id, inverted=true) → spins opposite direction to motor1,
         // which physically makes both wheels shoot in the same direction.
         shooter2Config
-            .inverted(true)//set to true
+            .inverted(false)//set to true
             .idleMode(IdleMode.kCoast);  // Coast so the flywheel spins down naturally
 
         shooter2Config.encoder
@@ -197,10 +199,14 @@ public class Shooter extends SubsystemBase {
 
     /** @return true when the flywheel has reached the ready RPM threshold */
     public boolean isCharged() {
-        double currentVelocity = shooterMotor1.getEncoder().getVelocity();
+        double currentVelocity1 = shooterMotor1.getEncoder().getVelocity();
+        double currentVelocity2 = shooterMotor2.getEncoder().getVelocity();
         double allowedError = Math.abs(ShooterConstants.targetRpm - ShooterConstants.readyRpm);
 
-        return Math.abs(currentVelocity - ShooterConstants.targetRpm) <= allowedError;
+        Boolean isCharged1 = Math.abs(currentVelocity1 - ShooterConstants.targetRpm) <= allowedError;
+        Boolean isCharged2 = Math.abs(currentVelocity2 - ShooterConstants.targetRpm) <= allowedError;
+        return isCharged1 && isCharged2;
+
     }
 
     /** Spins up the flywheel to {@link #targetRpm} */
@@ -304,7 +310,7 @@ public class Shooter extends SubsystemBase {
         ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
         //ShooterConstants.targetRpm = 3000; //Uncomment line above once tuning is done to enable distance-based RPM adjustment
         //readyRpm = ready;
-        ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.99; // Set ready RPM to 99% of target RPM for a larger buffer during testing
+        ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.95; // Set ready RPM to 99% of target RPM for a larger buffer during testing
 
         // Check if PIDF or MaxOutput changed
         if (f != ShooterConstants.kF || p != ShooterConstants.kP || i != ShooterConstants.kI || d != ShooterConstants.kD || max != ShooterConstants.maxOutput) {
