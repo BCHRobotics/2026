@@ -180,7 +180,10 @@ public class Shooter extends SubsystemBase {
 
     /** @return true when the flywheel has reached the ready RPM threshold */
     public boolean isCharged() {
-        return shooterMotor1.getEncoder().getVelocity() >= ShooterConstants.readyRpm;
+        double currentVelocity = shooterMotor1.getEncoder().getVelocity();
+        double allowedError = Math.abs(ShooterConstants.targetRpm - ShooterConstants.readyRpm);
+
+        return Math.abs(currentVelocity - ShooterConstants.targetRpm) <= allowedError;
     }
 
     /** Spins up the flywheel to {@link #targetRpm} */
