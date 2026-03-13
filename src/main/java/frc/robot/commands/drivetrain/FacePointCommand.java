@@ -31,19 +31,19 @@ public class FacePointCommand extends Command {
     
     // PID controllers for position and rotation control
     private final PIDController m_xController = new PIDController(
-        NavigationConstants.kPositionP,
-        NavigationConstants.kPositionI,
-        NavigationConstants.kPositionD
+        NavigationConstants.kPositionP/4,
+        0,
+        0
     );
     private final PIDController m_yController = new PIDController(
-        NavigationConstants.kPositionP,
-        NavigationConstants.kPositionI,
-        NavigationConstants.kPositionD
+        NavigationConstants.kPositionP/4,
+        0,
+        0
     );
     private final PIDController m_rotController = new PIDController(
-        NavigationConstants.kRotationP,
-        NavigationConstants.kRotationI,
-        NavigationConstants.kRotationD
+        NavigationConstants.kRotationP/16,
+        0,
+        0
     );
 
     /**
