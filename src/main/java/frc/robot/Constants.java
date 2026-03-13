@@ -296,6 +296,8 @@ public final class Constants {
 
   public static final class ClimbConstants {
     public static final int kMotorCanId = 40;
+    public static final int kProximitySwitchChannel = 1;
+    public static final boolean kProximitySwitchActiveLow = true;
     public static final boolean kMotorInverted = false;
     public static final int kMotorCurrentLimit = 60;
     public static final double kExtendSpeed = 1.0;

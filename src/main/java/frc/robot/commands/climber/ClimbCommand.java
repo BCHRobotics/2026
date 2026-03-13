@@ -129,6 +129,13 @@ public class ClimbCommand extends Command {
     }
 
     if (phase == Phase.APPROACHING_CLIMB) {
+      if (climber.isClimbPlateDetected()) {
+        drivetrain.setChassisSpeeds(new ChassisSpeeds());
+        phase = Phase.CLIMBING;
+        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
+        return;
+      }
+
       setDriveTarget(targetPose);
 
       if (driveToPose(targetPose)) {
