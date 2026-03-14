@@ -180,115 +180,114 @@ public class LED extends SubsystemBase {
             m_deployPlayed = true;
         }
 
-        setLEDs();
-        return;
-
-        // // ── Render ────────────────────────────────────────────────────────────
-        // switch (m_state) {
-
-        //     case DEPLOY:
-        //         // Solid white: new code is live. Tells pit crew deploy succeeded.
-        //         setSolid(WHITE);
-        //         break;
-
-        //     //case GYRO_FAULT:
-        //         // Flashing red-orange ↔ red at 4 Hz.
-        //         // NavX disconnected — field-relative steering is broken.
-        //         //setSolid(m_flashOn ? RED_ORANGE : RED);
-        //         //break;
-
-        //     case DISABLED:
-        //         // Solid red — robot is disabled or e-stopped.
-        //         setSolid(RED);
-        //         break;
 
 
-        //     case AUTO:
-        //         // Solid orange — autonomous period is running.
-        //         setSolid(ORANGE);
-        //         break;
+         // ── Render ────────────────────────────────────────────────────────────
+         switch (m_state) {
 
-        //     case TEST:
-        //         // Solid purple — Driver Station is in test mode.
-        //         setSolid(PURPLE);
-        //         break;
+             case DEPLOY:
+                 // Solid white: new code is live. Tells pit crew deploy succeeded.
+                 setSolid(WHITE);
+                 break;
 
-        //     case MATCH_END:
-        //         // Flashing white ↔ off at 4 Hz — ≤ 10 s left. Most urgent timing cue.
-        //         setSolid(m_flashOn ? WHITE : OFF);
-        //         break;
+             //case GYRO_FAULT:
+                 // Flashing red-orange ↔ red at 4 Hz.
+                 // NavX disconnected — field-relative steering is broken.
+                 //setSolid(m_flashOn ? RED_ORANGE : RED);
+                 //break;
 
-        //     case ENDGAME:
-        //         // Flashing yellow ↔ off at 4 Hz — ≤ 30 s left. Start climbing.
-        //         setSolid(m_flashOn ? YELLOW : OFF);
-        //         break;
+             case DISABLED:
+                 // Solid red — robot is disabled or e-stopped.
+                 setSolid(RED);
+                 break;
 
-        //     case AUTO_ASSIST:
-        //         // Solid blue — a navigation/assist command is steering the robot.
-        //         // Reverts the instant the command ends and TeleopDrive resumes.
-        //         setSolid(BLUE);
-        //         break;
 
-        //     case POSE_VALID:
-        //         // Vision is locked on at least one valid AprilTag this cycle.
-        //         // With distance data:    gradient color (red → yellow → green).
-        //         // Without distance data: flashing lime fallback.
-        //         if (m_distanceMeters >= 0) {
-        //             setSolid(distanceToColor(m_distanceMeters));
-        //         } else {
-        //             setSolid(m_flashOn ? LIME : OFF);
-        //         }
-        //         break;
+             case AUTO:
+                 // Solid orange — autonomous period is running.
+                 setSolid(ORANGE);
+                 break;
 
-        //     case INTAKE:
-        //         // Solid orange — intake motor is commanded above the deadband.
-        //         // Orange is shared with AUTO but the two states are mutually exclusive:
-        //         // INTAKE only fires during teleop (after all mode checks pass).
-        //         setSolid(ORANGE);
-        //         break;
-        //     case SHIFT_ON_WARNING:
-        //         // Flashing cyan ↔ off — shift is about to open. Get ready to shoot.
-        //         setSolid(m_flashOn ? CYAN : OFF);
-        //         break;
+             case TEST:
+                 // Solid purple — Driver Station is in test mode.
+                 setSolid(PURPLE);
+                 break;
 
-        //     case SHIFT_OFF_WARNING:
-        //         // Flashing dark-blue ↔ off — shift is about to close. Stop shooting.
-        //         setSolid(m_flashOn ? DARK_BLUE : OFF);
-        //         break;
-        //     case SHIFT_ON:
-        //         // Solid cyan — the current 25-second window is the shooting window.
-        //         setSolid(CYAN);
-        //         break;
+             case MATCH_END:
+                 // Flashing white ↔ off at 4 Hz — ≤ 10 s left. Most urgent timing cue.
+                 setSolid(m_flashOn ? WHITE : OFF);
+                 break;
 
-        //     case SHIFT_OFF:
-        //         // Solid dark-blue — the current 25-second window is NOT the shooting window.
-        //         setSolid(DARK_BLUE);
-        //         break;
+             case ENDGAME:
+                 // Flashing yellow ↔ off at 4 Hz — ≤ 30 s left. Start climbing.
+                 setSolid(m_flashOn ? YELLOW : OFF);
+                 break;
 
-        //     case CLIMBER:
-        //         // Solid teal — placeholder until the climber subsystem is wired up.
-        //         setSolid(TEAL);
-        //         break;
+             case AUTO_ASSIST:
+                 // Solid blue — a navigation/assist command is steering the robot.
+                 // Reverts the instant the command ends and TeleopDrive resumes.
+                 setSolid(BLUE);
+                 break;
 
-        //     case MECHANISM_READY:
-        //         // Solid lime — placeholder until the scoring mechanism is wired up.
-        //         // LIME is also used (flashing) as the POSE_VALID fallback — the two are
-        //         // visually distinct: solid lime here vs. blinking lime/off in POSE_VALID.
-        //         setSolid(LIME);
-        //         break;
+             case POSE_VALID:
+                 // Vision is locked on at least one valid AprilTag this cycle.
+                 // With distance data:    gradient color (red → yellow → green).
+                 // Without distance data: flashing lime fallback.
+                 if (m_distanceMeters >= 0) {
+                     setSolid(distanceToColor(m_distanceMeters));
+                 } else {
+                     setSolid(m_flashOn ? LIME : OFF);
+                 }
+                 break;
 
-        //     case TELEOP:
-        //     default:
-        //         // Solid green — driver in full control, no special condition active.
-        //         setSolid(GREEN);
-        //         break;
-        // }
+             case INTAKE:
+                 // Solid orange — intake motor is commanded above the deadband.
+                 // Orange is shared with AUTO but the two states are mutually exclusive:
+                 // INTAKE only fires during teleop (after all mode checks pass).
+                 setSolid(ORANGE);
+                 break;
+             case SHIFT_ON_WARNING:
+                 // Flashing cyan ↔ off — shift is about to open. Get ready to shoot.
+                 setSolid(m_flashOn ? CYAN : OFF);
+                 break;
+
+             case SHIFT_OFF_WARNING:
+                 // Flashing dark-blue ↔ off — shift is about to close. Stop shooting.
+                 setSolid(m_flashOn ? DARK_BLUE : OFF);
+                 break;
+             case SHIFT_ON:
+                 // Solid cyan — the current 25-second window is the shooting window.
+                 setSolid(CYAN);
+                 break;
+
+             case SHIFT_OFF:
+                 // Solid dark-blue — the current 25-second window is NOT the shooting window.
+                 setSolid(DARK_BLUE);
+                 break;
+
+             case CLIMBER:
+                 // Solid teal — placeholder until the climber subsystem is wired up.
+                 setSolid(TEAL);
+                 break;
+
+             case MECHANISM_READY:
+                 // Solid lime — placeholder until the scoring mechanism is wired up.
+                 // LIME is also used (flashing) as the POSE_VALID fallback — the two are
+                 // visually distinct: solid lime here vs. blinking lime/off in POSE_VALID.
+                 setSolid(LIME);
+                 break;
+
+             case TELEOP:
+             default:
+                 // Solid green — driver in full control, no special condition active.
+                 setSolid(GREEN);
+                 break;
+         }
 
         // Push the buffer to the physical LED strip every loop.
-        //m_led.setData(m_buffer);
+        m_led.setData(m_buffer);
 
         // Publish the current state name so drivers / programmers can see it live.
-        //SmartDashboard.putString("LED State", m_state.toString());
+        SmartDashboard.putString("LED State", m_state.toString());
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
