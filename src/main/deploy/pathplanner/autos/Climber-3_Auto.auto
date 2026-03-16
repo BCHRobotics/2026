@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-3_path_1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-3_path_2"
+            "pathName": "Climber-3_Path_1"
           }
         },
         {
@@ -29,15 +17,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Climber-3_path_3"
+            "waitTime": 5.0
           }
         },
         {
           "type": "named",
           "data": {
             "name": "shooter off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-3_Path_2"
           }
         },
         {
@@ -49,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-3_path_4"
+            "pathName": "Climber-3_Path_3"
           }
         }
       ]

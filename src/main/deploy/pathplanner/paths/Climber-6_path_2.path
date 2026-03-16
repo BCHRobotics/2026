@@ -3,57 +3,46 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1419615384615396,
-        "y": 7.2095
+        "x": 0.4791025641025659,
+        "y": 5.965282051287866
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3396410256352134,
-        "y": 6.507320512820513
+        "x": 1.7233205128205145,
+        "y": 5.942025641025641
       },
       "isLocked": false,
-      "linkedName": "Climber-2_path_1end"
+      "linkedName": "Climber-10_path_1end"
     },
     {
       "anchor": {
-        "x": 0.4674743589743602,
-        "y": 5.965282051282052
+        "x": 2.3,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 1.874919566958662,
-        "y": 5.965282051282052
+        "x": 2.3163589743589763,
+        "y": 5.174564102564102
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-4_path_1end"
+      "linkedName": "Climber-9_path_1end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7964912280701715,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "shooter off",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "intake on",
-      "waypointRelativePos": 0.0,
+      "name": "shooter on",
+      "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 2.0,
-    "maxAngularVelocity": 720.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
@@ -63,10 +52,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Climber_path_6",
+  "folder": "Climber_path_2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 114.775
+    "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
