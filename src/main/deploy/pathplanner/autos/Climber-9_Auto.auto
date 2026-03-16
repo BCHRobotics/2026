@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-6_path_1"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shooter on"
@@ -19,7 +13,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 2.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-9_path_1"
           }
         },
         {
@@ -31,49 +31,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-6_path_2"
+            "pathName": "Climber-9_path_2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shooter off"
+            "name": "intake off"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-6_path_3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter on"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-6_path_4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter off"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-6_path_5"
+            "pathName": "Climber-9_path_3"
           }
         },
         {
@@ -85,13 +55,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 2.5
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-6_path_6"
+            "pathName": "Climber-9_path_4"
           }
         },
         {
@@ -109,7 +79,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-6_path_7"
+            "pathName": "Climber-9_path_5"
           }
         }
       ]

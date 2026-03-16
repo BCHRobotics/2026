@@ -3,80 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.040746987951807,
-        "y": 7.4
+        "x": 1.6842225392296717,
+        "y": 0.7209615384538268
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.85847741497214,
-        "y": 7.839391689846503
+        "x": 0.8031223197545644,
+        "y": 0.6098452443109668
       },
       "isLocked": false,
-      "linkedName": "Cimber-7_path_2end"
+      "linkedName": "Climber-1_Path_1End"
     },
     {
       "anchor": {
-        "x": 6.8,
-        "y": 4.5
+        "x": 0.5,
+        "y": 0.7
       },
       "prevControl": {
-        "x": 6.704070773948056,
-        "y": 4.84371173035813
-      },
-      "nextControl": {
-        "x": 7.0796433666191145,
-        "y": 3.498045649072753
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.040746987951807,
-        "y": 4.339058487874465
-      },
-      "prevControl": {
-        "x": 6.290385164051354,
-        "y": 3.510984308131241
+        "x": 1.3043676922329435,
+        "y": 0.6542978592257687
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-7_Path_3end"
+      "linkedName": "Climber-3_path_1end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": -72.72
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "intake off",
-      "waypointRelativePos": 2.0,
+      "name": "shooter off",
+      "waypointRelativePos": 0.1458474004051318,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 720.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": true
+    "unlimited": false
   },
   "goalEndState": {
-    "velocity": 3.0,
-    "rotation": 111.05825411494587
+    "velocity": 0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Climber_path_7",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -72.71876876705807
+    "rotation": -133.01349770673585
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -3,18 +3,19 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Climber_path_1",
-    "Climber_path_2",
     "Climber_path_3",
+    "Climber_path_2",
     "Climber_path_4",
     "Climber_path_5",
     "Climber_path_6",
     "Climber_path_7",
-    "Climber_path_8"
+    "Climber_path_8",
+    "Climber_path_9",
+    "Climber_path_10",
+    "Climber_path_1"
   ],
   "autoFolders": [
-    "Climber_Autos",
-    "Circle_Autos"
+    "Climber_Autos"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
