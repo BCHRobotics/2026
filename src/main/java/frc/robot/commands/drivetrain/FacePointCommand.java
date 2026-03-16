@@ -46,17 +46,17 @@ public class FacePointCommand extends Command {
     // This controller only cares about one thing: how far the robot is from the anchor point.
     // If the robot is too close, it pushes outward. If the robot is too far, it pulls inward.
     private final PIDController m_radiusController = new PIDController(
-        NavigationConstants.kPositionP/4,
+        NavigationConstants.kPositionP,
         0,
-        0
+        NavigationConstants.kPositionD
     );
 
     // PID for robot heading.
     // This turns the robot so its front points away from the anchor point.
     private final PIDController m_rotController = new PIDController(
-        NavigationConstants.kRotationP/16,
+        NavigationConstants.kRotationP,
         0,
-        0
+        NavigationConstants.kRotationD
     );
 
     /**
