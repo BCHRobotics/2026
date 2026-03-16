@@ -3,7 +3,44 @@
   "command": {
     "type": "sequential",
     "data": {
-      "commands": []
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-6_path_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-6_path_2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-6_path_3"
+          }
+        }
+      ]
     }
   },
   "resetOdom": true,
