@@ -163,6 +163,15 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "RunClimb",
                 new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+        NamedCommands.registerCommand(
+                "shooter on",
+                new ShootCommand(m_shooter));
+        NamedCommands.registerCommand(
+                "shooter off",
+                Commands.runOnce(() -> {
+                    m_shooter.stopShooter();
+                    m_shooter.stopFeeder();
+                }, m_shooter));
     }
 
     private Pose2d getSelectedClimbStartPose() {
