@@ -23,15 +23,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-7_path_2"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shooter off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-7_path_2"
           }
         },
         {
@@ -59,9 +59,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Climber-7_path_4"
+            "name": "intake on"
           }
         },
         {
@@ -71,9 +71,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "intake on"
+            "pathName": "Climber-7_path_4"
           }
         },
         {
@@ -98,6 +98,12 @@
           "type": "path",
           "data": {
             "pathName": "Climber-7_path_6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake off"
           }
         },
         {

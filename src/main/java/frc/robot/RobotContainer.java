@@ -101,6 +101,9 @@ public class RobotContainer {
         autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
         autoChooser.addOption("Climber-9_Auto", new PathPlannerAuto("Climber-9_Auto"));
         autoChooser.addOption("Climber-10_Auto", new PathPlannerAuto("Climber-10_Auto"));
+        autoChooser.addOption("Practice_Auto", new PathPlannerAuto("Practice_Auto"));
+
+
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
@@ -159,17 +162,32 @@ public class RobotContainer {
 
     private void registerPathPlannerCommands() {
         NamedCommands.registerCommand(
-                "RunClimb",
+                "climber on",
                 new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
         NamedCommands.registerCommand(
                 "shooter on",
-                new ShootCommand(m_shooter));
+                Commands.runOnce(() -> {
+                    m_shooter.startShooter();
+                    m_shooter.startFeeder();
+                }, m_shooter));
         NamedCommands.registerCommand(
                 "shooter off",
                 Commands.runOnce(() -> {
                     m_shooter.stopShooter();
                     m_shooter.stopFeeder();
                 }, m_shooter));
+        NamedCommands.registerCommand(
+                "intake on",
+                Commands.runOnce(() -> {
+                    m_ballIntake.moveToExtendedPosition();
+                    m_ballIntake.run();
+                }, m_ballIntake));
+        NamedCommands.registerCommand(
+                "intake off",
+                Commands.runOnce(() -> {
+                    m_ballIntake.moveToRetractedPosition();
+                    m_ballIntake.stopRun();
+                }, m_ballIntake));
     }
 
     private Pose2d getSelectedClimbStartPose() {

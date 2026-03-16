@@ -327,7 +327,7 @@ public final class Constants {
     public static final Pose2d kRedRightStartPose = new Pose2d(
         NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
         NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
-        Rotation2d.fromDegrees(-90.0));
+        Rotation2d.fromDegrees(90.0));
   }
 
   public static final class BallIntakeConstants {

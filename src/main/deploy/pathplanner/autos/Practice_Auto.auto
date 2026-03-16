@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "P-1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intake on"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": null
+            "name": "shooter on"
           }
         },
         {
@@ -31,13 +25,37 @@
         {
           "type": "named",
           "data": {
-            "name": "shooter on"
+            "name": "shooter off"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "P-2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "P-3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.0
           }
         },
         {
@@ -47,15 +65,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "climber on"
+            "pathName": "P-4"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Climber_Autos",
+  "folder": null,
   "choreoAuto": false
 }
