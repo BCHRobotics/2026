@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.537320512828689,
-        "y": 0.7209615384538268
+        "y": 0.7
       },
       "prevControl": null,
       "nextControl": {
         "x": 4.153713651358569,
-        "y": 0.7320908905830635
+        "y": 0.7111293521292367
       },
       "isLocked": false,
       "linkedName": "Climber-1_pathstart"

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.054,
-        "y": 2.6047307692307697
+        "x": 1.9326282051282067,
+        "y": 2.4419358974358976
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.054,
-        "y": 2.8547307692307697
+        "x": 1.6535512820512839,
+        "y": 2.5000769230769233
       },
       "isLocked": false,
-      "linkedName": "collect6end"
+      "linkedName": "Climber-6_path_5end"
     },
     {
       "anchor": {
         "x": 1.054,
-        "y": 3.048
+        "y": 2.6047307692307697
       },
       "prevControl": {
-        "x": 1.054,
-        "y": 2.798
+        "x": 1.548897435897437,
+        "y": 2.5117051282051284
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "collect6end"
     }
   ],
   "rotationTargets": [],
@@ -33,9 +33,9 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 1.5,
-    "maxAngularVelocity": 720.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
@@ -48,7 +48,7 @@
   "folder": "Climber_path_5",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -149.15
   },
   "useDefaultConstraints": true
 }

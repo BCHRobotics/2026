@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.037,
+        "x": 1.054,
         "y": 2.6047307692307697
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2824795778071543,
-        "y": 2.652057050297649
+        "x": 1.054,
+        "y": 2.8547307692307697
       },
       "isLocked": false,
       "linkedName": "collect6end"
     },
     {
       "anchor": {
-        "x": 1.037,
-        "y": 2.8
+        "x": 1.054,
+        "y": 3.048
       },
       "prevControl": {
-        "x": 0.7559454161779073,
-        "y": 2.7739513000577
+        "x": 1.054,
+        "y": 2.7847612455090482
       },
       "nextControl": null,
       "isLocked": false,
