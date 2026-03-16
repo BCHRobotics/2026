@@ -8,37 +8,30 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0372820512820526,
-        "y": 4.674551282051282
+        "x": 3.8537428814966397,
+        "y": 3.9905172022017394
       },
       "isLocked": false,
       "linkedName": "Climber-9_path_1start"
     },
     {
       "anchor": {
-        "x": 0.4791025641025659,
-        "y": 5.965282051287866
+        "x": 2.3,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 0.886089743589745,
-        "y": 5.593179487185302
+        "x": 2.0442749615759364,
+        "y": 4.005315774420002
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-10_path_1end"
+      "linkedName": "Climber-9_path_1end"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "intake on",
-      "waypointRelativePos": 0.7,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -52,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Climber_path_2",
+  "folder": "Climber_path_1",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
