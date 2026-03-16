@@ -7,25 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Climber-9_path_1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New New New Path"
+            "pathName": "Climber-9_path_2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New New Path"
+            "pathName": "Climber-9_path_3"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Climber_Autos",
   "choreoAuto": false
 }

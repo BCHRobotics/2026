@@ -3,52 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9,
-        "y": 3.912
+        "x": 3.5140641025641033,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.650563429366098,
-        "y": 3.9287748988193205
+        "x": 2.769041814818735,
+        "y": 4.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.7618544935805986,
-        "y": 3.912
+        "x": 2.3,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 2.0098994832469432,
-        "y": 3.9432038956129345
+        "x": 2.8348631833635762,
+        "y": 4.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Climber-9_path_1end"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "shooter on",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 0.5,
-    "maxAcceleration": 0.5,
-    "maxAngularVelocity": 720.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.5,
-    "rotation": -178.46173754527288
-  },
-  "reversed": false,
-  "folder": "Mr Dykstra Path",
-  "idealStartingState": {
-    "velocity": 0.5,
+    "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "reversed": false,
+  "folder": "Climber_path_9",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
 }
