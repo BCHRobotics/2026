@@ -67,8 +67,8 @@ public final class Constants {
     public static final double kRotationalSlewRate = 2; // percent/sec (1 = 100%) 
 
     // Chassis dimensions
-    public static final double kTrackWidth = Units.inchesToMeters(24.5);
-    public static final double kWheelBase = Units.inchesToMeters(24.5);
+    public static final double kTrackWidth = Units.inchesToMeters(25.5);
+    public static final double kWheelBase = Units.inchesToMeters(25.5);
     
     // Swerve drive kinematics
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
@@ -134,12 +134,12 @@ public final class Constants {
       // ShooterLeft_Camera
       new Transform3d(
         new Translation3d(Units.inchesToMeters(-11.475), Units.inchesToMeters(11.253), Units.inchesToMeters(20.783)),
-        new Rotation3d(0, 30, Math.toRadians(150))
+        new Rotation3d(0, 0, Math.toRadians(150))
       ),
       // ShooterRight_Camera
       new Transform3d(
         new Translation3d(Units.inchesToMeters(-11.475), Units.inchesToMeters(-11.253), Units.inchesToMeters(20.783)),
-        new Rotation3d(0, 30, Math.toRadians(-150))
+        new Rotation3d(0, 0, Math.toRadians(-150))
       ),
       // // Rear_Left_Camera 
       // new Transform3d(new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(4.25), Units.inchesToMeters(36)),
@@ -373,7 +373,7 @@ public final class Constants {
     //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
     public static double targetRpm   = 3000.0;
     public static double readyRpm;   // Minimum RPM before feeder activates
-    public static double feederSpeed = 0.5;      // Feeder open-loop duty cycle [0, 1]
+    public static double feederSpeed = 0.8;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
     // Closed-loop velocity PID gains (tune these on the physical robot)
