@@ -357,14 +357,21 @@ public class Shooter extends SubsystemBase {
     }
 
     private void updateMotors() {
+        double feederOutput = 0.0;
+
         if (isShooterActive) {
             // Delegate PID calculation to the SPARK MAX (runs at 1 kHz on-board)
             flywheelController1.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
             flywheelController2.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
+
+            if (isCharged()) {
+                feederOutput = currentFeederSpeed;
+            }
         } else {
             shooterMotor1.set(0);
             shooterMotor2.set(0);
         }
-        feederMotor.set(currentFeederSpeed);
+
+        feederMotor.set(feederOutput);
     }
 }
