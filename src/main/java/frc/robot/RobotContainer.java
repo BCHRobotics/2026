@@ -18,6 +18,8 @@ import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -91,20 +95,38 @@ public class RobotContainer {
         configureDashboardCommands();
         registerPathPlannerCommands();
 
-        autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
-        autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
-        autoChooser.addOption("Circle Auto", new PathPlannerAuto("Circle Auto"));
-        autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));
-        autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto"));
-        autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
-        autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
-        autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
-        autoChooser.addOption("Climber-5_Auto", new PathPlannerAuto("Climber-5_Auto"));
-        autoChooser.addOption("Climber-6_Auto", new PathPlannerAuto("Climber-6_Auto"));
-        autoChooser.addOption("N_Climber-7_Auto", new PathPlannerAuto("N_Climber-7_Auto"));
-        autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
+        addAutoOptionIfPresent("Square Auto");
+        addAutoOptionIfPresent("Tuning_auto");
+        addAutoOptionIfPresent("Circle Auto");
+        addAutoOptionIfPresent("Test Climber Centre");
+        addAutoOptionIfPresent("Climber-1_Auto");
+        addAutoOptionIfPresent("Climber-2_Auto");
+        addAutoOptionIfPresent("Climber-3_Auto");
+        addAutoOptionIfPresent("Climber-4_Auto");
+        addAutoOptionIfPresent("Climber-5_Auto");
+        addAutoOptionIfPresent("Climber-6_Auto");
+        addAutoOptionIfPresent("N_Climber-7_Auto");
+        addAutoOptionIfPresent("Climber-8_Auto");
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", autoChooser);
+    }
+
+    private void addAutoOptionIfPresent(String autoName) {
+        Path autoPath = Filesystem.getDeployDirectory().toPath()
+                .resolve("pathplanner")
+                .resolve("autos")
+                .resolve(autoName + ".auto");
+
+        if (!Files.exists(autoPath)) {
+            DriverStation.reportWarning("Skipping missing PathPlanner auto: " + autoName, false);
+            return;
+        }
+
+        try {
+            autoChooser.addOption(autoName, new PathPlannerAuto(autoName));
+        } catch (RuntimeException ex) {
+            DriverStation.reportError("Failed to load PathPlanner auto '" + autoName + "': " + ex.getMessage(), false);
+        }
     }
 
     /**
@@ -152,6 +174,9 @@ public class RobotContainer {
         );
         ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
         ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
+
+        SmartDashboard.putData("PathPlanner Translation PID", ppTranslationPidChooser);
+        SmartDashboard.putData("PathPlanner Rotation PID", ppRotationPidChooser);
     }
 
     private void configureDashboardCommands() {

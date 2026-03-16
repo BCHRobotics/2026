@@ -199,6 +199,14 @@ public class Vision extends SubsystemBase {
         public void periodic() {
         boolean acceptedMeasurement = false;
 
+        if (cameraModules.isEmpty()) {
+            SmartDashboard.putBoolean("Vision/HasVisionPose", false);
+            SmartDashboard.putString("Vision/Status", "No active cameras configured");
+            return;
+        }
+
+        SmartDashboard.putString("Vision/Status", "Active cameras: " + cameraModules.size());
+
         //odometryField2d.setRobotPose(drivetrain.getOdometryPose());
         // Update ball detection (only if ballCamera is initialized)
         // if (ballCamera != null) {
@@ -244,6 +252,10 @@ public class Vision extends SubsystemBase {
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+        if (cameraModules.isEmpty()) {
+            return Optional.empty();
+        }
+
         Optional<VisionMeasurement> measurement = getEstimatedGlobalPose(cameraModules.get(0));
         return measurement.map(value -> value.estimatedPose);
     }

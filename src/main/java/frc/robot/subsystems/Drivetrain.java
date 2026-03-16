@@ -161,6 +161,7 @@ public class Drivetrain extends SubsystemBase {
 
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
+    SmartDashboard.setDefaultBoolean("Drivetrain/VerboseDiagnostics", false);
     configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
   }
 
@@ -236,9 +237,11 @@ public class Drivetrain extends SubsystemBase {
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
 
-    // Print comprehensive diagnostics once every 5 seconds
+    // Print comprehensive diagnostics only when explicitly enabled.
     double currentTime = WPIUtilJNI.now() * 1e-6;
-    if (currentTime - lastPrintTime >= 5.0) {
+    boolean verboseDiagnosticsEnabled = SmartDashboard.getBoolean("Drivetrain/VerboseDiagnostics", false);
+    SmartDashboard.putBoolean("Drivetrain/VerboseDiagnosticsEnabled", verboseDiagnosticsEnabled);
+    if (verboseDiagnosticsEnabled && currentTime - lastPrintTime >= 5.0) {
       printDiagnostics();
       lastPrintTime = currentTime;
     }
