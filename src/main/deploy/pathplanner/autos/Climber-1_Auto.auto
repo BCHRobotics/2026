@@ -23,15 +23,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": null
+            "name": "shooter off"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "Climber-1_path_2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-1_path_3"
           }
         }
       ]

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4675000000000014,
-        "y": 6.104820512820513
+        "x": 1.0396089996644915,
+        "y": 6.709518416058531
       },
       "isLocked": false,
       "linkedName": "Climber-2_path_1end"
@@ -20,8 +20,8 @@
         "y": 6.453666666666667
       },
       "prevControl": {
-        "x": 2.037714438753534,
-        "y": 6.453666666666667
+        "x": 0.9194789356984472,
+        "y": 6.639356984478935
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7964912280701715,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 0.39778372181886995,
+      "rotationDegrees": -135.0
     }
   ],
   "constraintZones": [],

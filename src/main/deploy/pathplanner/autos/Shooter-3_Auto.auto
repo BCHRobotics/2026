@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-3_path_1"
+            "pathName": "Shooter-3_path_1"
           }
         },
         {
@@ -27,29 +27,11 @@
           "data": {
             "name": "shooter off"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-3_Path_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "climber on"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-3_Path_3"
-          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Climber_Autos",
+  "folder": "Shooter_Autos",
   "choreoAuto": false
 }

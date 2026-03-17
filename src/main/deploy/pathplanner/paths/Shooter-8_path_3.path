@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.865,
-        "y": 1.881
+        "x": 1.9326282051282067,
+        "y": 2.4419358974358976
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8087212371941808,
-        "y": 0.9609540415036344
+        "x": 2.3372949002217287,
+        "y": 3.6428381374722836
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Climber-6_path_5end"
     },
     {
       "anchor": {
-        "x": 0.4938659058487873,
-        "y": 0.6515406562054205
+        "x": 0.6302692307692321,
+        "y": 5.500153846153847
       },
       "prevControl": {
-        "x": 0.26750966160074063,
-        "y": 0.44585041705577233
+        "x": 2.26690687361419,
+        "y": 4.688603104212859
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Climber-10_path_1end"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6484524264424837,
+      "rotationDegrees": 135.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 135.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Shooter_path_8",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -144.58
+    "rotation": -149.15
   },
   "useDefaultConstraints": true
 }

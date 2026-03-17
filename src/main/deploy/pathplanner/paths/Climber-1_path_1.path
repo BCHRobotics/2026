@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.865,
-        "y": 1.881
+        "x": 3.52,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2046787789325366,
-        "y": 1.8715172022017397
+        "x": 3.8596787789325373,
+        "y": 3.9905172022017394
       },
       "isLocked": false,
-      "linkedName": "Climber-9_path_1start"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -48,7 +48,7 @@
   "folder": "Climber_path_1",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -147.47929669582547
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

@@ -5,21 +5,57 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Climber-5_path_1"
+            "pathName": "Shooter-9_path_1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shooter-9_path_2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-5_path_2"
+            "pathName": "Shooter-9_path_3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shooter-9_path_4"
           }
         },
         {
@@ -39,29 +75,11 @@
           "data": {
             "name": "shooter off"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "climber on"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_4"
-          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Climber_Autos",
+  "folder": "Shooter_Autos",
   "choreoAuto": false
 }

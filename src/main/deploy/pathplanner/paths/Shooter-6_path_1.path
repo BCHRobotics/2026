@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.865,
-        "y": 1.881
+        "x": 3.537320512828689,
+        "y": 7.4
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8087212371941808,
-        "y": 0.9609540415036344
+        "x": 2.08590909090909,
+        "y": 7.343237250554324
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Climber-2_and_4_path_1start"
     },
     {
       "anchor": {
-        "x": 0.4938659058487873,
-        "y": 0.6515406562054205
+        "x": 0.6302692307692321,
+        "y": 6.453666666666667
       },
       "prevControl": {
-        "x": 0.26750966160074063,
-        "y": 0.44585041705577233
+        "x": 1.4825831485587573,
+        "y": 7.292960088691796
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -135.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Shooter_path_6",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -144.58
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
