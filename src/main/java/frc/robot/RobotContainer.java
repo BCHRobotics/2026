@@ -251,7 +251,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -281,10 +281,12 @@ public class RobotContainer {
             killIntake = operatorPS5.circle();
             climberExtend = operatorPS5.triangle();
             climberRetract = operatorPS5.cross();
-            vortexSpeedShot = operatorPS5.R2();
+            vortexSpeedShot = operatorPS5.R1();
+            jiggleIntake = operatorPS5.L2();
 
             killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
+            jiggleIntake.onTrue(Commands.runOnce(m_ballIntake::JiggleIntake, m_ballIntake));
 
             climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
             climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));

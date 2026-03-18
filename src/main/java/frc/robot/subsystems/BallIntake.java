@@ -30,6 +30,10 @@ import frc.robot.Constants.BallIntakeConstants;
  * indicates contact with the hard stop, or a timeout expires.
  */
 public class BallIntake extends SubsystemBase {
+  private static final double JIGGLE_INTAKE_POSITION =
+      BallIntakeConstants.kRetractedPosition
+          + ((BallIntakeConstants.kExtendedPosition - BallIntakeConstants.kRetractedPosition) * 0.5);
+  private static final double JIGGLE_INTERVAL_SECONDS = 0.5;
 
   // ── Calibration state machine ────────────────────────────────────────────
   private enum CalibrateState { IDLE, CALIBRATING, CALIBRATED, FAILED }
@@ -43,11 +47,16 @@ public class BallIntake extends SubsystemBase {
   // ── Calibration tracking ─────────────────────────────────────────────────
   private CalibrateState m_calibrateState = CalibrateState.IDLE;
   private final Timer m_calibrateTimer = new Timer();
+  private final Timer m_jiggleTimer = new Timer();
   private final LinearFilter m_calibrateCurrentFilter = LinearFilter.movingAverage(20);
   private boolean m_extendEnabled = false;
   private boolean m_runEnabled = false;
   private double m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
   private double m_filteredExtendCurrent = 0.0;
+  private boolean m_jiggleIntakeActive = false;
+  private boolean m_jiggleReturningToStart = false;
+  private boolean m_jiggleStartedExtended = false;
+  private double m_jiggleReturnPosition = BallIntakeConstants.kRetractedPosition;
 
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -130,6 +139,27 @@ public class BallIntake extends SubsystemBase {
     }
 
     moveToExtendedPosition();
+  }
+
+  /**
+   * Moves the intake to the half-retracted position, waits 500 ms, then returns
+   * it to the state it started from.
+   */
+  public void JiggleIntake() {
+    if (!isCalibrated() || m_jiggleIntakeActive) {
+      return;
+    }
+
+    m_jiggleIntakeActive = true;
+    m_jiggleReturningToStart = false;
+    m_jiggleStartedExtended = m_extendEnabled;
+    m_jiggleReturnPosition = m_extendEnabled
+        ? BallIntakeConstants.kExtendedPosition
+        : BallIntakeConstants.kRetractedPosition;
+    m_jiggleTimer.restart();
+
+    m_targetExtendPosition = JIGGLE_INTAKE_POSITION;
+    setExtendPosition(m_targetExtendPosition);
   }
 
   /** Stops the extend/retract motor. */
@@ -283,12 +313,28 @@ public class BallIntake extends SubsystemBase {
       m_filteredExtendCurrent = extendCurrent;
     }
 
+    if (m_jiggleIntakeActive) {
+      if (!m_jiggleReturningToStart && m_jiggleTimer.hasElapsed(JIGGLE_INTERVAL_SECONDS)) {
+        m_jiggleReturningToStart = true;
+        m_extendEnabled = m_jiggleStartedExtended;
+        m_targetExtendPosition = m_jiggleReturnPosition;
+        setExtendPosition(m_targetExtendPosition);
+        m_jiggleTimer.restart();
+      } else if (m_jiggleReturningToStart && m_jiggleTimer.hasElapsed(JIGGLE_INTERVAL_SECONDS)) {
+        m_jiggleIntakeActive = false;
+        m_jiggleReturningToStart = false;
+        m_extendEnabled = m_jiggleStartedExtended;
+        m_jiggleTimer.stop();
+      }
+    }
+
     SmartDashboard.putString("BallIntake/CalibrateState", m_calibrateState.toString());
     SmartDashboard.putNumber("BallIntake/ExtendCurrent",  extendCurrent);
     SmartDashboard.putNumber("BallIntake/FilteredExtendCurrent", m_filteredExtendCurrent);
     SmartDashboard.putNumber("BallIntake/ExtendPosition", getExtendPosition());
     SmartDashboard.putNumber("BallIntake/TargetExtendPosition", m_targetExtendPosition);
     SmartDashboard.putBoolean("BallIntake/ExtendEnabled", m_extendEnabled);
+    SmartDashboard.putBoolean("BallIntake/JiggleActive", m_jiggleIntakeActive);
     SmartDashboard.putBoolean("BallIntake/RunEnabled", m_runEnabled);
     SmartDashboard.putBoolean("BallIntake/AtTarget", isAtTargetPosition());
     SmartDashboard.putNumber("BallIntake/RunCurrent",     m_runMotor.getOutputCurrent());
