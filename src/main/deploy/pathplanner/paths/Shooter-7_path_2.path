@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.6302692307692321,
+        "y": 5.500153846153847
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6302692307692321,
+        "y": 5.500153846153847
+      },
+      "isLocked": false,
+      "linkedName": "Climber-10_path_1end"
+    },
+    {
+      "anchor": {
+        "x": 2.3,
+        "y": 4.0
+      },
+      "prevControl": {
+        "x": 2.1462416851441235,
+        "y": 4.678547671840354
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Shooter_path_7",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 135.0
+  },
+  "useDefaultConstraints": true
+}

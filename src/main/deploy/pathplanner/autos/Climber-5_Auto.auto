@@ -11,9 +11,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "shooter on"
+            "waitTime": 3.0
           }
         },
         {
@@ -25,13 +25,19 @@
         {
           "type": "named",
           "data": {
-            "name": "shooter off"
+            "name": "shooter on"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 4.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
           }
         },
         {
@@ -43,73 +49,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shooter on"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter off"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake on"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter on"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_6"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter off"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "climber on"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-5_path_7"
+            "pathName": "Climber-5_path_4"
           }
         }
       ]

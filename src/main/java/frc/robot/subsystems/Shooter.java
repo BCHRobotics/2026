@@ -84,6 +84,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import frc.robot.Constants.NavigationConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.VortexMotorConstants;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -105,7 +106,12 @@ public class Shooter extends SubsystemBase {
     private final SparkClosedLoopController flywheelController1;
     private final SparkClosedLoopController flywheelController2;
 
+    private static final double IDLE_RPM = 1400.0;
+    private static final double VORTEX_SPEED_SHOT_TARGET_RPM = VortexMotorConstants.kFreeSpeedRpm * 0.95;
+    private static final double VORTEX_SPEED_SHOT_READY_RPM = VORTEX_SPEED_SHOT_TARGET_RPM * 0.50;
+
     private boolean isShooterActive  = false;
+    private boolean isVortexSpeedShotActive = false;
     private double  currentFeederSpeed = 0.0;
 
     public Shooter(Drivetrain drivetrain) {
@@ -212,9 +218,26 @@ public class Shooter extends SubsystemBase {
     /** Spins up the flywheel to {@link #targetRpm} */
     public void startShooter() {
         isShooterActive = true;
+        isVortexSpeedShotActive = false;
 
         // Restore coast mode
         setShooterIdleMode(IdleMode.kCoast);
+    }
+
+    /** Spins the shooter to 95% of NEO Vortex free speed and auto-runs the feeder at 80% of target RPM. */
+    public void startVortexSpeedShot() {
+        isShooterActive = false;
+        isVortexSpeedShotActive = true;
+
+        setShooterIdleMode(IdleMode.kCoast);
+    }
+
+    public boolean isVortexSpeedShotReady() {
+        double currentVelocity1 = shooterMotor1.getEncoder().getVelocity();
+        double currentVelocity2 = shooterMotor2.getEncoder().getVelocity();
+
+        return currentVelocity1 >= VORTEX_SPEED_SHOT_READY_RPM
+            && currentVelocity2 >= VORTEX_SPEED_SHOT_READY_RPM;
     }
 
     /** No-op; subsystem state is already initialized in the constructor */
@@ -223,9 +246,11 @@ public class Shooter extends SubsystemBase {
     /** Coasts the flywheel to a stop */
     public void stopShooter() {
         isShooterActive = false;
+        isVortexSpeedShotActive = false;
     }
     public void killShooter() {
         isShooterActive = false;
+        isVortexSpeedShotActive = false;
 
         // Switch to brake mode and stop motors
         setShooterIdleMode(IdleMode.kBrake);
@@ -264,7 +289,7 @@ public class Shooter extends SubsystemBase {
         final double MIN_DISTANCE = 1.0;      // Minimum shooting distance (meters)
         final double MAX_DISTANCE = 3.0;     // Maximum shooting distance (meters)
         final double MIN_RPM = 1500.0;         // RPM at minimum distance
-        final double MAX_RPM = 4500.0;         // RPM at maximum distance
+        final double MAX_RPM = 3800.0;         // RPM at maximum distance
 
         // Clamp distance to valid range
         double clampedDistance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distanceFromHub));
@@ -303,6 +328,8 @@ public class Shooter extends SubsystemBase {
         double i = SmartDashboard.getNumber("Shooter/I", ShooterConstants.kI);
         double d = SmartDashboard.getNumber("Shooter/D", ShooterConstants.kD);
         double max = SmartDashboard.getNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
+        SmartDashboard.putNumber("Shooter/Distance", getHubDistance());
+
         double hubdistance = getHubDistance();
         // Update local variables
         //ShooterConstants.distance = hubdistance;
@@ -357,14 +384,31 @@ public class Shooter extends SubsystemBase {
     }
 
     private void updateMotors() {
-        if (isShooterActive) {
+        double feederOutput = 0.0;
+
+        if (!DriverStation.isEnabled()) {
+            shooterMotor1.set(0);
+            shooterMotor2.set(0);
+        } else if (isVortexSpeedShotActive) {
+            flywheelController1.setSetpoint(VORTEX_SPEED_SHOT_TARGET_RPM, ControlType.kVelocity);
+            flywheelController2.setSetpoint(VORTEX_SPEED_SHOT_TARGET_RPM, ControlType.kVelocity);
+
+            if (isVortexSpeedShotReady()) {
+                feederOutput = ShooterConstants.feederSpeed;
+            }
+        } else if (isShooterActive) {
             // Delegate PID calculation to the SPARK MAX (runs at 1 kHz on-board)
             flywheelController1.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
             flywheelController2.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
+
+            if (isCharged()) {
+                feederOutput = currentFeederSpeed;
+            }
         } else {
-            shooterMotor1.set(0);
-            shooterMotor2.set(0);
+            flywheelController1.setSetpoint(IDLE_RPM, ControlType.kVelocity);
+            flywheelController2.setSetpoint(IDLE_RPM, ControlType.kVelocity);
         }
-        feederMotor.set(currentFeederSpeed);
+
+        feederMotor.set(feederOutput);
     }
 }

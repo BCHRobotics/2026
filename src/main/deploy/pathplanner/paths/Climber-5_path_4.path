@@ -3,64 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9442564102564113,
-        "y": 2.0698333333333334
+        "x": 1.054,
+        "y": 2.6047307692307697
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9210000000000012,
-        "y": 2.6279871794871794
+        "x": 1.054,
+        "y": 2.8547307692307697
       },
       "isLocked": false,
-      "linkedName": "Climber-5_path_3end"
+      "linkedName": "collect6end"
     },
     {
       "anchor": {
-        "x": 1.2000512820512832,
-        "y": 5.965282051282052
+        "x": 1.054,
+        "y": 3.048
       },
       "prevControl": {
-        "x": 2.2700989110550673,
-        "y": 5.965282051282052
-      },
-      "nextControl": {
-        "x": 0.7000512820512852,
-        "y": 5.965282051282052
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 0.5023589743589756,
-        "y": 5.965282051282052
-      },
-      "prevControl": {
-        "x": 1.3279615384615397,
-        "y": 5.965282051282052
+        "x": 1.054,
+        "y": 2.798
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-5_path_4end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "shooter off",
-      "waypointRelativePos": 0.12424037812289422,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "climber on",
-      "waypointRelativePos": 0.7778528021606974,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 1.5,
@@ -71,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Climber_path_5",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -143.53
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

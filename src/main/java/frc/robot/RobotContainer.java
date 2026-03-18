@@ -6,6 +6,7 @@ import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.drivetrain.VisionTuningPath;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.shooter.ShootCommand;
+import frc.robot.commands.shooter.VortexSpeedShotCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.climber.ClimbCommand;
@@ -14,7 +15,6 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Shooter;
-import frc.robot.webserver.VisionWebServer;
 import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -44,9 +44,7 @@ public class RobotContainer {
     // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
 
-    // Web server for vision diagnostics running on RoboRIO port 8082.
-    private final VisionWebServer webServer = new VisionWebServer(vision);
-
+    
     // Controllers
     CommandPS5Controller driverPS5;
     CommandXboxController driverXbox;
@@ -79,9 +77,7 @@ public class RobotContainer {
         // Connect Vision subsystem to Drivetrain for diagnostics
         robotDrive.setVision(vision);
 
-        // Start the web server for vision diagnostics
-        webServer.start();
-
+    
         // Configure default commands
         configureDefaultCommands();
 
@@ -96,18 +92,31 @@ public class RobotContainer {
         configureDashboardCommands();
         registerPathPlannerCommands();
 
-        autoChooser.addOption("Square Auto", new PathPlannerAuto("Square Auto"));
-        autoChooser.addOption("Tuning_auto", new PathPlannerAuto("Tuning_auto"));
-        autoChooser.addOption("Circle Auto", new PathPlannerAuto("Circle Auto"));
-        autoChooser.addOption("Test Climber Centre", new PathPlannerAuto("Test Climber Centre"));
-        autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto"));
-        autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
-        autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
-        autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
-        autoChooser.addOption("Climber-5_Auto", new PathPlannerAuto("Climber-5_Auto"));
-        autoChooser.addOption("Climber-6_Auto", new PathPlannerAuto("Climber-6_Auto"));
-        autoChooser.addOption("N_Climber-7_Auto", new PathPlannerAuto("N_Climber-7_Auto"));
-        autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
+        // Auto Paths with Climb 
+        // autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto"));
+        // autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
+        // autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
+        // autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
+        // autoChooser.addOption("Climber-5_Auto", new PathPlannerAuto("Climber-5_Auto"));
+        // autoChooser.addOption("Climber-6_Auto", new PathPlannerAuto("Climber-6_Auto"));
+        // autoChooser.addOption("Climber-7_Auto", new PathPlannerAuto("Climber-7_Auto"));
+        // autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
+        // autoChooser.addOption("Climber-9_Auto", new PathPlannerAuto("Climber-9_Auto"));
+        // autoChooser.addOption("Climber-10_Auto", new PathPlannerAuto("Climber-10_Auto"));
+
+        // Auto Paths without Climb (only shoot)
+        autoChooser.addOption("Practice_Auto", new PathPlannerAuto("Practice_Auto"));
+        autoChooser.addOption("Shooter-1_Auto", new PathPlannerAuto("Shooter-1_Auto"));
+        autoChooser.addOption("Shooter-2_Auto", new PathPlannerAuto("Shooter-2_Auto"));
+        autoChooser.addOption("Shooter-3_Auto", new PathPlannerAuto("Shooter-3_Auto"));
+        autoChooser.addOption("Shooter-4_Auto", new PathPlannerAuto("Shooter-4_Auto"));
+        autoChooser.addOption("Shooter-5_Auto", new PathPlannerAuto("Shooter-5_Auto"));
+        autoChooser.addOption("Shooter-6_Auto", new PathPlannerAuto("Shooter-6_Auto"));
+        autoChooser.addOption("Shooter-7_Auto", new PathPlannerAuto("Shooter-7_Auto"));
+        autoChooser.addOption("Shooter-8_Auto", new PathPlannerAuto("Shooter-8_Auto"));
+        autoChooser.addOption("Shooter-9_Auto", new PathPlannerAuto("Shooter-9_Auto"));
+        
+
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
@@ -166,8 +175,37 @@ public class RobotContainer {
 
     private void registerPathPlannerCommands() {
         NamedCommands.registerCommand(
-                "RunClimb",
+                "climber on",
                 new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+        NamedCommands.registerCommand(
+                "shooter on",
+                Commands.runOnce(() -> {
+                    m_shooter.startShooter();
+                    m_shooter.startFeeder();
+                }, m_shooter));
+        NamedCommands.registerCommand(
+                "shooter off",
+                Commands.runOnce(() -> {
+                    m_shooter.stopShooter();
+                    m_shooter.stopFeeder();
+                }, m_shooter));
+        NamedCommands.registerCommand(
+                "intake on",
+                Commands.runOnce(() -> {
+                    m_ballIntake.moveToExtendedPosition();
+                    m_ballIntake.run();
+                }, m_ballIntake));
+        NamedCommands.registerCommand(
+                "intake off",
+                Commands.runOnce(() -> {
+                    m_ballIntake.moveToRetractedPosition();
+                    m_ballIntake.stopRun();
+                }, m_ballIntake));
+        NamedCommands.registerCommand(
+                "jiggle on", 
+                Commands.runOnce(() ->  {
+                    m_ballIntake.JiggleIntake();
+                }, m_ballIntake));
     }
 
     private Pose2d getSelectedClimbStartPose() {
@@ -218,7 +256,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -248,12 +286,16 @@ public class RobotContainer {
             killIntake = operatorPS5.circle();
             climberExtend = operatorPS5.triangle();
             climberRetract = operatorPS5.cross();
+            vortexSpeedShot = operatorPS5.R2();
+            jiggleIntake = operatorPS5.L2();
 
             killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
+            jiggleIntake.onTrue(Commands.runOnce(m_ballIntake::JiggleIntake, m_ballIntake));
 
             climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
             climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
+            vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
 
         }
 

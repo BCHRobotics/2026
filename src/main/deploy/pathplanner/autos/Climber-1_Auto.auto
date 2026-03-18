@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-1_Path_1"
+            "pathName": "Climber-1_path_1"
           }
         },
         {
@@ -31,19 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-1_Path_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "climber on"
+            "pathName": "Climber-1_path_2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-1_Path_3"
+            "pathName": "Climber-1_path_3"
           }
         }
       ]

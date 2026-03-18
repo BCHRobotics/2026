@@ -3,70 +3,52 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2698205128263274,
-        "y": 6.807
+        "x": 0.6302692307692321,
+        "y": 6.453666666666667
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4675000000000014,
-        "y": 6.104820512820513
+        "x": 1.5721538461538476,
+        "y": 6.907166666666667
       },
       "isLocked": false,
-      "linkedName": "Climber-2_path_1end"
+      "linkedName": "Climber-4_path_1end"
     },
     {
       "anchor": {
-        "x": 0.4674743589743602,
-        "y": 5.965282051282052
+        "x": 1.886115384615386,
+        "y": 5.058282051282052
       },
       "prevControl": {
-        "x": 1.874919566958662,
-        "y": 5.965282051282052
+        "x": 2.0372820512820526,
+        "y": 6.081564102564102
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Climber-4_path_1end"
+      "linkedName": "Climber-5_path_5end"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7964912280701715,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "shooter off",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "intake on",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 2.0,
-    "maxAngularVelocity": 720.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 159.74
   },
   "reversed": false,
   "folder": "Climber_path_6",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 140.82
+    "rotation": -135.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
