@@ -201,6 +201,11 @@ public class RobotContainer {
                     m_ballIntake.moveToRetractedPosition();
                     m_ballIntake.stopRun();
                 }, m_ballIntake));
+        NamedCommands.registerCommand(
+                "jiggle on", 
+                Commands.runOnce(() ->  {
+                    m_ballIntake.JiggleIntake();
+                }, m_ballIntake));
     }
 
     private Pose2d getSelectedClimbStartPose() {
