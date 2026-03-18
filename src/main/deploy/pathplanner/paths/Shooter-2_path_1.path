@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.557841646395876,
-        "y": 0.7884627587118267
+        "x": 1.8524251069900137,
+        "y": 1.0008844507845933
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6842225392296717,
-        "y": 0.7209615384538268
+        "x": 2.124136947218259,
+        "y": 2.2947503566333807
       },
       "prevControl": {
-        "x": 2.021041459158882,
-        "y": 0.6689064222359246
+        "x": 2.4217261055634802,
+        "y": 2.035977175463623
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -133.01349770673585
+    "rotation": -141.27
   },
   "reversed": false,
   "folder": "Shooter_path_2",
