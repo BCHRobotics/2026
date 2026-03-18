@@ -158,7 +158,7 @@ public final class Constants {
     public static final double kRotationDistanceWeight = 0.03;
     
     // Maximum camera-to-tag distance (meters) at which we will accept vision updates.
-    public static final double kMaxSingleTagDistance = 2.5;
+    public static final double kMaxSingleTagDistance = 4.0;
     public static final double kMaxMultiTagDistance = 4.0;
 
     // Reject measurements that jump too far from the current fused pose estimate.

@@ -91,18 +91,30 @@ public class RobotContainer {
         configureDashboardCommands();
         registerPathPlannerCommands();
 
-        autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto"));
-        autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
-        autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
-        autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
-        autoChooser.addOption("Climber-5_Auto", new PathPlannerAuto("Climber-5_Auto"));
+        // Auto Paths with Climb 
+        // autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto"));
+        // autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
+        // autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
+        // autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
+        // autoChooser.addOption("Climber-5_Auto", new PathPlannerAuto("Climber-5_Auto"));
         // autoChooser.addOption("Climber-6_Auto", new PathPlannerAuto("Climber-6_Auto"));
-        autoChooser.addOption("Climber-7_Auto", new PathPlannerAuto("Climber-7_Auto"));
-        autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
-        autoChooser.addOption("Climber-9_Auto", new PathPlannerAuto("Climber-9_Auto"));
-        autoChooser.addOption("Climber-10_Auto", new PathPlannerAuto("Climber-10_Auto"));
-        autoChooser.addOption("Practice_Auto", new PathPlannerAuto("Practice_Auto"));
+        // autoChooser.addOption("Climber-7_Auto", new PathPlannerAuto("Climber-7_Auto"));
+        // autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
+        // autoChooser.addOption("Climber-9_Auto", new PathPlannerAuto("Climber-9_Auto"));
+        // autoChooser.addOption("Climber-10_Auto", new PathPlannerAuto("Climber-10_Auto"));
 
+        // Auto Paths without Climb (only shoot)
+        autoChooser.addOption("Practice_Auto", new PathPlannerAuto("Practice_Auto"));
+        autoChooser.addOption("Shooter-1_Auto", new PathPlannerAuto("Shooter-1_Auto"));
+        autoChooser.addOption("Shooter-2_Auto", new PathPlannerAuto("Shooter-2_Auto"));
+        autoChooser.addOption("Shooter-3_Auto", new PathPlannerAuto("Shooter-3_Auto"));
+        autoChooser.addOption("Shooter-4_Auto", new PathPlannerAuto("Shooter-4_Auto"));
+        autoChooser.addOption("Shooter-5_Auto", new PathPlannerAuto("Shooter-5_Auto"));
+        autoChooser.addOption("Shooter-6_Auto", new PathPlannerAuto("Shooter-6_Auto"));
+        autoChooser.addOption("Shooter-7_Auto", new PathPlannerAuto("Shooter-7_Auto"));
+        autoChooser.addOption("Shooter-8_Auto", new PathPlannerAuto("Shooter-8_Auto"));
+        autoChooser.addOption("Shooter-9_Auto", new PathPlannerAuto("Shooter-9_Auto"));
+        
 
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", autoChooser);
