@@ -13,6 +13,7 @@
     "Climber_path_7",
     "Climber_path_8",
     "Climber_path_9",
+    "Collector_path_1",
     "Shooter_path_1",
     "Shooter_path_2",
     "Shooter_path_3",
@@ -25,6 +26,7 @@
   ],
   "autoFolders": [
     "Climber_Autos",
+    "Collector_Autos",
     "Shooter_Autos"
   ],
   "defaultMaxVel": 3.0,
