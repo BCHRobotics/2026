@@ -281,7 +281,7 @@ public class RobotContainer {
             killIntake = operatorPS5.circle();
             climberExtend = operatorPS5.triangle();
             climberRetract = operatorPS5.cross();
-            vortexSpeedShot = operatorPS5.R1();
+            vortexSpeedShot = operatorPS5.R2();
 
             killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));

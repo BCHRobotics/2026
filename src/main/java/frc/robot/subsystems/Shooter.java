@@ -107,7 +107,7 @@ public class Shooter extends SubsystemBase {
     private final SparkClosedLoopController flywheelController2;
 
     private static final double VORTEX_SPEED_SHOT_TARGET_RPM = VortexMotorConstants.kFreeSpeedRpm * 0.95;
-    private static final double VORTEX_SPEED_SHOT_READY_RPM = VORTEX_SPEED_SHOT_TARGET_RPM * 0.80;
+    private static final double VORTEX_SPEED_SHOT_READY_RPM = VORTEX_SPEED_SHOT_TARGET_RPM * 0.50;
 
     private boolean isShooterActive  = false;
     private boolean isVortexSpeedShotActive = false;
