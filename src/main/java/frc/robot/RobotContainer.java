@@ -6,6 +6,7 @@ import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.drivetrain.VisionTuningPath;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.shooter.ShootCommand;
+import frc.robot.commands.shooter.VortexSpeedShotCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.climber.ClimbCommand;
@@ -238,7 +239,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -268,12 +269,14 @@ public class RobotContainer {
             killIntake = operatorPS5.circle();
             climberExtend = operatorPS5.triangle();
             climberRetract = operatorPS5.cross();
+            vortexSpeedShot = operatorPS5.R1();
 
             killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
 
             climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
             climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
+            vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
 
         }
 
