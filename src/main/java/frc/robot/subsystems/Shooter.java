@@ -106,6 +106,7 @@ public class Shooter extends SubsystemBase {
     private final SparkClosedLoopController flywheelController1;
     private final SparkClosedLoopController flywheelController2;
 
+    private static final double IDLE_RPM = 500.0;
     private static final double VORTEX_SPEED_SHOT_TARGET_RPM = VortexMotorConstants.kFreeSpeedRpm * 0.95;
     private static final double VORTEX_SPEED_SHOT_READY_RPM = VORTEX_SPEED_SHOT_TARGET_RPM * 0.50;
 
@@ -385,7 +386,10 @@ public class Shooter extends SubsystemBase {
     private void updateMotors() {
         double feederOutput = 0.0;
 
-        if (isVortexSpeedShotActive) {
+        if (!DriverStation.isEnabled()) {
+            shooterMotor1.set(0);
+            shooterMotor2.set(0);
+        } else if (isVortexSpeedShotActive) {
             flywheelController1.setSetpoint(VORTEX_SPEED_SHOT_TARGET_RPM, ControlType.kVelocity);
             flywheelController2.setSetpoint(VORTEX_SPEED_SHOT_TARGET_RPM, ControlType.kVelocity);
 
@@ -401,8 +405,8 @@ public class Shooter extends SubsystemBase {
                 feederOutput = currentFeederSpeed;
             }
         } else {
-            shooterMotor1.set(0);
-            shooterMotor2.set(0);
+            flywheelController1.setSetpoint(IDLE_RPM, ControlType.kVelocity);
+            flywheelController2.setSetpoint(IDLE_RPM, ControlType.kVelocity);
         }
 
         feederMotor.set(feederOutput);
