@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import frc.robot.commands.drivetrain.FacePointCommand;
 import frc.robot.commands.drivetrain.PointRearToAllianceHubCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.drivetrain.VisionTuningPath;
@@ -142,7 +141,7 @@ public class RobotContainer {
 
     private void configureClimbStartPoseChooser() {
         // These poses are predefined constants so the team can place the robot at known climb
-        // test locations and select them from SmartDashboard before running the command.
+        // Select positions from SmartDashboard before running the command.
         climbStartPoseChooser.setDefaultOption("Blue Left", ClimbConstants.kBlueLeftStartPose);
         climbStartPoseChooser.addOption("Blue Right", ClimbConstants.kBlueRightStartPose);
         climbStartPoseChooser.addOption("Red Left", ClimbConstants.kRedLeftStartPose);
@@ -257,12 +256,12 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger alignToTag, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, pointRearToHub;
+        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
-            alignToTag = driverPS5.square();
+            pointRearToHub = driverPS5.square();
             intakeToggle = driverPS5.circle();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
@@ -272,7 +271,7 @@ public class RobotContainer {
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
         } else {
-            alignToTag = driverXbox.x();
+            pointRearToHub = driverXbox.x();
             intakeToggle = driverXbox.b();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
@@ -290,7 +289,6 @@ public class RobotContainer {
             climberRetract = operatorPS5.cross();
             vortexSpeedShot = operatorPS5.R2();
             jiggleIntake = operatorPS5.L2();
-            pointRearToHub = operatorPS5.R1();
 
             killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
@@ -299,24 +297,15 @@ public class RobotContainer {
             climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
             climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
             vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
-            pointRearToHub.whileTrue(new PointRearToAllianceHubCommand(robotDrive));
 
         }
 
         // ========== Vision-Based Navigation Commands ==========
 
         // Square/X button: Navigate to 1 meter in front of an AprilTag
-        alignToTag.whileTrue(
-                new FacePointCommand(robotDrive, leftY, // Forward/backward (inverted)
-                        leftX, 11.945, 4.029, 2.8) // Safety timeout
-        );
+        pointRearToHub.whileTrue(new PointRearToAllianceHubCommand(robotDrive));
 
         intakeToggle.onTrue(Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
-
-        // driverController.cross().whileTrue(
-        //     new GoToPositionCommand(m_robotDrive,10.0, 7.0,0.0)
-        //             .withTimeout(10.0) // Safety timeout
-        // );
 
         // Reset gyro heading to zero (forward)
         zeroHeading.onTrue(new ZeroHeadingCommand(robotDrive));
