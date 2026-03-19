@@ -254,9 +254,9 @@ public final class Constants {
      * PID gains for rotation control.
      * Controls turning accuracy to target heading.
      */
-    public static final double kRotationP = 0.025;
-    public static final double kRotationI = 0.005;
-    public static final double kRotationD = 0.0;
+    public static final double kRotationP = 0.031/2;
+    public static final double kRotationI = 0.00;
+    public static final double kRotationD = 0.00;
  
     public static final double kPositionTolerance = 0.05; // meters
     public static final double kRotationTolerance = 5.0; // degrees
@@ -373,7 +373,7 @@ public final class Constants {
     //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
     public static double targetRpm   = 3000.0;
     public static double readyRpm;   // Minimum RPM before feeder activates
-    public static double feederSpeed = 0.8;      // Feeder open-loop duty cycle [0, 1]
+    public static double feederSpeed = 1.0;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
     // Closed-loop velocity PID gains (tune these on the physical robot)
