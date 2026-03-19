@@ -348,6 +348,81 @@ Use this quick process in the pit or practice field.
 
 If one camera repeatedly causes issues, disable it rather than poisoning the whole fusion system.
 
+## Vision Tuning At Competition
+
+Use this as a simple on-field PhotonVision checklist before changing robot-side fusion constants.
+
+### Pre-match checklist
+
+1. Confirm each camera is on the correct AprilTag pipeline.
+2. Confirm the camera image is sharp and in focus.
+3. Confirm tags are visible without heavy motion blur while driving past them.
+4. Confirm no mechanism, bumper, cable, or polycarb edge is blocking part of the image.
+5. Confirm the active camera name in PhotonVision still matches the name used in code.
+6. Confirm at least one camera can see a clean close tag and a clean multi-tag layout from realistic field positions.
+
+### PhotonVision settings to check
+
+- Exposure
+	Use manual exposure if field lighting is harsh or inconsistent.
+	Lower exposure if the image is washed out, bright, or tags bloom into the background.
+	Raise exposure slightly if the image is too dark and tags disappear into noise.
+	Keep it as low as possible while tags still remain easy to detect, because lower exposure usually reduces motion blur.
+
+- Gain
+	Keep gain as low as practical.
+	Raise gain only if the image is too dark after exposure is set.
+	Too much gain adds noise and can make tag edges unstable.
+
+- Brightness
+	Keep brightness near neutral unless the image is obviously too dark or too bright.
+	Brightness is usually not the first knob to touch; exposure and gain matter more for AprilTag quality.
+
+- FPS
+	Use the highest stable FPS the camera and coprocessor can sustain.
+	If performance is unstable or CPU load is high, lower FPS before making the vision filter more permissive.
+
+- Resolution
+    Check the calibrated resolution is in use
+
+- Tag family and pipeline type
+	Confirm pipeline type is `AprilTag`.
+	Confirm tag family matches the game field expectation for the season.
+
+### Quick adjustments by symptom
+
+- Tags are detected when stationary but lost while driving
+	Lower exposure.
+	Lower gain if image noise is high.
+	Reduce resolution or FPS only if processing load is causing lag.
+
+- Image looks very bright or reflective field elements wash out the tag
+	Lower exposure first.
+	Then lower brightness if needed.
+	Avoid compensating with high gain.
+
+- Image looks too dark and tag edges are hard to see
+	Raise exposure slightly.
+	If needed, raise gain a small amount.
+	Stop when the tag is readable without making the full image noisy.
+
+- Close tags work but far tags do not
+	Try higher resolution if the hardware can handle it.
+	Recheck focus before changing robot code constants.
+	Make sure the lens is clean.
+
+- One camera is consistently worse than the others
+	Compare exposure, gain, focus, and mounting angle against the good camera.
+	If time is short at an event, disable the bad camera rather than tuning around it.
+
+### Competition best practices
+
+- Make one camera change at a time.
+- Re-test from the same robot position after each change.
+- Prefer reducing blur and glare over making the image generally brighter.
+- Do not loosen robot-side rejection thresholds just to hide a bad camera image.
+- Save known-good PhotonVision settings before leaving the pit.
+
 ## Vision Repeatability Path
 
 There is now a SmartDashboard command named:

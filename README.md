@@ -3,133 +3,153 @@
 [![Java](https://img.shields.io/badge/Java-17-blue)]()
 [![WPILib](https://img.shields.io/badge/WPILib-2026-orange)]()
 
-Robot code for Team 2386's 2026 robot. The current codebase is built around a MAXSwerve drivetrain with NavX-based field-oriented control, PhotonVision AprilTag pose fusion, an active ball intake, a climber, and a distance-aware shooter.
+Robot code for Team 2386's 2026 robot. The project is built on WPILib 2026 and GradleRIO, with a MAXSwerve drivetrain, PhotonVision AprilTag pose fusion, a motorized ball intake, a climber, and a distance-aware shooter.
 
-## What Is In This Robot
+## Robot Overview
 
 ### Drivetrain
 
-- Four-module MAXSwerve drive using REV MAXSwerve hardware
-- NavX gyro on MXP SPI for field-relative control and pose rotation
+- REV MAXSwerve four-module drivetrain
+- NavX-based field-relative driving
 - Slew-rate-limited teleop drive
-- Swerve odometry plus `SwerveDrivePoseEstimator`
-- PathPlanner AutoBuilder integration for holonomic autonomous paths
+- Odometry plus `SwerveDrivePoseEstimator`
+- PathPlanner AutoBuilder integration
 
 ### Vision
 
-- PhotonVision AprilTag pose estimation
-- Two active cameras in the current constants configuration
+- PhotonVision AprilTag localization
+- Multi-camera subsystem design with two cameras currently enabled
    - `ShooterLeft_Camera`
    - `ShooterRight_Camera`
-- Vision measurement filtering by ambiguity, distance, and pose delta
-- Vision updates fused into drivetrain pose estimation
-- Field visualization and per-camera diagnostics on SmartDashboard
+- 2026 Rebuilt Andymark AprilTag field layout
+- Vision measurement rejection by ambiguity, distance, translation delta, and rotation delta
+- Vision measurements fused into drivetrain pose estimation
 
 ### Mechanisms
 
-- Ball intake with:
-   - extend/retract arm on CAN 4
-   - roller on CAN 6
-   - homing/calibration by current spike detection
-- Climber with:
-   - main motor on CAN 40
-   - REV forward/reverse limit switches
+- Ball intake
+   - extend motor on CAN 4
+   - roller motor on CAN 6
+   - calibration by current-spike detection at startup when needed
+- Climber
+   - climber motor on CAN 40
    - proximity switch on DIO 1
-- Shooter with:
-   - feeder on CAN 21
-   - dual flywheel motors on CAN 22 and 23
-   - live-tunable velocity PID and feedforward
-   - target RPM derived from estimated field distance to the hub
+- Shooter
+   - feeder motor on CAN 21
+   - flywheel motors on CAN 22 and 23
+   - SmartDashboard-tunable PID and feedforward values
+   - target RPM derived from robot distance to the active alliance hub
 
-## Current Driver Controls
+## Controls
 
-### Driver controller
+Driver controller type defaults to PS5 through `OIConstants.kDriverControllerType`.
 
-Default driver controller type is PS5, configured in `OIConstants.kDriverControllerType`.
+### Driver PS5
 
-PS5 bindings:
-
-- Left stick Y: drive forward/backward
-- Left stick X: strafe left/right
-- Right stick X: rotate chassis
-- Square: hold `FacePointCommand` around the fixed field point `(11.945, 4.029)` at `2.8 m`
-- Circle: toggle intake roller on/off
-- Triangle: zero gyro heading
+- Left stick Y: drive forward and backward
+- Left stick X: strafe left and right
+- Right stick X: rotate chassis manually
+- Square: hold `PointRearToAllianceHubCommand` to rotate so the rear points at the active alliance hub
+- Circle: toggle intake roller on and off
+- Triangle: zero drivetrain heading
 - Cross: toggle intake arm between retracted and extended positions
-- L1: run `ClimbCommand` using the selected climb start pose
-- R2 or L2: run shooter while held
+- L1: start `ClimbCommand` using the selected climb start pose
+- R2 or L2: run `ShootCommand` while held
 
-Xbox fallback bindings exist in `RobotContainer`, but the active controller selection is PS5 unless constants are changed.
+### Driver Xbox Fallback
 
-### Operator controller
+- Left stick Y: drive forward and backward
+- Left stick X: strafe left and right
+- Right stick X: rotate chassis manually
+- X: hold `PointRearToAllianceHubCommand`
+- B: toggle intake roller
+- Y: zero drivetrain heading
+- A: toggle intake arm position
+- Left bumper: start `ClimbCommand`
+- Left or right trigger: run `ShootCommand` while held
 
-Operator controller is a PS5 on port 1.
+### Operator PS5
 
-- Square: kill shooter immediately
+- Square: immediately kill shooter
 - Circle: stop intake roller
 - Triangle: extend climber while held
 - Cross: retract climber while held
+- R2: run `VortexSpeedShotCommand` while held
+- L2: jiggle intake once
 
 ## Dashboard and Runtime Behavior
 
-Published dashboard items used by the current robot code include:
+The code publishes or uses these major dashboard controls:
 
-- `Auto Mode` chooser
-- `Climb Start Pose` chooser
-- `Climb Command` button
-- `VisionTuningPath` button
-- `Gyro Heading`
-- `Vision Field`
-- climber telemetry under `Climber/...`
+- `Auto Mode`
+- `Field Pose`
+- `Climb Start Pose`
+- `Climb Command`
+- `VisionTuningPath`
 - shooter telemetry under `Shooter/...`
+- climber telemetry under `Climber/...`
 - vision telemetry under `Vision/...`
+- drivetrain telemetry including `Gyro Heading`
 
-Startup behavior:
+Runtime behavior:
 
-- teleop init schedules ball-intake calibration if the intake is not already calibrated
-- autonomous also calibrates the intake before running the selected auto command
-- driver heading zero is manual and bound to triangle on the PS5 controller
+- teleop init calibrates the intake if it is not already calibrated
+- autonomous also calibrates the intake before starting the selected auto
+- drivetrain auto PID constants are selected from dashboard choosers before autonomous runs
+- the vision subsystem is attached to the drivetrain for fused diagnostics and pose correction
 
 ## Autonomous
 
-The dashboard auto chooser currently exposes these PathPlanner autos:
+### Autos Exposed In The Dashboard Chooser
 
-- `Square Auto`
-- `Tuning_auto`
-- `Circle Auto`
-- `Test Climber Centre`
-- `Climber-1_Auto`
-- `Climber-2_Auto`
-- `Climber-3_Auto`
-- `Climber-4_Auto`
-- `Climber-5_Auto`
-- `Climber-6_Auto`
-- `N_Climber-7_Auto`
-- `Climber-8_Auto`
+- `Practice_Auto`
+- `Shooter-1_Auto`
+- `Shooter-2_Auto`
+- `Shooter-3_Auto`
+- `Shooter-4_Auto`
+- `Shooter-5_Auto`
+- `Shooter-6_Auto`
+- `Shooter-7_Auto`
+- `Shooter-8_Auto`
+- `Shooter-9_Auto`
+- `Another_Practice`
 
-Additional auto files exist under `src/main/deploy/pathplanner/autos`, including:
+### Additional Auto Files In The Repo
 
-- `Another_Double_Circle_Auto.auto`
-- `Double_Circle_Auto.auto`
+These exist under `src/main/deploy/pathplanner/autos`, but are not currently added to the SmartDashboard chooser:
 
-Named PathPlanner command currently registered in code:
+- `Climber-1_Auto.auto` through `Climber-10_Auto.auto`
+- `Practice_Auto.auto`
+- `Shooter-1_Auto.auto` through `Shooter-9_Auto.auto`
+- `Another_Practice.auto`
 
-- `RunClimb`
+### Registered PathPlanner Named Commands
+
+- `climber on`
+- `shooter on`
+- `shooter off`
+- `intake on`
+- `intake off`
+- `jiggle on`
 
 ## Key Configuration
 
-Important constants live in `src/main/java/frc/robot/Constants.java`.
+Important configuration lives in `src/main/java/frc/robot/Constants.java`.
 
-Highlights:
+Highlights from the current code:
 
-- field-relative driving is enabled by default
-- rate limiting is enabled by default
-- wheelbase and track width are both `24.5 in`
-- drivetrain drive motor CAN IDs: `10, 12, 14, 16`
-- drivetrain turn motor CAN IDs: `11, 13, 15, 17`
-- current vision configuration enables two shooter-side cameras
+- Java 17 target
+- field-relative driving enabled by default
+- rate limiting enabled by default
+- wheelbase and track width are both `25.5 in`
+- drive motor CAN IDs: `12, 10, 14, 16`
+- turn motor CAN IDs: `13, 11, 15, 17`
+- ball intake CAN IDs: `4, 6`
+- climber CAN ID: `40`
+- shooter CAN IDs: `21, 22, 23`
+- enabled PhotonVision cameras: `ShooterLeft_Camera`, `ShooterRight_Camera`
 
-One detail worth calling out: `DriveConstants.kGyroReversed` exists, but it is not referenced by the current drivetrain code. Changing that constant alone will not change heading behavior.
+Alliance hub centers used by the shooter and hub-pointing command are defined in `NavigationConstants`.
 
 ## Build and Deploy
 
@@ -137,9 +157,9 @@ One detail worth calling out: `DriveConstants.kGyroReversed` exists, but it is n
 
 - WPILib 2026
 - Java 17
-- VS Code with WPILib tools
+- VS Code with WPILib support
 
-Vendor libraries used by this project:
+Vendor libraries currently referenced by the project:
 
 - REVLib
 - PhotonLib
@@ -152,42 +172,30 @@ Vendor libraries used by this project:
 ./gradlew build
 ```
 
+### Test
+
+```bash
+./gradlew test
+```
+
 ### Deploy
 
-Deploy with the WPILib VS Code command palette or your normal driver-station workflow.
-
-## Vision Setup
-
-Vision configuration is defined in `VisionConstants` and the `Vision` subsystem.
-
-Current camera configuration in code:
-
-- up to 4 cameras supported by the subsystem design
-- 2 cameras enabled in the current constants array
-- AprilTag field layout loaded from `AprilTagFields.k2026RebuiltAndymark`
-
-Vision fusion notes:
-
-- drivetrain pose rotation is still gyro-dominant
-- vision acts as a correction source through `addVisionMeasurement(...)`
-- measurements are rejected if ambiguity, tag distance, translation delta, or rotation delta exceed configured thresholds
-
-For full setup and tuning instructions, use the dedicated docs below.
+Deploy with the WPILib VS Code commands or the usual driver-station workflow for your team.
 
 ## Repository Guides
 
-Top-level docs that match the current codebase:
+Additional documentation in `docs/`:
 
-- `docs/gyro.md`: where gyro values are used and how heading affects behavior
-- `docs/PHOTON_SETUP.md`: PhotonVision setup and calibration guide
-- `docs/vision_tuning.md`: vision tuning notes
-- `docs/CameraTransform.md`: camera transform reference
-- `docs/APRILTAG_FIELD_LAYOUT.md`: field layout notes
-- `docs/intake_commissioning_guide.md`: intake bring-up and calibration notes
-- `docs/ClimberFlowDiagram.md`: climber sequence reference
-- `docs/joystick controls.md`: controller mapping notes
-- `docs/SHUFFLEBOARD_ITEMS.md`: dashboard inventory
-- `docs/FUNCTIONAL_SPECS.md`: higher-level system behavior notes
+- `docs/gyro.md`
+- `docs/PHOTON_SETUP.md`
+- `docs/vision_tuning.md`
+- `docs/CameraTransform.md`
+- `docs/APRILTAG_FIELD_LAYOUT.md`
+- `docs/intake_commissioning_guide.md`
+- `docs/ClimberFlowDiagram.md`
+- `docs/joystick controls.md`
+- `docs/SHUFFLEBOARD_ITEMS.md`
+- `docs/FUNCTIONAL_SPECS.md`
 
 ## Code Layout
 
@@ -196,6 +204,7 @@ src/main/java/frc/robot/
    Robot.java
    RobotContainer.java
    Constants.java
+   Configs.java
    subsystems/
       Drivetrain.java
       Vision.java
@@ -205,6 +214,7 @@ src/main/java/frc/robot/
       MAXSwerveModule.java
    commands/
       auto/
+      ball/
       ballintake/
       climber/
       drivetrain/
@@ -217,16 +227,18 @@ src/main/deploy/pathplanner/
 
 utilities/
    nt_vision_monitor.py
+   requirements.txt
+   run_vision_monitor.sh
 ```
 
-## Troubleshooting Pointers
+## Troubleshooting
 
-If field-oriented driving feels wrong, start with these checks:
+If field-relative drive or auto alignment feels wrong, start here:
 
-1. Confirm `Gyro Heading` on SmartDashboard behaves as expected.
-2. Zero heading with the robot pointed in the intended field-forward direction.
-3. Verify the active camera names match the PhotonVision configuration.
-4. Check whether intake calibration succeeded before relying on extend/retract position commands.
-5. Compare the robot's known field position against the vision-fused pose when tuning autonomous behavior.
+1. Verify `Gyro Heading` behaves correctly on the dashboard.
+2. Re-zero heading with the robot pointed the intended field-forward direction.
+3. Confirm PhotonVision camera names match the names in `VisionConstants`.
+4. Confirm intake calibration completed before relying on intake position commands.
+5. Compare odometry pose against vision-updated pose when tuning autonomous or vision filtering.
 
-For gyro-specific troubleshooting, see `docs/gyro.md`.
+For subsystem-specific setup and tuning, use the matching files in `docs/`.
