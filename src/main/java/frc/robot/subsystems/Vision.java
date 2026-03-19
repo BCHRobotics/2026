@@ -199,16 +199,6 @@ public class Vision extends SubsystemBase {
         public void periodic() {
         boolean acceptedMeasurement = false;
 
-        //odometryField2d.setRobotPose(drivetrain.getOdometryPose());
-        // Update ball detection (only if ballCamera is initialized)
-        // if (ballCamera != null) {
-        //     List<PhotonPipelineResult> res = ballCamera.getAllUnreadResults();
-        //     // updating the ball list
-        //     if (res.size() > 0) {
-        //         visibleGamePieces = res.get(0).getTargets();
-        //     }
-        // }
-
         // Process vision measurements from all cameras
         for (CameraModule module : cameraModules) {
             Optional<VisionMeasurement> measurement = getEstimatedGlobalPose(module);

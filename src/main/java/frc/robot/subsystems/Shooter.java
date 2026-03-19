@@ -1,64 +1,3 @@
-// =============================================================================
-// Shooter2.java — Flywheel Velocity PID Subsystem
-// =============================================================================
-//
-// OVERVIEW
-// --------
-// Controls a dual-NEO Vortex (SparkFlex) flywheel and a Neo 550 (SparkMax) feeder
-// belt via on-board closed-loop velocity control running at 1 kHz on each SPARK
-// controller.  Tunable gains (F, P, I, D) and setpoints are exposed through
-// SmartDashboard so they can be adjusted live without redeploying code.
-//
-// =============================================================================
-// TUNING STRATEGY — Velocity PID on a Flywheel
-// =============================================================================
-//
-// RECOMMENDED TOOLING (target vs. actual graphs)
-// -----------------------------------------------
-//  1. Shuffleboard (built into WPILib)
-//       - Drag "Shooter/RPM" and "Shooter/TargetRPM" SmartDashboard entries onto
-//         a tab and change their widget type to "Graph".
-//       - Both signals appear on the same time-series plot, making overshoot and
-//         steady-state error immediately visible.
-//       - Open via: Driver Station → Shuffleboard (or run `shuffleboard` from a
-//         terminal after deploying).
-//
-//  2. Glass (WPILib desktop tool)
-//       - Provides a lightweight NetworkTables client with built-in plot windows.
-//       - Run: `glass` from the WPILib command palette or start menu shortcut.
-//       - Add entries under "NT" → drag to a "Plot" widget for live graphing.
-//
-
-// STEP-BY-STEP TUNING PROCEDURE
-// ------------------------------
-//  Phase 1 — Feedforward (F aka kV)  — eliminates steady-state error at speed
-//    1. Set kP = 0, kI = 0, kD = 0.
-//    2. Set kV to a rough estimate: kV ≈ 12.0 / maxFreeRPM  (≈ 0.0024 for 5000 RPM).
-//    3. Command the target RPM and watch the graph.  Increase kV until the actual
-//       RPM roughly tracks the target without oscillating.
-//    4. A good kV means the motor reaches ~90–95 % of target on feedforward alone.
-//
-//  Phase 2 — Proportional (P)  — closes the remaining error
-//    1. With a tuned kV, add a small kP (e.g. 0.0005).
-//    2. Increase kP until the RPM reaches setpoint quickly with minimal overshoot
-//       (< 5 % is typical for a flywheel).
-//    3. If the motor oscillates or sounds rough, kP is too high — back off by 50 %.
-//
-//  Phase 3 — Derivative (D)  — damps overshoot (usually not needed for flywheels)
-//    1. Only add kD if kP causes noticeable oscillation that kV alone cannot cure.
-//    2. Start at kD ≈ 10 × kP; increase until oscillation damps.
-//    3. Too much kD causes a high-frequency buzz — reduce if heard.
-//
-//  Phase 4 — Integral (I)  — corrects persistent steady-state error
-//    1. Flywheels rarely need kI if kV and kP are well-tuned.
-//    2. If a small constant offset remains, add kI ≈ 0.001 and watch for wind-up.
-//    3. Use the integral zone (iZone) on the SPARK to limit accumulation.
-//
-//  Phase 5 — Validate under load
-//    1. Fire a game piece and observe how quickly the RPM recovers.
-//    2. Increase kP or kV slightly if recovery is sluggish; reduce if the motor
-//       oscillates after the shot.
-//
 // TUNING RULES OF THUMB
 // ----------------------
 //  • Always tune feedforward before feedback (F before P before D before I).
@@ -331,12 +270,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Distance", getHubDistance());
 
         double hubdistance = getHubDistance();
-        // Update local variables
-        //ShooterConstants.distance = hubdistance;
-        //SmartDashboard.putNumber("Shooter/Distance", getHubDistance());
         ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
-        //ShooterConstants.targetRpm = 3000; //Uncomment line above once tuning is done to enable distance-based RPM adjustment
-        //readyRpm = ready;
+
         ShooterConstants.readyRpm = ShooterConstants.targetRpm * 0.95; // Set ready RPM to 99% of target RPM for a larger buffer during testing
 
         // Check if PIDF or MaxOutput changed
