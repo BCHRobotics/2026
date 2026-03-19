@@ -116,6 +116,7 @@ public class RobotContainer {
         autoChooser.addOption("Shooter-7_Auto", new PathPlannerAuto("Shooter-7_Auto"));
         autoChooser.addOption("Shooter-8_Auto", new PathPlannerAuto("Shooter-8_Auto"));
         autoChooser.addOption("Shooter-9_Auto", new PathPlannerAuto("Shooter-9_Auto"));
+        autoChooser.addOption("Another_Practice", new PathPlannerAuto("Another_Practice"));
         
 
         // Put the chooser on SmartDashboard for driver selection
