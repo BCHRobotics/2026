@@ -34,20 +34,12 @@ public class ShootCommand extends Command {
     @Override
     public void initialize() {
         m_shooter.startShooter();
-        m_shooter.stopFeeder();
+        m_shooter.startFeeder();
     }
 
     /** Feeds game pieces when flywheel reaches threshold RPM, otherwise waits */
     @Override
-    public void execute() {
-        // Run feeder if flywheel is ready
-        if (m_shooter.isCharged()) {
-            m_shooter.startFeeder();
-        } else {
-            // Flywheel not ready yet - wait for it to spin up
-            m_shooter.stopFeeder();
-        }
-    }
+    public void execute() {}
 
     /** Stops both feeder and flywheel when command ends (button released) */
     @Override
