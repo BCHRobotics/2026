@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase {
     private final SparkClosedLoopController flywheelController1;
     private final SparkClosedLoopController flywheelController2;
 
-    private static final double IDLE_RPM = 1400.0;
+    private static final double IDLE_RPM = 1500.0;
     private static final double VORTEX_SPEED_SHOT_TARGET_RPM = VortexMotorConstants.kFreeSpeedRpm * 0.95;
     private static final double VORTEX_SPEED_SHOT_READY_RPM = VORTEX_SPEED_SHOT_TARGET_RPM * 0.50;
 
@@ -71,17 +71,17 @@ public class Shooter extends SubsystemBase {
     }
 
     private void publishTunables() {
-        SmartDashboard.putNumber("Shooter/Motor1/F", ShooterConstants.kF1);
-        SmartDashboard.putNumber("Shooter/Motor1/P", ShooterConstants.kP1);
-        SmartDashboard.putNumber("Shooter/Motor1/I", ShooterConstants.kI1);
-        SmartDashboard.putNumber("Shooter/Motor1/D", ShooterConstants.kD1);
-        SmartDashboard.putNumber("Shooter/Motor2/F", ShooterConstants.kF2);
-        SmartDashboard.putNumber("Shooter/Motor2/P", ShooterConstants.kP2);
-        SmartDashboard.putNumber("Shooter/Motor2/I", ShooterConstants.kI2);
-        SmartDashboard.putNumber("Shooter/Motor2/D", ShooterConstants.kD2);
-        SmartDashboard.putNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
-        SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
-        SmartDashboard.putNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
+        // SmartDashboard.putNumber("Shooter/Motor1/F", ShooterConstants.kF1);
+        // SmartDashboard.putNumber("Shooter/Motor1/P", ShooterConstants.kP1);
+        // SmartDashboard.putNumber("Shooter/Motor1/I", ShooterConstants.kI1);
+        // SmartDashboard.putNumber("Shooter/Motor1/D", ShooterConstants.kD1);
+        // SmartDashboard.putNumber("Shooter/Motor2/F", ShooterConstants.kF2);
+        // SmartDashboard.putNumber("Shooter/Motor2/P", ShooterConstants.kP2);
+        // SmartDashboard.putNumber("Shooter/Motor2/I", ShooterConstants.kI2);
+        // SmartDashboard.putNumber("Shooter/Motor2/D", ShooterConstants.kD2);
+        // SmartDashboard.putNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
+        // SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
+        // SmartDashboard.putNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
     }
 
     private void publishTelemetry() {
@@ -92,7 +92,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Shooter2RPM", shooterMotor2.getEncoder().getVelocity());
         SmartDashboard.putNumber("Shooter/AppliedFeederSpeed", currentFeederSpeed);
         SmartDashboard.putBoolean("Shooter/VortexSpeedShotActive", isVortexSpeedShotActive);
-        SmartDashboard.putBoolean("Shooter/VortexSpeedShotReady", isVortexSpeedShotReady());
+        // SmartDashboard.putBoolean("Shooter/VortexSpeedShotReady", isVortexSpeedShotReady());
     }
 
     private void applyClosedLoopConfig(SparkFlexConfig config, double p, double i, double d, double f) {
@@ -132,7 +132,7 @@ public class Shooter extends SubsystemBase {
         // follow(id, inverted=true) → spins opposite direction to motor1,
         // which physically makes both wheels shoot in the same direction.
         shooter2Config
-            .inverted(false)//set to true
+            .inverted(false)
             .idleMode(IdleMode.kCoast);  // Coast so the flywheel spins down naturally
 
         shooter2Config.encoder

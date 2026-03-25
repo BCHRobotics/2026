@@ -371,22 +371,22 @@ public final class Constants {
   public static final class ShooterConstants {
     // Shooter tuning
     //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
-    public static double targetRpm   = 3000.0;
-    public static double readyRpm    = targetRpm * 0.95;   // Minimum RPM before feeder activates
+    public static double targetRpm   = 1500.0;
+    public static double readyRpm    = targetRpm * 1.0;   // Minimum RPM before feeder activates
     public static double feederSpeed = 1.0;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
     // Closed-loop velocity PID gains for flywheel motor 1.
-    public static double kP1 = 0.00025;
-    public static double kI1 = 0.000002;
-    public static double kD1 = 0.0064;
-    public static double kF1 = 0.0000016;
+    public static double kP1 = 0.003;
+    public static double kI1 = 0.0000;
+    public static double kD1 = 0.004;
+    public static double kF1 = 0.000162;
 
     // Closed-loop velocity PID gains for flywheel motor 2.
-    public static double kP2 = 0.00025;
-    public static double kI2 = 0.000002;
-    public static double kD2 = 0.0064;
-    public static double kF2 = 0.0000016;
+    public static double kP2 = 0.003;
+    public static double kI2 = 0.00000;
+    public static double kD2 = 0.004;
+    public static double kF2 = 0.000162;
 
     public static final int FEEDER_CAN_ID = 21;
     public static final int SHOOTER1_CAN_ID = 22;

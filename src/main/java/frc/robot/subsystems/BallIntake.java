@@ -328,15 +328,15 @@ public class BallIntake extends SubsystemBase {
       }
     }
 
-    SmartDashboard.putString("BallIntake/CalibrateState", m_calibrateState.toString());
-    SmartDashboard.putNumber("BallIntake/ExtendCurrent",  extendCurrent);
-    SmartDashboard.putNumber("BallIntake/FilteredExtendCurrent", m_filteredExtendCurrent);
-    SmartDashboard.putNumber("BallIntake/ExtendPosition", getExtendPosition());
-    SmartDashboard.putNumber("BallIntake/TargetExtendPosition", m_targetExtendPosition);
-    SmartDashboard.putBoolean("BallIntake/ExtendEnabled", m_extendEnabled);
-    SmartDashboard.putBoolean("BallIntake/JiggleActive", m_jiggleIntakeActive);
-    SmartDashboard.putBoolean("BallIntake/RunEnabled", m_runEnabled);
-    SmartDashboard.putBoolean("BallIntake/AtTarget", isAtTargetPosition());
-    SmartDashboard.putNumber("BallIntake/RunCurrent",     m_runMotor.getOutputCurrent());
+      SmartDashboard.putString("BallIntake/CalibrateState", m_calibrateState.toString());
+    // SmartDashboard.putNumber("BallIntake/ExtendCurrent",  extendCurrent);
+    // SmartDashboard.putNumber("BallIntake/FilteredExtendCurrent", m_filteredExtendCurrent);
+    // SmartDashboard.putNumber("BallIntake/ExtendPosition", getExtendPosition());
+    // SmartDashboard.putNumber("BallIntake/TargetExtendPosition", m_targetExtendPosition);
+    // SmartDashboard.putBoolean("BallIntake/ExtendEnabled", m_extendEnabled);
+    // SmartDashboard.putBoolean("BallIntake/JiggleActive", m_jiggleIntakeActive);
+    // SmartDashboard.putBoolean("BallIntake/RunEnabled", m_runEnabled);
+    // SmartDashboard.putBoolean("BallIntake/AtTarget", isAtTargetPosition());
+    // SmartDashboard.putNumber("BallIntake/RunCurrent",     m_runMotor.getOutputCurrent());
   }
 }
