@@ -143,18 +143,18 @@ public class Climber extends SubsystemBase {
     filteredCurrent = currentFilter.calculate(climbMotor.getOutputCurrent());
 
     // Publish the important climber signals so students can debug the mechanism from the dashboard.
-    SmartDashboard.putBoolean("Climber/ForwardLimitPressed", isForwardLimitSwitchPressed());
-    SmartDashboard.putBoolean("Climber/ReverseLimitPressed", isReverseLimitSwitchPressed());
-    SmartDashboard.putBoolean("Climber/LimitPressed", isLimitSwitchPressed());
-    SmartDashboard.putBoolean("Climber/CurrentSpikeDetected", isCurrentSpikeDetected());
-    SmartDashboard.putBoolean("Climber/PlateDetected", isClimbPlateDetected());
-    SmartDashboard.putBoolean("Climber/ExtendLimitReached", isExtendLimitReached());
-    SmartDashboard.putBoolean("Climber/RetractLimitReached", isRetractLimitReached());
-    SmartDashboard.putBoolean("Climber/MotionTimedOut", hasMotionTimedOut(MotionState.EXTENDING)
-        || hasMotionTimedOut(MotionState.RETRACTING));
-    SmartDashboard.putString("Climber/MotionState", motionState.name());
-    SmartDashboard.putNumber("Climber/Current", climbMotor.getOutputCurrent());
-    SmartDashboard.putNumber("Climber/FilteredCurrent", filteredCurrent);
-    SmartDashboard.putNumber("Climber/AppliedOutput", climbMotor.getAppliedOutput());
+    // SmartDashboard.putBoolean("Climber/ForwardLimitPressed", isForwardLimitSwitchPressed());
+    // SmartDashboard.putBoolean("Climber/ReverseLimitPressed", isReverseLimitSwitchPressed());
+    // SmartDashboard.putBoolean("Climber/LimitPressed", isLimitSwitchPressed());
+    // SmartDashboard.putBoolean("Climber/CurrentSpikeDetected", isCurrentSpikeDetected());
+    // SmartDashboard.putBoolean("Climber/PlateDetected", isClimbPlateDetected());
+    // SmartDashboard.putBoolean("Climber/ExtendLimitReached", isExtendLimitReached());
+    // SmartDashboard.putBoolean("Climber/RetractLimitReached", isRetractLimitReached());
+    // SmartDashboard.putBoolean("Climber/MotionTimedOut", hasMotionTimedOut(MotionState.EXTENDING)
+    //     || hasMotionTimedOut(MotionState.RETRACTING));
+    // SmartDashboard.putString("Climber/MotionState", motionState.name());
+    // SmartDashboard.putNumber("Climber/Current", climbMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Climber/FilteredCurrent", filteredCurrent);
+    // SmartDashboard.putNumber("Climber/AppliedOutput", climbMotor.getAppliedOutput());
   }
 }

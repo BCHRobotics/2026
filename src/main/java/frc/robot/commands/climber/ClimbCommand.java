@@ -89,12 +89,12 @@ public class ClimbCommand extends Command {
     rotationController.reset();
     setDriveTarget(startPose);
 
-    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
-    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "InitialPose", poseToString(currentPose));
-    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "SelectedStartPose", poseToString(startPose));
-    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "TargetPose", poseToString(targetPose));
-    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", false);
-    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
+    // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
+    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "InitialPose", poseToString(currentPose));
+    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "SelectedStartPose", poseToString(startPose));
+    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "TargetPose", poseToString(targetPose));
+    // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", false);
+    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
   }
 
   @Override

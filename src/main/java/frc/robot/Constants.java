@@ -373,8 +373,8 @@ public final class Constants {
     // Shooter tuning
     //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
     public static double targetRpm   = 1500.0;
-    public static double readyRpm    = targetRpm * 1.0;   // Minimum RPM before feeder activates
-    public static double feederSpeed = 1.0;      // Feeder open-loop duty cycle [0, 1]
+    public static double readyRpm    = targetRpm * 0.98;   // Minimum RPM before feeder activates
+    public static double feederSpeed = 0.9;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
     // Closed-loop velocity PID gains for flywheel motor 1.
