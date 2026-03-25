@@ -255,8 +255,8 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake;
+        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger, turboSpeedToggle;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -265,6 +265,7 @@ public class RobotContainer {
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
             climbTrigger = driverPS5.L1();
+            turboSpeedToggle = driverPS5.R1();
             shootTrigger = driverPS5.R2().or(driverPS5.L2());
 
             leftY = () -> -driverPS5.getLeftY();
@@ -275,6 +276,7 @@ public class RobotContainer {
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
             climbTrigger = driverXbox.leftBumper();
+            turboSpeedToggle = driverXbox.rightBumper();
             shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
 
             leftY = () -> -driverXbox.getLeftY();
@@ -288,10 +290,12 @@ public class RobotContainer {
             climberRetract = operatorPS5.cross();
             vortexSpeedShot = operatorPS5.R2();
             jiggleIntake = operatorPS5.L2();
+            calibrateIntake = operatorPS5.R1();
 
             killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
             killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
             jiggleIntake.onTrue(Commands.runOnce(m_ballIntake::JiggleIntake, m_ballIntake));
+            calibrateIntake.onTrue(new CalibrateBallIntakeCommand(m_ballIntake));
 
             climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
             climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
@@ -317,6 +321,9 @@ public class RobotContainer {
 
         // R2 and L2: Shoot while held
         shootTrigger.whileTrue(new ShootCommand(m_shooter));
+
+        // R1: Toggle turbo speed mode for drivetrain
+        turboSpeedToggle.onTrue(Commands.runOnce(robotDrive::toggleMaxSpeed, robotDrive));
     }
 
     /**

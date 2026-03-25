@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter extends SubsystemBase {
 
@@ -39,6 +40,7 @@ public class Shooter extends SubsystemBase {
     private final SparkFlexConfig shooter1Config;
     private final SparkFlexConfig shooter2Config;
     private final Drivetrain drivetrain;
+    private final Timer shooterSpinTimer = new Timer();
 
     // On-board closed-loop controller runs the PID at 1 kHz on the SPARK MAX
     // (vs. 50 Hz if run on the RoboRIO with WPILib PIDController)
@@ -180,6 +182,9 @@ public class Shooter extends SubsystemBase {
 
         // Restore coast mode
         setShooterIdleMode(IdleMode.kCoast);
+
+        shooterSpinTimer.reset();
+        shooterSpinTimer.start();
     }
 
     /** Spins the shooter to 95% of NEO Vortex free speed and auto-runs the feeder at 80% of target RPM. */
@@ -205,6 +210,7 @@ public class Shooter extends SubsystemBase {
     public void stopShooter() {
         isShooterActive = false;
         isVortexSpeedShotActive = false;
+        shooterSpinTimer.stop();
     }
     public void killShooter() {
         isShooterActive = false;
@@ -371,7 +377,7 @@ public class Shooter extends SubsystemBase {
             flywheelController1.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
             flywheelController2.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
 
-            if (isCharged()) {
+            if (isCharged() && shooterSpinTimer.hasElapsed(1.0)) {  // Add a short delay after reaching target RPM
                 feederOutput = currentFeederSpeed;
             }
         } else {

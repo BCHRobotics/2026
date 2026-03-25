@@ -73,6 +73,8 @@ public class Drivetrain extends SubsystemBase {
   // boolean for keeping track of robot alliance (used for flipping auto path)
   public boolean isRedAlliance;
 
+  private boolean isTurboSpeed = false;
+
   // Timer for pose output throttling (once per second)
   private double lastPrintTime = 0.0;
   
@@ -467,6 +469,15 @@ public class Drivetrain extends SubsystemBase {
     rearLeftModule.resetEncoders();
     frontRightModule.resetEncoders();
     rearRightModule.resetEncoders();
+  }
+
+  /** Toggles the robot max speed between normal and turbo */
+  public void toggleMaxSpeed() {
+    if (isTurboSpeed) {
+      maxSpeed = DriveConstants.maxSpeedTurbo;
+    } else {
+      maxSpeed = DriveConstants.maxSpeedNormal;
+    }
   }
 
   /** Returns the robot heading as a Rotation2d. Always authoritative source. */
