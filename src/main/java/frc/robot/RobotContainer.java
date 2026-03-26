@@ -49,7 +49,8 @@ public class RobotContainer {
     CommandPS5Controller driverPS5;
     CommandXboxController driverXbox;
     // Operator controller (port 1) — always PS5, used for intake controls
-    CommandPS5Controller operatorPS5 = new CommandPS5Controller(OIConstants.kBackupControllerPort);
+    CommandPS5Controller operatorPS5;
+    CommandXboxController operatorXbox;
 
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -69,6 +70,12 @@ public class RobotContainer {
             driverPS5 = new CommandPS5Controller(OIConstants.kMainControllerPort);
         } else {
             driverXbox = new CommandXboxController(OIConstants.kMainControllerPort);
+        }
+
+        if (OIConstants.kOperatorControllerType == OIConstants.ControllerType.PS5) {
+            operatorPS5 = new CommandPS5Controller(OIConstants.kOperatorControllerPort);
+        } else {
+            operatorXbox = new CommandXboxController(OIConstants.kOperatorControllerPort);
         }
 
         // Start data logging for AdvantageScope
@@ -291,38 +298,29 @@ public class RobotContainer {
             vortexSpeedShot = operatorPS5.R2();
             jiggleIntake = operatorPS5.L2();
             calibrateIntake = operatorPS5.R1();
+        } else {
+            killshooter = operatorXbox.x();
+            killIntake = operatorXbox.b();
+            climberExtend = operatorXbox.y();
+            climberRetract = operatorXbox.a();
+            vortexSpeedShot = operatorXbox.rightTrigger();
+            jiggleIntake = operatorXbox.leftTrigger();
+            calibrateIntake = operatorXbox.rightBumper();
 
-            killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
-            killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
-            jiggleIntake.onTrue(Commands.runOnce(m_ballIntake::JiggleIntake, m_ballIntake));
-            calibrateIntake.onTrue(new CalibrateBallIntakeCommand(m_ballIntake));
-
-            climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
-            climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
-            vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
 
         }
 
         // ========== Vision-Based Navigation Commands ==========
 
-        // Square/X button: Navigate to 1 meter in front of an AprilTag
-        pointRearToHub.whileTrue(new PointRearToAllianceHubCommand(robotDrive));
+        // Main controller commands
 
         intakeToggle.onTrue(Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
-
-        // Reset gyro heading to zero (forward)
         zeroHeading.onTrue(new ZeroHeadingCommand(robotDrive));
-
-        // Cross: Toggle between retracted home and configured extended position.
         extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
-
-        // Left bumper: run the climb sequence using the currently selected climb start pose.
         climbTrigger.onTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
 
-        // R2 and L2: Shoot while held
+        pointRearToHub.whileTrue(new PointRearToAllianceHubCommand(robotDrive));
         shootTrigger.whileTrue(new ShootCommand(m_shooter));
-
-        // R1: Toggle turbo speed mode for drivetrain
         turboSpeedTrigger.whileTrue(
             Commands.startEnd(
                 robotDrive::enableTurboSpeed,
@@ -330,6 +328,17 @@ public class RobotContainer {
                 robotDrive
             )
         );
+
+        // Operator controller commands
+        killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
+        killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
+        jiggleIntake.onTrue(Commands.runOnce(m_ballIntake::JiggleIntake, m_ballIntake));
+        calibrateIntake.onTrue(new CalibrateBallIntakeCommand(m_ballIntake));
+
+        climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
+        climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
+        vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
+
     }
 
     /**

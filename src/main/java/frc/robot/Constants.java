@@ -38,13 +38,14 @@ public final class Constants {
   // Opoerator Interface
   public static final class OIConstants {
     public static final int kMainControllerPort = 0;
-    public static final int kBackupControllerPort = 1;
+    public static final int kOperatorControllerPort = 1;
 
     public enum ControllerType {
       PS5,
       XBOX
     }
     public static final ControllerType kDriverControllerType = ControllerType.PS5;
+    public static final ControllerType kOperatorControllerType = ControllerType.PS5;
 
     public static final double kDriveDeadband = 0.05;
     public static final double kTurnDeadband = 0.12;
