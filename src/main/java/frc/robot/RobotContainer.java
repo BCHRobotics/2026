@@ -255,7 +255,7 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger, turboSpeedToggle;
+        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger, turboSpeedTrigger;
         Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake;
         DoubleSupplier leftY, leftX;
 
@@ -265,7 +265,7 @@ public class RobotContainer {
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
             climbTrigger = driverPS5.L1();
-            turboSpeedToggle = driverPS5.R1();
+            turboSpeedTrigger = driverPS5.R1();
             shootTrigger = driverPS5.R2().or(driverPS5.L2());
 
             leftY = () -> -driverPS5.getLeftY();
@@ -276,7 +276,7 @@ public class RobotContainer {
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
             climbTrigger = driverXbox.leftBumper();
-            turboSpeedToggle = driverXbox.rightBumper();
+            turboSpeedTrigger = driverXbox.rightBumper();
             shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
 
             leftY = () -> -driverXbox.getLeftY();
@@ -323,7 +323,13 @@ public class RobotContainer {
         shootTrigger.whileTrue(new ShootCommand(m_shooter));
 
         // R1: Toggle turbo speed mode for drivetrain
-        turboSpeedToggle.onTrue(Commands.runOnce(robotDrive::toggleMaxSpeed, robotDrive));
+        turboSpeedTrigger.whileTrue(
+            Commands.startEnd(
+                robotDrive::enableTurboSpeed,
+                robotDrive::disableTurboSpeed,
+                robotDrive
+            )
+        );
     }
 
     /**
