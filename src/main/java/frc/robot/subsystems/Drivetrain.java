@@ -471,13 +471,16 @@ public class Drivetrain extends SubsystemBase {
     rearRightModule.resetEncoders();
   }
 
-  /** Toggles the robot max speed between normal and turbo */
-  public void toggleMaxSpeed() {
-    if (isTurboSpeed) {
-      maxSpeed = DriveConstants.maxSpeedTurbo;
-    } else {
-      maxSpeed = DriveConstants.maxSpeedNormal;
-    }
+  /** Enables turbo speed while held */
+  public void enableTurboSpeed() {
+    isTurboSpeed = true;
+    maxSpeed = DriveConstants.maxSpeedTurbo;
+  }
+
+  /** Disables turbo speed when released */
+  public void disableTurboSpeed() {
+    isTurboSpeed = false;
+    maxSpeed = DriveConstants.maxSpeedNormal;
   }
 
   /** Returns the robot heading as a Rotation2d. Always authoritative source. */
