@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Shooter-5_path_1"

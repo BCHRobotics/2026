@@ -59,6 +59,7 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
     public static final double maxSpeedNormal = 5.0; // 3.3
+    public static final double maxSpeedTurbo = 7.0; 
     public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
@@ -371,18 +372,23 @@ public final class Constants {
   public static final class ShooterConstants {
     // Shooter tuning
     //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
-    public static double targetRpm   = 3000.0;
-    public static double readyRpm;   // Minimum RPM before feeder activates
-    public static double feederSpeed = 1.0;      // Feeder open-loop duty cycle [0, 1]
+    public static double targetRpm   = 1500.0;
+    public static double readyRpm    = targetRpm * 0.98;   // Minimum RPM before feeder activates
+    public static double feederSpeed = 0.9;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
-    // Closed-loop velocity PID gains (tune these on the physical robot)
-    public static double kP = 0.00025;
-    public static double kI = 0.000002;
-    public static double kD = 0.0064;
+    // Closed-loop velocity PID gains for flywheel motor 1.
+    public static double kP1 = 0.003;
+    public static double kI1 = 0.0000;
+    public static double kD1 = 0.004;
+    public static double kF1 = 0.000162;
 
-    // kV(aka kF) feedforward (volts per RPM). Set to ~1/maxRPM for a first estimate.
-    public static double kF = 0.0000016;//12/targetRpm;  // Tune this on the physical robot
+    // Closed-loop velocity PID gains for flywheel motor 2.
+    public static double kP2 = 0.003;
+    public static double kI2 = 0.00000;
+    public static double kD2 = 0.004;
+    public static double kF2 = 0.000162;
+
     public static final int FEEDER_CAN_ID = 21;
     public static final int SHOOTER1_CAN_ID = 22;
     public static final int SHOOTER2_CAN_ID = 23;
