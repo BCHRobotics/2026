@@ -81,6 +81,12 @@
           "data": {
             "name": "shooter off"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "S8R-Turn"
+          }
         }
       ]
     }
