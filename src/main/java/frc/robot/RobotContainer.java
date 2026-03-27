@@ -373,10 +373,13 @@ public class RobotContainer {
     }
 
     public Command getTeleopInitCommand() {
-        new ZeroHeadingCommand(robotDrive);
-        return new ConditionalCommand(
-                Commands.none(),
-                new CalibrateBallIntakeCommand(m_ballIntake),
-                m_ballIntake::isCalibrated);
+        return new ZeroHeadingCommand(robotDrive)
+            .andThen(
+                new ConditionalCommand(
+                    Commands.none(),
+                    new CalibrateBallIntakeCommand(m_ballIntake),
+                    m_ballIntake::isCalibrated
+                )
+            );
     }
 }
