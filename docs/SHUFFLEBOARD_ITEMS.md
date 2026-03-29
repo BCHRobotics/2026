@@ -13,7 +13,7 @@ This file contains a list of all elements currently being published to Shufflebo
 - [Y] `Climb Start Pose` (SendableChooser)
 
 ## Drivetrain
-- [N] `Gyro Heading` (Number)
+- [Y] `Gyro Heading` (Number)
 - [Y] `Field/Fused` (Field2d)
 - [Y] `Field/Odometry` (Field2d)
 - [Y] `Field/Vision` (Field2d)

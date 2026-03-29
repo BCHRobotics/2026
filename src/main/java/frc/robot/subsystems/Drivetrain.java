@@ -253,6 +253,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Pose/Odometry/X", odometryPose.getX());
     SmartDashboard.putNumber("Pose/Odometry/Y", odometryPose.getY());
     SmartDashboard.putNumber("Pose/Odometry/HeadingDegrees", odometryPose.getRotation().getDegrees());
+    SmartDashboard.putNumber("Gyro Heading", getHeading());
     odometryField.setRobotPose(odometryPose);
 
     if (vision != null) {
