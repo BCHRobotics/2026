@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
@@ -150,6 +151,7 @@ public class Vision extends SubsystemBase {
         // Process vision measurements from all cameras
         for (CameraModule module : cameraModules) {
             Optional<VisionMeasurement> measurement = getEstimatedGlobalPose(module);
+            publishCameraDetectionStatus(module);
 
             if (measurement.isPresent()) {
                 VisionMeasurement accepted = measurement.get();
@@ -162,6 +164,33 @@ public class Vision extends SubsystemBase {
                 );
             }
         }
+    }
+
+    private void publishCameraDetectionStatus(CameraModule module) {
+        String baseKey = "Vision/" + module.name + "/";
+
+        if (module.lastResult == null) {
+            SmartDashboard.putString(baseKey + "DetectionStatus", "NO_DATA");
+            SmartDashboard.putNumber(baseKey + "TagCount", 0);
+            SmartDashboard.putBoolean(baseKey + "HasTargets", false);
+            SmartDashboard.putBoolean(baseKey + "IsMultiTag", false);
+            return;
+        }
+
+        int tagCount = module.lastResult.getTargets().size();
+        String status;
+        if (tagCount <= 0) {
+            status = "NO_TAGS";
+        } else if (tagCount == 1) {
+            status = "SINGLE_TAG";
+        } else {
+            status = "MULTI_TAG";
+        }
+
+        SmartDashboard.putString(baseKey + "DetectionStatus", status);
+        SmartDashboard.putNumber(baseKey + "TagCount", tagCount);
+        SmartDashboard.putBoolean(baseKey + "HasTargets", tagCount > 0);
+        SmartDashboard.putBoolean(baseKey + "IsMultiTag", tagCount > 1);
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
