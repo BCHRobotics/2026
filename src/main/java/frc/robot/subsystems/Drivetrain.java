@@ -82,6 +82,7 @@ public class Drivetrain extends SubsystemBase {
   // Optional reference to Vision subsystem for diagnostics
   private Vision vision = null;
 
+  private final Field2d fusedField = new Field2d();
   private final Field2d odometryField = new Field2d();
   private final Field2d visionField = new Field2d();
 
@@ -167,6 +168,7 @@ public class Drivetrain extends SubsystemBase {
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
     configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
+    SmartDashboard.putData("Field/Fused", fusedField);
     SmartDashboard.putData("Field/Odometry", odometryField);
     SmartDashboard.putData("Field/Vision", visionField);
   }
@@ -239,6 +241,12 @@ public class Drivetrain extends SubsystemBase {
             rearLeftModule.getPosition(),
             rearRightModule.getPosition()
         });
+
+      Pose2d fusedPose = getPose();
+      SmartDashboard.putNumber("Pose/Fused/X", fusedPose.getX());
+      SmartDashboard.putNumber("Pose/Fused/Y", fusedPose.getY());
+      SmartDashboard.putNumber("Pose/Fused/HeadingDegrees", fusedPose.getRotation().getDegrees());
+      fusedField.setRobotPose(fusedPose);
 
     Pose2d odometryPose = getOdometryPose();
     SmartDashboard.putNumber("Pose/Odometry/X", odometryPose.getX());
