@@ -15,6 +15,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.BallIntakeConstants;
 
@@ -326,5 +327,19 @@ public class BallIntake extends SubsystemBase {
         m_jiggleTimer.stop();
       }
     }
+
+    SmartDashboard.putString("BallIntake/CalibrateState", m_calibrateState.toString());
+    SmartDashboard.putNumber("BallIntake/ExtendCurrent", extendCurrent);
+    SmartDashboard.putNumber("BallIntake/FilteredExtendCurrent", m_filteredExtendCurrent);
+    SmartDashboard.putNumber("BallIntake/ExtendPosition", getExtendPosition());
+    SmartDashboard.putNumber("BallIntake/TargetExtendPosition", m_targetExtendPosition);
+    SmartDashboard.putBoolean("BallIntake/ExtendEnabled", m_extendEnabled);
+    SmartDashboard.putBoolean("BallIntake/JiggleActive", m_jiggleIntakeActive);
+    SmartDashboard.putBoolean("BallIntake/RunEnabled", m_runEnabled);
+    SmartDashboard.putBoolean("BallIntake/AtTarget", isAtTargetPosition());
+    SmartDashboard.putNumber("BallIntake/RunCurrent", m_runMotor.getOutputCurrent());
+    SmartDashboard.putNumber("BallIntake/Speed", m_runMotor.getAppliedOutput());
+    SmartDashboard.putNumber("BallIntake/Current", m_runMotor.getOutputCurrent());
+    SmartDashboard.putBoolean("BallIntake/Running", m_runEnabled);
   }
 }

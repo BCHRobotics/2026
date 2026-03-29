@@ -264,6 +264,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Pose/Vision/X", visionPose.getX());
         SmartDashboard.putNumber("Pose/Vision/Y", visionPose.getY());
         SmartDashboard.putNumber("Pose/Vision/HeadingDegrees", visionPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("Pose/Vision/Timestamp", visionEstimate.get().timestampSeconds);
         visionField.setRobotPose(visionPose);
       }
     } else {
