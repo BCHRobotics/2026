@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.REVLibError;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -268,6 +269,8 @@ public class Drivetrain extends SubsystemBase {
     } else {
       SmartDashboard.putBoolean("Pose/Vision/Available", false);
     }
+
+    SmartDashboard.putString("CAN/DrivetrainStatus", getDrivetrainCanStatus());
 
     // Print comprehensive diagnostics once every 5 seconds
     double currentTime = WPIUtilJNI.now() * 1e-6;
@@ -571,5 +574,35 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveRobotRelative(ChassisSpeeds speeds) {
     setChassisSpeeds(speeds);
+  }
+
+  private String getDrivetrainCanStatus() {
+    StringBuilder errors = new StringBuilder();
+
+    appendCanError(errors, "FrontLeftDriving", frontLeftModule.m_drivingSpark.getLastError());
+    appendCanError(errors, "FrontLeftTurning", frontLeftModule.m_turningSpark.getLastError());
+    appendCanError(errors, "FrontRightDriving", frontRightModule.m_drivingSpark.getLastError());
+    appendCanError(errors, "FrontRightTurning", frontRightModule.m_turningSpark.getLastError());
+    appendCanError(errors, "RearLeftDriving", rearLeftModule.m_drivingSpark.getLastError());
+    appendCanError(errors, "RearLeftTurning", rearLeftModule.m_turningSpark.getLastError());
+    appendCanError(errors, "RearRightDriving", rearRightModule.m_drivingSpark.getLastError());
+    appendCanError(errors, "RearRightTurning", rearRightModule.m_turningSpark.getLastError());
+
+    if (errors.length() == 0) {
+      return "HEALTHY";
+    }
+
+    return errors.toString();
+  }
+
+  private void appendCanError(StringBuilder errors, String deviceName, REVLibError error) {
+    if (error == REVLibError.kOk) {
+      return;
+    }
+
+    if (errors.length() > 0) {
+      errors.append(" | ");
+    }
+    errors.append(deviceName).append(": ").append(error.name());
   }
 }
