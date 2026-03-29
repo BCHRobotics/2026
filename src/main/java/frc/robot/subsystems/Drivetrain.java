@@ -25,7 +25,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
@@ -233,9 +232,6 @@ public class Drivetrain extends SubsystemBase {
             rearLeftModule.getPosition(),
             rearRightModule.getPosition()
         });
-    
-    // Add gyro heading to Shuffleboard
-    SmartDashboard.putNumber("Gyro Heading", getHeading());
 
     // Print comprehensive diagnostics once every 5 seconds
     double currentTime = WPIUtilJNI.now() * 1e-6;

@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.NavigationConstants;
@@ -29,8 +28,6 @@ public class ClimbCommand extends Command {
     CLIMBING,
     FINISHED
   }
-
-  private static final String DASHBOARD_KEY_PREFIX = "ClimbCommand/";
 
   private final Drivetrain drivetrain;
   private final Climber climber;
@@ -62,9 +59,6 @@ public class ClimbCommand extends Command {
     rotationController.setTolerance(NavigationConstants.kRotationTolerance);
     rotationController.enableContinuousInput(-180.0, 180.0);
 
-    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", false);
-    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", Phase.ALIGNING_TO_START.name());
-
     addRequirements(drivetrain, climber);
   }
 
@@ -72,7 +66,6 @@ public class ClimbCommand extends Command {
   public void initialize() {
     Pose2d selectedPose = selectedStartPoseSupplier.get();
     startPose = selectedPose != null ? selectedPose : ClimbConstants.kBlueLeftStartPose;
-    Pose2d currentPose = drivetrain.getPose();
 
     // transformBy() applies motion in the robot's local frame, so this moves the robot
     // 30 inches "forward" relative to the heading stored in the selected start pose.
@@ -88,13 +81,6 @@ public class ClimbCommand extends Command {
     yController.reset();
     rotationController.reset();
     setDriveTarget(startPose);
-
-    // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "InitialPose", poseToString(currentPose));
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "SelectedStartPose", poseToString(startPose));
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "TargetPose", poseToString(targetPose));
-    // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", false);
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
   }
 
   @Override
@@ -107,8 +93,6 @@ public class ClimbCommand extends Command {
         } else {
           phase = Phase.EXTENDING_AT_START;
         }
-
-        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       }
 
       return;
@@ -120,7 +104,6 @@ public class ClimbCommand extends Command {
       if (climber.isExtendLimitReached()) {
         climber.stop();
         phase = Phase.APPROACHING_CLIMB;
-        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       } else {
         climber.extendClimber();
       }
@@ -132,7 +115,6 @@ public class ClimbCommand extends Command {
       if (climber.isClimbPlateDetected()) {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         phase = Phase.CLIMBING;
-        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
         return;
       }
 
@@ -141,7 +123,6 @@ public class ClimbCommand extends Command {
       if (driveToPose(targetPose)) {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         phase = Phase.CLIMBING;
-        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       }
 
       return;
@@ -153,7 +134,6 @@ public class ClimbCommand extends Command {
       if (climber.isRetractLimitReached()) {
         climber.stop();
         phase = Phase.FINISHED;
-        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       } else {
         climber.retractClimber();
       }
@@ -166,9 +146,6 @@ public class ClimbCommand extends Command {
   public void end(boolean interrupted) {
     drivetrain.setChassisSpeeds(new ChassisSpeeds());
     climber.stop();
-
-    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", false);
-    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "LastResult", interrupted ? "Interrupted" : "Completed");
   }
 
   @Override
@@ -208,11 +185,6 @@ public class ClimbCommand extends Command {
         rotationSpeed,
         Rotation2d.fromDegrees(drivetrain.getHeading())));
 
-    SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseX", currentPose.getX());
-    SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseY", currentPose.getY());
-    SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentHeadingDegrees", currentPose.getRotation().getDegrees());
-    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", isAtPose(currentPose, startPose));
-
     return isAtPose(currentPose, desiredPose);
   }
 
@@ -232,10 +204,4 @@ public class ClimbCommand extends Command {
         && headingErrorDegrees <= NavigationConstants.kRotationTolerance;
   }
 
-  private String poseToString(Pose2d pose) {
-    return String.format("(%.3f, %.3f, %.1f deg)",
-        pose.getX(),
-        pose.getY(),
-        pose.getRotation().getDegrees());
-  }
 }

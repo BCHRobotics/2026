@@ -25,14 +25,10 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
-    private static final String TUNING_KEY_PREFIX = "Vision/Tuning/";
-
     // Information about heading and distance to a specific AprilTag
     public static class TagNavigationInfo {
         public final int tagId;
@@ -72,7 +68,6 @@ public class Vision extends SubsystemBase {
         public final int index;
         public final String name;
         public PhotonPipelineResult lastResult;
-        public String lastRejectReason;
         
         public CameraModule(PhotonCamera camera, PhotonPoseEstimator estimator, int index, String name) {
             this.camera = camera;
@@ -80,26 +75,19 @@ public class Vision extends SubsystemBase {
             this.index = index;
             this.name = name;
             this.lastResult = null;
-            this.lastRejectReason = "No frame processed yet";
         }
     }
 
     private static class VisionMeasurement {
         public final EstimatedRobotPose estimatedPose;
         public final Matrix<N3, N1> stdDevs;
-        public final int tagCount;
-        public final double averageTagDistanceMeters;
 
         public VisionMeasurement(
             EstimatedRobotPose estimatedPose,
-            Matrix<N3, N1> stdDevs,
-            int tagCount,
-            double averageTagDistanceMeters
+            Matrix<N3, N1> stdDevs
         ) {
             this.estimatedPose = estimatedPose;
             this.stdDevs = stdDevs;
-            this.tagCount = tagCount;
-            this.averageTagDistanceMeters = averageTagDistanceMeters;
         }
     }
     
@@ -109,13 +97,6 @@ public class Vision extends SubsystemBase {
 
     // Used to get current odometry pose and update pose estimator with vision measurements
     private final Drivetrain drivetrain;
-    
-    /**
-     * Field2d widget for visualizing vision estimates on dashboard.
-     * Shows the robot's vision-estimated position alongside odometry position
-     * for debugging and verification.
-     */
-    private final Field2d field2d = new Field2d();
 
     private List<PhotonTrackedTarget> visibleGamePieces;
     private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules
@@ -180,11 +161,6 @@ public class Vision extends SubsystemBase {
             if (ballCamera == null) {
                 System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
             }
-            
-            // Add field visualization to SmartDashboard
-            SmartDashboard.putData("Vision Field", field2d);
-            publishTuningDefaults();
-            //SmartDashboard.putData("Odometry Field", odometryField2d);
         }
     
         public PhotonTrackedTarget getBallPosition() {
@@ -197,8 +173,6 @@ public class Vision extends SubsystemBase {
         
         @Override
         public void periodic() {
-        boolean acceptedMeasurement = false;
-
         // Process vision measurements from all cameras
         for (CameraModule module : cameraModules) {
             Optional<VisionMeasurement> measurement = getEstimatedGlobalPose(module);
@@ -207,30 +181,13 @@ public class Vision extends SubsystemBase {
                 VisionMeasurement accepted = measurement.get();
                 Pose2d visionPose = accepted.estimatedPose.estimatedPose.toPose2d();
 
-                field2d.setRobotPose(visionPose);
                 drivetrain.addVisionMeasurement(
                     visionPose,
                     accepted.estimatedPose.timestampSeconds,
                     accepted.stdDevs
                 );
-
-                acceptedMeasurement = true;
-
-                // SmartDashboard.putString("Vision/LastAcceptedCamera", module.name);
-                // SmartDashboard.putNumber("Vision/LastAcceptedTagCount", accepted.tagCount);
-                // SmartDashboard.putNumber("Vision/LastAcceptedAvgDistance", accepted.averageTagDistanceMeters);
-                // SmartDashboard.putNumber("Vision/LastAcceptedXYStdDev", accepted.stdDevs.get(0, 0));
-                // SmartDashboard.putNumber("Vision/LastAcceptedThetaStdDev", accepted.stdDevs.get(2, 0));
-                // SmartDashboard.putNumber("Vision/EstimatedPose/X", visionPose.getX());
-                // SmartDashboard.putNumber("Vision/EstimatedPose/Y", visionPose.getY());
-                // SmartDashboard.putNumber("Vision/EstimatedPose/Rotation", visionPose.getRotation().getDegrees());
-                // SmartDashboard.putNumber("Vision/PoseTimestamp", accepted.estimatedPose.timestampSeconds);
             }
-
-            SmartDashboard.putString("Vision/" + module.name + "/LastRejectReason", module.lastRejectReason);
         }
-
-        SmartDashboard.putBoolean("Vision/HasVisionPose", acceptedMeasurement);
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
@@ -265,7 +222,6 @@ public class Vision extends SubsystemBase {
         
         // Check if we detected any targets
         if (!result.hasTargets()) {
-            module.lastRejectReason = "No AprilTags detected";
             return Optional.empty();
         }
         
@@ -276,11 +232,6 @@ public class Vision extends SubsystemBase {
         // Filter out ambiguous single-tag detections.
         PhotonTrackedTarget bestTarget = result.getBestTarget();
         if (!isMultiTag && bestTarget.getPoseAmbiguity() > maxAmbiguity) {
-            module.lastRejectReason = String.format(
-                "Single-tag ambiguity %.3f > %.3f",
-                bestTarget.getPoseAmbiguity(),
-                maxAmbiguity
-            );
             return Optional.empty();
         }
 
@@ -289,7 +240,6 @@ public class Vision extends SubsystemBase {
             visionEst = module.poseEstimator.estimateLowestAmbiguityPose(result);
         }
         if (visionEst.isEmpty()) {
-            module.lastRejectReason = "PhotonPoseEstimator returned no pose";
             return Optional.empty();
         }
 
@@ -298,11 +248,6 @@ public class Vision extends SubsystemBase {
             ? getMaxMultiTagDistance()
             : getMaxSingleTagDistance();
         if (averageTagDistanceMeters > maxDistanceMeters) {
-            module.lastRejectReason = String.format(
-                "Tag distance %.2fm > %.2fm",
-                averageTagDistanceMeters,
-                maxDistanceMeters
-            );
             return Optional.empty();
         }
 
@@ -317,35 +262,19 @@ public class Vision extends SubsystemBase {
             ? getMaxMultiTagRotationDeltaDegrees()
             : getMaxSingleTagRotationDeltaDegrees();
 
-        SmartDashboard.putNumber("Vision/" + module.name + "/PoseDeltaMeters", translationDeltaMeters);
-        SmartDashboard.putNumber("Vision/" + module.name + "/RotationDeltaDegrees", rotationDeltaDegrees);
-
         if (translationDeltaMeters > maxTranslationDeltaMeters) {
-            module.lastRejectReason = String.format(
-                "Pose delta %.2fm > %.2fm",
-                translationDeltaMeters,
-                maxTranslationDeltaMeters
-            );
             return Optional.empty();
         }
 
         if (rotationDeltaDegrees > maxRotationDeltaDegrees) {
-            module.lastRejectReason = String.format(
-                "Rotation delta %.1fdeg > %.1fdeg",
-                rotationDeltaDegrees,
-                maxRotationDeltaDegrees
-            );
             return Optional.empty();
         }
 
         Matrix<N3, N1> estStdDevs = getEstimationStdDevs(result, averageTagDistanceMeters);
-        module.lastRejectReason = "Accepted";
 
         return Optional.of(new VisionMeasurement(
             visionEst.get(),
-            estStdDevs,
-            tagCount,
-            averageTagDistanceMeters
+            estStdDevs
         ));
     }
     
@@ -381,79 +310,56 @@ public class Vision extends SubsystemBase {
         return VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev);
     }
 
-    private void publishTuningDefaults() {
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxAmbiguity", VisionConstants.kMaxAmbiguity);
-
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "SingleTagXYStdDev", VisionConstants.kSingleTagStdDevs.get(0, 0));
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "SingleTagThetaStdDev", VisionConstants.kSingleTagStdDevs.get(2, 0));
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MultiTagXYStdDev", VisionConstants.kMultiTagStdDevs.get(0, 0));
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MultiTagThetaStdDev", VisionConstants.kMultiTagStdDevs.get(2, 0));
-
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "DistanceWeight", VisionConstants.kDistanceWeight);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "RotationDistanceWeight", VisionConstants.kRotationDistanceWeight);
-
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagDistance", VisionConstants.kMaxSingleTagDistance);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagDistance", VisionConstants.kMaxMultiTagDistance);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagPoseDeltaMeters", VisionConstants.kMaxSingleTagPoseDeltaMeters);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagPoseDeltaMeters", VisionConstants.kMaxMultiTagPoseDeltaMeters);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagRotationDeltaDegrees", VisionConstants.kMaxSingleTagRotationDeltaDegrees);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagRotationDeltaDegrees", VisionConstants.kMaxMultiTagRotationDeltaDegrees);
-    }
-
-    private double getTuningValue(String keySuffix, double defaultValue) {
-        return SmartDashboard.getNumber(TUNING_KEY_PREFIX + keySuffix, defaultValue);
-    }
-
     private double getMaxAmbiguity() {
-        return getTuningValue("MaxAmbiguity", VisionConstants.kMaxAmbiguity);
+        return VisionConstants.kMaxAmbiguity;
     }
 
     private double getSingleTagXYStdDev() {
-        return getTuningValue("SingleTagXYStdDev", VisionConstants.kSingleTagStdDevs.get(0, 0));
+        return VisionConstants.kSingleTagStdDevs.get(0, 0);
     }
 
     private double getSingleTagThetaStdDev() {
-        return getTuningValue("SingleTagThetaStdDev", VisionConstants.kSingleTagStdDevs.get(2, 0));
+        return VisionConstants.kSingleTagStdDevs.get(2, 0);
     }
 
     private double getMultiTagXYStdDev() {
-        return getTuningValue("MultiTagXYStdDev", VisionConstants.kMultiTagStdDevs.get(0, 0));
+        return VisionConstants.kMultiTagStdDevs.get(0, 0);
     }
 
     private double getMultiTagThetaStdDev() {
-        return getTuningValue("MultiTagThetaStdDev", VisionConstants.kMultiTagStdDevs.get(2, 0));
+        return VisionConstants.kMultiTagStdDevs.get(2, 0);
     }
 
     private double getDistanceWeight() {
-        return getTuningValue("DistanceWeight", VisionConstants.kDistanceWeight);
+        return VisionConstants.kDistanceWeight;
     }
 
     private double getRotationDistanceWeight() {
-        return getTuningValue("RotationDistanceWeight", VisionConstants.kRotationDistanceWeight);
+        return VisionConstants.kRotationDistanceWeight;
     }
 
     private double getMaxSingleTagDistance() {
-        return getTuningValue("MaxSingleTagDistance", VisionConstants.kMaxSingleTagDistance);
+        return VisionConstants.kMaxSingleTagDistance;
     }
 
     private double getMaxMultiTagDistance() {
-        return getTuningValue("MaxMultiTagDistance", VisionConstants.kMaxMultiTagDistance);
+        return VisionConstants.kMaxMultiTagDistance;
     }
 
     private double getMaxSingleTagPoseDeltaMeters() {
-        return getTuningValue("MaxSingleTagPoseDeltaMeters", VisionConstants.kMaxSingleTagPoseDeltaMeters);
+        return VisionConstants.kMaxSingleTagPoseDeltaMeters;
     }
 
     private double getMaxMultiTagPoseDeltaMeters() {
-        return getTuningValue("MaxMultiTagPoseDeltaMeters", VisionConstants.kMaxMultiTagPoseDeltaMeters);
+        return VisionConstants.kMaxMultiTagPoseDeltaMeters;
     }
 
     private double getMaxSingleTagRotationDeltaDegrees() {
-        return getTuningValue("MaxSingleTagRotationDeltaDegrees", VisionConstants.kMaxSingleTagRotationDeltaDegrees);
+        return VisionConstants.kMaxSingleTagRotationDeltaDegrees;
     }
 
     private double getMaxMultiTagRotationDeltaDegrees() {
-        return getTuningValue("MaxMultiTagRotationDeltaDegrees", VisionConstants.kMaxMultiTagRotationDeltaDegrees);
+        return VisionConstants.kMaxMultiTagRotationDeltaDegrees;
     }
 
     private double getAverageTagDistanceMeters(PhotonPipelineResult result) {

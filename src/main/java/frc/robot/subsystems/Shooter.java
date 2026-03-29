@@ -1,7 +1,6 @@
 // TUNING RULES OF THUMB
 // ----------------------
 //  • Always tune feedforward before feedback (F before P before D before I).
-//  • Use SmartDashboard live-tuning (updateTunables) — no redeploy required.
 //  • Keep maxOutput ≤ 0.85 until gains are stable to protect the mechanism.
 //  • Once gains are finalized, change PersistMode to kPersistParameters and
 //    commit the constants in code so they survive a power cycle.
@@ -28,7 +27,6 @@ import frc.robot.Constants.VortexMotorConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -66,35 +64,7 @@ public class Shooter extends SubsystemBase {
         flywheelController1 = shooterMotor1.getClosedLoopController();
         flywheelController2 = shooterMotor2.getClosedLoopController();
 
-        publishTunables();
-        publishTelemetry();
-
         configureMotors();
-    }
-
-    private void publishTunables() {
-        // SmartDashboard.putNumber("Shooter/Motor1/F", ShooterConstants.kF1);
-        // SmartDashboard.putNumber("Shooter/Motor1/P", ShooterConstants.kP1);
-        // SmartDashboard.putNumber("Shooter/Motor1/I", ShooterConstants.kI1);
-        // SmartDashboard.putNumber("Shooter/Motor1/D", ShooterConstants.kD1);
-        // SmartDashboard.putNumber("Shooter/Motor2/F", ShooterConstants.kF2);
-        // SmartDashboard.putNumber("Shooter/Motor2/P", ShooterConstants.kP2);
-        // SmartDashboard.putNumber("Shooter/Motor2/I", ShooterConstants.kI2);
-        // SmartDashboard.putNumber("Shooter/Motor2/D", ShooterConstants.kD2);
-        // SmartDashboard.putNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
-        // SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
-        // SmartDashboard.putNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
-    }
-
-    private void publishTelemetry() {
-        SmartDashboard.putNumber("Shooter/Distance", getHubDistance());
-        SmartDashboard.putNumber("Shooter/TargetRPM", ShooterConstants.targetRpm);
-        SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
-        SmartDashboard.putNumber("Shooter/Shooter1RPM", shooterMotor1.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Shooter/Shooter2RPM", shooterMotor2.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Shooter/AppliedFeederSpeed", currentFeederSpeed);
-        SmartDashboard.putBoolean("Shooter/VortexSpeedShotActive", isVortexSpeedShotActive);
-        // SmartDashboard.putBoolean("Shooter/VortexSpeedShotReady", isVortexSpeedShotReady());
     }
 
     private void applyClosedLoopConfig(SparkFlexConfig config, double p, double i, double d, double f) {
@@ -248,18 +218,17 @@ public class Shooter extends SubsystemBase {
      * @return the target RPM for the shooter flywheel
      */
     public double calculateRpmFromDistance(double distanceFromHub) {
-        // Linear interpolation model: RPM increases with distance
-        // Adjust these constants based on your shooter's ballistics
-        final double MIN_DISTANCE = 1.0;      // Minimum shooting distance (meters)
-        final double MAX_DISTANCE = 3.0;     // Maximum shooting distance (meters)
-        final double MIN_RPM = 1500.0;         // RPM at minimum distance
-        final double MAX_RPM = 3800.0;         // RPM at maximum distance
-
         // Clamp distance to valid range
-        double clampedDistance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distanceFromHub));
+        double clampedDistance = Math.max(
+            ShooterConstants.kMinimumDistanceMeters,
+            Math.min(ShooterConstants.kMaximumDistanceMeters, distanceFromHub)
+        );
 
         // Linear interpolation
-        double rpm = MIN_RPM + (clampedDistance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE) * (MAX_RPM - MIN_RPM);
+        double rpm = ShooterConstants.kMinimumTargetRpm
+            + (clampedDistance - ShooterConstants.kMinimumDistanceMeters)
+                / (ShooterConstants.kMaximumDistanceMeters - ShooterConstants.kMinimumDistanceMeters)
+                * (ShooterConstants.kMaximumTargetRpm - ShooterConstants.kMinimumTargetRpm);
 
         return rpm;
     }
@@ -277,86 +246,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        updateTunables();
+        ShooterConstants.targetRpm = calculateRpmFromDistance(getHubDistance());
         updateMotors();
-        publishTunables();
-        publishTelemetry();
-
-        // Publish telemetry to SmartDashboard / Shuffleboard
-        SmartDashboard.putNumber("Shooter/RPM",     shooterMotor1.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("Shooter/Charged", isCharged());
-        SmartDashboard.putBoolean("Shooter/Active",  isShooterActive);
-    }
-
-    private void updateTunables() {
-        double motor1F = SmartDashboard.getNumber("Shooter/Motor1/F", ShooterConstants.kF1);
-        double motor1P = SmartDashboard.getNumber("Shooter/Motor1/P", ShooterConstants.kP1);
-        double motor1I = SmartDashboard.getNumber("Shooter/Motor1/I", ShooterConstants.kI1);
-        double motor1D = SmartDashboard.getNumber("Shooter/Motor1/D", ShooterConstants.kD1);
-        double motor2F = SmartDashboard.getNumber("Shooter/Motor2/F", ShooterConstants.kF2);
-        double motor2P = SmartDashboard.getNumber("Shooter/Motor2/P", ShooterConstants.kP2);
-        double motor2I = SmartDashboard.getNumber("Shooter/Motor2/I", ShooterConstants.kI2);
-        double motor2D = SmartDashboard.getNumber("Shooter/Motor2/D", ShooterConstants.kD2);
-        double max = SmartDashboard.getNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
-        double readyRpm = SmartDashboard.getNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
-        double feederSpeed = SmartDashboard.getNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
-
-        double hubdistance = getHubDistance();
-        ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
-
-        ShooterConstants.readyRpm = readyRpm;
-        ShooterConstants.feederSpeed = feederSpeed;
-
-        // Check if PIDF or MaxOutput changed
-        if (motor1F != ShooterConstants.kF1
-            || motor1P != ShooterConstants.kP1
-            || motor1I != ShooterConstants.kI1
-            || motor1D != ShooterConstants.kD1
-            || motor2F != ShooterConstants.kF2
-            || motor2P != ShooterConstants.kP2
-            || motor2I != ShooterConstants.kI2
-            || motor2D != ShooterConstants.kD2
-            || max != ShooterConstants.maxOutput) {
-            ShooterConstants.kF1 = motor1F;
-            ShooterConstants.kP1 = motor1P;
-            ShooterConstants.kI1 = motor1I;
-            ShooterConstants.kD1 = motor1D;
-            ShooterConstants.kF2 = motor2F;
-            ShooterConstants.kP2 = motor2P;
-            ShooterConstants.kI2 = motor2I;
-            ShooterConstants.kD2 = motor2D;
-            ShooterConstants.maxOutput = max;
-
-            applyClosedLoopConfig(
-                shooter1Config,
-                ShooterConstants.kP1,
-                ShooterConstants.kI1,
-                ShooterConstants.kD1,
-                ShooterConstants.kF1);
-
-            // Re-apply configuration to the motor controller
-            // We use kNoResetSafeParameters to avoid resetting other settings
-            // We use kNoPersistParameters to avoid wearing out flash memory during tuning
-            shooterMotor1.configure(
-                shooter1Config,
-                ResetMode.kNoResetSafeParameters,
-                PersistMode.kNoPersistParameters);
-
-            applyClosedLoopConfig(
-                shooter2Config,
-                ShooterConstants.kP2,
-                ShooterConstants.kI2,
-                ShooterConstants.kD2,
-                ShooterConstants.kF2);
-
-            // Re-apply configuration to the motor controller
-            // We use kNoResetSafeParameters to avoid resetting other settings
-            // We use kNoPersistParameters to avoid wearing out flash memory during tuning
-            shooterMotor2.configure(
-                shooter2Config,
-                ResetMode.kNoResetSafeParameters,
-                PersistMode.kNoPersistParameters);
-        }
     }
 
     private void updateMotors() {

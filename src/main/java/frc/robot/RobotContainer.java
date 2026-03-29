@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.commands.drivetrain.PointRearToAllianceHubCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
-import frc.robot.commands.drivetrain.VisionTuningPath;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.shooter.VortexSpeedShotCommand;
@@ -17,7 +16,6 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Shooter;
 import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,7 +30,6 @@ import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.config.PIDConstants;
 
 public class RobotContainer {
     // Subsystems
@@ -54,13 +51,7 @@ public class RobotContainer {
 
     // Autonomous chooser
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-    // Field pose chooser — selects where the robot drives when the pose-nav button
-    // is held
-    private final SendableChooser<Pose2d> fieldPoseChooser = new SendableChooser<>();
     private final SendableChooser<Pose2d> climbStartPoseChooser = new SendableChooser<>();
-    private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
-    private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
 
     // The container for the robot, initializing everything and setting up the
     // controller chooser
@@ -91,12 +82,7 @@ public class RobotContainer {
         // Configure button bindings
         configureBindings();
 
-        // Configure field pose chooser
-        configureFieldPoseChooser();
         configureClimbStartPoseChooser();
-        configurePathPlannerPidChoosers();
-        configureVisionTuning();
-        configureDashboardCommands();
         registerPathPlannerCommands();
 
         // Auto Paths with Climb 
@@ -128,56 +114,13 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
-    /**
-     * Populates and publishes the field pose chooser on SmartDashboard.
-     *
-     * Coordinates are blue-alliance-relative. GoToPositionRelativeCommand mirrors
-     * them automatically when the DriverStation reports red alliance:
-     * red_x = fieldLength - x, red_y = fieldWidth - y, red_heading = 180 - heading
-     */
-    private void configureFieldPoseChooser() {
-        // Climber positions (final waypoints from PathPlanner paths, blue alliance)
-        fieldPoseChooser.setDefaultOption("Climber 1", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
-        fieldPoseChooser.addOption("Climber 2", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees(90.0)));
-        fieldPoseChooser.addOption("Climber 3", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
-        fieldPoseChooser.addOption("Climber 4", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees(90.0)));
-
-        SmartDashboard.putData("Field Pose", fieldPoseChooser);
-    }
-
     private void configureClimbStartPoseChooser() {
-        // These poses are predefined constants so the team can place the robot at known climb
-        // Select positions from SmartDashboard before running the command.
         climbStartPoseChooser.setDefaultOption("Blue Left", ClimbConstants.kBlueLeftStartPose);
         climbStartPoseChooser.addOption("Blue Right", ClimbConstants.kBlueRightStartPose);
         climbStartPoseChooser.addOption("Red Left", ClimbConstants.kRedLeftStartPose);
         climbStartPoseChooser.addOption("Red Right", ClimbConstants.kRedRightStartPose);
 
         SmartDashboard.putData("Climb Start Pose", climbStartPoseChooser);
-    }
-
-    /**
-     * Configures Shuffleboard choosers for PathPlanner translation/rotation PID presets.
-     */
-    private void configurePathPlannerPidChoosers() {
-        ppTranslationPidChooser.setDefaultOption(
-                "Default (2.0, 1.0, 0.0)",
-            AutoConstants.translationConstants
-        );
-        ppTranslationPidChooser.addOption("Soft (1.2, 0.0, 0.0)", new PIDConstants(1.2, 0.0, 0.0));
-        ppTranslationPidChooser.addOption("Aggressive (2.0, 0.0, 0.0)", new PIDConstants(2.0, 0.0, 0.0));
-
-        ppRotationPidChooser.setDefaultOption(
-                "Default (1.0, 0.0, 0.0)",
-            AutoConstants.rotationConstants
-        );
-        ppRotationPidChooser.addOption("Soft (0.6, 0.0, 0.0)", new PIDConstants(0.6, 0.0, 0.0));
-        ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
-    }
-
-    private void configureDashboardCommands() {
-        // putData publishes a clickable command button to SmartDashboard.
-        SmartDashboard.putData("Climb Command", new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
     }
 
     private void registerPathPlannerCommands() {
@@ -220,10 +163,6 @@ public class RobotContainer {
         return selectedPose != null ? selectedPose : ClimbConstants.kBlueLeftStartPose;
     }
 
-    private void configureVisionTuning() {
-        SmartDashboard.putData("VisionTuningPath", new VisionTuningPath(robotDrive));
-    }
-
     /**
      * Configures default commands for subsystems.
      * 
@@ -264,7 +203,6 @@ public class RobotContainer {
 
         Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger, turboSpeedTrigger;
         Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake;
-        DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
             pointRearToHub = driverPS5.square();
@@ -275,8 +213,6 @@ public class RobotContainer {
             turboSpeedTrigger = driverPS5.R1();
             shootTrigger = driverPS5.R2().or(driverPS5.L2());
 
-            leftY = () -> -driverPS5.getLeftY();
-            leftX = () -> -driverPS5.getLeftX();
         } else {
             pointRearToHub = driverXbox.x();
             intakeToggle = driverXbox.b();
@@ -286,8 +222,6 @@ public class RobotContainer {
             turboSpeedTrigger = driverXbox.rightBumper();
             shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
 
-            leftY = () -> -driverXbox.getLeftY();
-            leftX = () -> -driverXbox.getLeftX();
         }
 
         if (operatorPS5 !=null) {
@@ -347,15 +281,7 @@ public class RobotContainer {
      * @return the autonomous command selected from dashboard
      */
     public Command getAutonomousCommand() {
-        PIDConstants translationConstants = ppTranslationPidChooser.getSelected();
-        PIDConstants rotationConstants = ppRotationPidChooser.getSelected();
-        if (translationConstants == null) {
-            translationConstants = AutoConstants.translationConstants;
-        }
-        if (rotationConstants == null) {
-            rotationConstants = AutoConstants.rotationConstants;
-        }
-        robotDrive.configureAutoBuilder(translationConstants, rotationConstants);
+        robotDrive.configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
 
         Command selectedAuto = autoChooser.getSelected();
         if (selectedAuto == null) {

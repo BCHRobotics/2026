@@ -11,7 +11,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
 
@@ -141,20 +140,5 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     filteredCurrent = currentFilter.calculate(climbMotor.getOutputCurrent());
-
-    // Publish the important climber signals so students can debug the mechanism from the dashboard.
-    // SmartDashboard.putBoolean("Climber/ForwardLimitPressed", isForwardLimitSwitchPressed());
-    // SmartDashboard.putBoolean("Climber/ReverseLimitPressed", isReverseLimitSwitchPressed());
-    // SmartDashboard.putBoolean("Climber/LimitPressed", isLimitSwitchPressed());
-    // SmartDashboard.putBoolean("Climber/CurrentSpikeDetected", isCurrentSpikeDetected());
-    // SmartDashboard.putBoolean("Climber/PlateDetected", isClimbPlateDetected());
-    // SmartDashboard.putBoolean("Climber/ExtendLimitReached", isExtendLimitReached());
-    // SmartDashboard.putBoolean("Climber/RetractLimitReached", isRetractLimitReached());
-    // SmartDashboard.putBoolean("Climber/MotionTimedOut", hasMotionTimedOut(MotionState.EXTENDING)
-    //     || hasMotionTimedOut(MotionState.RETRACTING));
-    // SmartDashboard.putString("Climber/MotionState", motionState.name());
-    // SmartDashboard.putNumber("Climber/Current", climbMotor.getOutputCurrent());
-    // SmartDashboard.putNumber("Climber/FilteredCurrent", filteredCurrent);
-    // SmartDashboard.putNumber("Climber/AppliedOutput", climbMotor.getAppliedOutput());
   }
 }

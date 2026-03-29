@@ -283,6 +283,10 @@ public final class Constants {
       new Translation2d(kBlueAllianceHubCenterX, kBlueAllianceHubCenterY);
   }
 
+  public static final class VisionTuningConstants {
+    public static final double kMaxSpeedMetersPerSecond = 0.75;
+  }
+
   /**
    * PID constants for ball alignment rotation control.
    * Used for vision-based yaw alignment of the robot to balls.
@@ -372,11 +376,15 @@ public final class Constants {
 
   public static final class ShooterConstants {
     // Shooter tuning
-    //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
     public static double targetRpm   = 1500.0;
     public static double readyRpm    = targetRpm * 0.98;   // Minimum RPM before feeder activates
     public static double feederSpeed = 0.9;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
+
+    public static final double kMinimumDistanceMeters = 1.0;
+    public static final double kMaximumDistanceMeters = 3.0;
+    public static final double kMinimumTargetRpm = 1500.0;
+    public static final double kMaximumTargetRpm = 3800.0;
 
     // Closed-loop velocity PID gains for flywheel motor 1.
     public static double kP1 = 0.003;
