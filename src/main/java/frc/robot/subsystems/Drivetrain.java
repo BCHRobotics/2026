@@ -25,6 +25,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
@@ -79,6 +81,9 @@ public class Drivetrain extends SubsystemBase {
   
   // Optional reference to Vision subsystem for diagnostics
   private Vision vision = null;
+
+  private final Field2d odometryField = new Field2d();
+  private final Field2d visionField = new Field2d();
 
   // Odometry class for tracking robot pose (basic wheel odometry)
   SwerveDriveOdometry odometry = new SwerveDriveOdometry(
@@ -162,6 +167,8 @@ public class Drivetrain extends SubsystemBase {
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
     configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
+    SmartDashboard.putData("Field/Odometry", odometryField);
+    SmartDashboard.putData("Field/Vision", visionField);
   }
 
   /**
@@ -233,6 +240,27 @@ public class Drivetrain extends SubsystemBase {
             rearRightModule.getPosition()
         });
 
+    Pose2d odometryPose = getOdometryPose();
+    SmartDashboard.putNumber("Pose/Odometry/X", odometryPose.getX());
+    SmartDashboard.putNumber("Pose/Odometry/Y", odometryPose.getY());
+    SmartDashboard.putNumber("Pose/Odometry/HeadingDegrees", odometryPose.getRotation().getDegrees());
+    odometryField.setRobotPose(odometryPose);
+
+    if (vision != null) {
+      var visionEstimate = vision.getEstimatedGlobalPose();
+      SmartDashboard.putBoolean("Pose/Vision/Available", visionEstimate.isPresent());
+
+      if (visionEstimate.isPresent()) {
+        Pose2d visionPose = visionEstimate.get().estimatedPose.toPose2d();
+        SmartDashboard.putNumber("Pose/Vision/X", visionPose.getX());
+        SmartDashboard.putNumber("Pose/Vision/Y", visionPose.getY());
+        SmartDashboard.putNumber("Pose/Vision/HeadingDegrees", visionPose.getRotation().getDegrees());
+        visionField.setRobotPose(visionPose);
+      }
+    } else {
+      SmartDashboard.putBoolean("Pose/Vision/Available", false);
+    }
+
     // Print comprehensive diagnostics once every 5 seconds
     double currentTime = WPIUtilJNI.now() * 1e-6;
     if (currentTime - lastPrintTime >= 5.0) {
@@ -283,7 +311,7 @@ public class Drivetrain extends SubsystemBase {
     }
     
     diagnostics.append("=======================================\n");
-    
+    SmartDashboard.putString("Diagnostics/Drivetrain", diagnostics.toString());
     System.out.print(diagnostics.toString());
   }
 
