@@ -205,7 +205,7 @@ public class Vision extends SubsystemBase {
         
         int tagCount = result.getTargets().size();
         boolean isMultiTag = tagCount > 1;
-        double maxAmbiguity = getMaxAmbiguity();
+        double maxAmbiguity = VisionConstants.kMaxAmbiguity;
 
         // Filter out ambiguous single-tag detections.
         PhotonTrackedTarget bestTarget = result.getBestTarget();
@@ -223,8 +223,8 @@ public class Vision extends SubsystemBase {
 
         double averageTagDistanceMeters = getAverageTagDistanceMeters(result);
         double maxDistanceMeters = isMultiTag
-            ? getMaxMultiTagDistance()
-            : getMaxSingleTagDistance();
+            ? VisionConstants.kMaxMultiTagDistance
+            : VisionConstants.kMaxSingleTagDistance;
         if (averageTagDistanceMeters > maxDistanceMeters) {
             return Optional.empty();
         }
@@ -234,11 +234,11 @@ public class Vision extends SubsystemBase {
         double translationDeltaMeters = estimatedPose.getTranslation().getDistance(currentPose.getTranslation());
         double rotationDeltaDegrees = Math.abs(estimatedPose.getRotation().minus(currentPose.getRotation()).getDegrees());
         double maxTranslationDeltaMeters = isMultiTag
-            ? getMaxMultiTagPoseDeltaMeters()
-            : getMaxSingleTagPoseDeltaMeters();
+            ? VisionConstants.kMaxMultiTagPoseDeltaMeters
+            : VisionConstants.kMaxSingleTagPoseDeltaMeters;
         double maxRotationDeltaDegrees = isMultiTag
-            ? getMaxMultiTagRotationDeltaDegrees()
-            : getMaxSingleTagRotationDeltaDegrees();
+            ? VisionConstants.kMaxMultiTagRotationDeltaDegrees
+            : VisionConstants.kMaxSingleTagRotationDeltaDegrees;
 
         if (translationDeltaMeters > maxTranslationDeltaMeters) {
             return Optional.empty();
@@ -272,72 +272,20 @@ public class Vision extends SubsystemBase {
      */
     private Matrix<N3, N1> getEstimationStdDevs(PhotonPipelineResult result, double averageTagDistanceMeters) {
         // Base standard deviations (tuned for your robot)
-        double xyStdDev = getSingleTagXYStdDev();
-        double thetaStdDev = getSingleTagThetaStdDev();
+        double xyStdDev = VisionConstants.kSingleTagStdDevs.get(0, 0);
+        double thetaStdDev = VisionConstants.kSingleTagStdDevs.get(2, 0);
         
         // If multiple tags are visible, trust the measurement more
         int numTags = result.getTargets().size();
         if (numTags > 1) {
-            xyStdDev = getMultiTagXYStdDev();
-            thetaStdDev = getMultiTagThetaStdDev();
+            xyStdDev = VisionConstants.kMultiTagStdDevs.get(0, 0);
+            thetaStdDev = VisionConstants.kMultiTagStdDevs.get(2, 0);
         }
 
-        xyStdDev *= (1 + (averageTagDistanceMeters * averageTagDistanceMeters * getDistanceWeight()));
-        thetaStdDev *= (1 + (averageTagDistanceMeters * getRotationDistanceWeight()));
+        xyStdDev *= (1 + (averageTagDistanceMeters * averageTagDistanceMeters * VisionConstants.kDistanceWeight));
+        thetaStdDev *= (1 + (averageTagDistanceMeters * VisionConstants.kRotationDistanceWeight));
         
         return VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev);
-    }
-
-    private double getMaxAmbiguity() {
-        return VisionConstants.kMaxAmbiguity;
-    }
-
-    private double getSingleTagXYStdDev() {
-        return VisionConstants.kSingleTagStdDevs.get(0, 0);
-    }
-
-    private double getSingleTagThetaStdDev() {
-        return VisionConstants.kSingleTagStdDevs.get(2, 0);
-    }
-
-    private double getMultiTagXYStdDev() {
-        return VisionConstants.kMultiTagStdDevs.get(0, 0);
-    }
-
-    private double getMultiTagThetaStdDev() {
-        return VisionConstants.kMultiTagStdDevs.get(2, 0);
-    }
-
-    private double getDistanceWeight() {
-        return VisionConstants.kDistanceWeight;
-    }
-
-    private double getRotationDistanceWeight() {
-        return VisionConstants.kRotationDistanceWeight;
-    }
-
-    private double getMaxSingleTagDistance() {
-        return VisionConstants.kMaxSingleTagDistance;
-    }
-
-    private double getMaxMultiTagDistance() {
-        return VisionConstants.kMaxMultiTagDistance;
-    }
-
-    private double getMaxSingleTagPoseDeltaMeters() {
-        return VisionConstants.kMaxSingleTagPoseDeltaMeters;
-    }
-
-    private double getMaxMultiTagPoseDeltaMeters() {
-        return VisionConstants.kMaxMultiTagPoseDeltaMeters;
-    }
-
-    private double getMaxSingleTagRotationDeltaDegrees() {
-        return VisionConstants.kMaxSingleTagRotationDeltaDegrees;
-    }
-
-    private double getMaxMultiTagRotationDeltaDegrees() {
-        return VisionConstants.kMaxMultiTagRotationDeltaDegrees;
     }
 
     private double getAverageTagDistanceMeters(PhotonPipelineResult result) {
@@ -433,7 +381,7 @@ public class Vision extends SubsystemBase {
             if (result != null && result.hasTargets()) {
                 for (PhotonTrackedTarget target : result.getTargets()) {
                     double ambiguity = target.getPoseAmbiguity();
-                    boolean usedForUpdate = ambiguity <= getMaxAmbiguity();
+                    boolean usedForUpdate = ambiguity <= VisionConstants.kMaxAmbiguity;
                     
                     // Calculate distance to tag
                     double distance = -1.0;
