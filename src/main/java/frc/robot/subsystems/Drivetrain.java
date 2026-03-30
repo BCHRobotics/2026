@@ -63,7 +63,7 @@ public class Drivetrain extends SubsystemBase {
   private double slew_currentTranslationMag = 0.0;
 
   // A percentage value (0-1) for the linear speed of the robot
-  private double maxSpeed = 0.2;
+  private double maxSpeed = DriveConstants.maxSpeedNormal;
 
   // slew rates (basically ramp rates?) for the swerve drive
   private SlewRateLimiter slew_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
@@ -213,6 +213,9 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    setSpeedPercent();
+
     // Update odometry with latest wheel positions
     odometry.update(
         getRotation2d(),
@@ -474,13 +477,13 @@ public class Drivetrain extends SubsystemBase {
   /** Enables turbo speed while held */
   public void enableTurboSpeed() {
     isTurboSpeed = true;
-    maxSpeed = DriveConstants.maxSpeedTurbo;
+    setSpeedPercent();
   }
 
   /** Disables turbo speed when released */
   public void disableTurboSpeed() {
     isTurboSpeed = false;
-    maxSpeed = DriveConstants.maxSpeedNormal;
+    setSpeedPercent();
   }
 
   /** Returns the robot heading as a Rotation2d. Always authoritative source. */
@@ -496,7 +499,11 @@ public class Drivetrain extends SubsystemBase {
 
   // Updated the max speed of the robot based on what mode is enabled
   public void setSpeedPercent() {
-    maxSpeed = DriveConstants.maxSpeedNormal;
+    if (isTurboSpeed) {
+      maxSpeed = DriveConstants.maxSpeedTurbo;
+    } else {
+      maxSpeed = DriveConstants.maxSpeedNormal;
+    }
   }   
   
   /**

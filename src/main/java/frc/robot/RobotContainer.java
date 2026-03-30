@@ -92,7 +92,6 @@ public class RobotContainer {
         configureBindings();
 
         // Configure field pose chooser
-        configureFieldPoseChooser();
         configureClimbStartPoseChooser();
         configurePathPlannerPidChoosers();
         configureVisionTuning();
@@ -135,16 +134,6 @@ public class RobotContainer {
      * them automatically when the DriverStation reports red alliance:
      * red_x = fieldLength - x, red_y = fieldWidth - y, red_heading = 180 - heading
      */
-    private void configureFieldPoseChooser() {
-        // Climber positions (final waypoints from PathPlanner paths, blue alliance)
-        fieldPoseChooser.setDefaultOption("Climber 1", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
-        fieldPoseChooser.addOption("Climber 2", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees(90.0)));
-        fieldPoseChooser.addOption("Climber 3", new Pose2d(1.037, 2.800, Rotation2d.fromDegrees(-90.0)));
-        fieldPoseChooser.addOption("Climber 4", new Pose2d(1.061, 4.600, Rotation2d.fromDegrees(90.0)));
-
-        SmartDashboard.putData("Field Pose", fieldPoseChooser);
-    }
-
     private void configureClimbStartPoseChooser() {
         // These poses are predefined constants so the team can place the robot at known climb
         // Select positions from SmartDashboard before running the command.
@@ -262,7 +251,7 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, climbTrigger, shootTrigger, turboSpeedTrigger;
+        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
         Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake;
         DoubleSupplier leftY, leftX;
 
@@ -271,7 +260,6 @@ public class RobotContainer {
             intakeToggle = driverPS5.L1();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
-            climbTrigger = driverPS5.circle();
             turboSpeedTrigger = driverPS5.R1();
             shootTrigger = driverPS5.R2().or(driverPS5.L2());
 
@@ -282,7 +270,6 @@ public class RobotContainer {
             intakeToggle = driverXbox.leftBumper();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
-            climbTrigger = driverXbox.b();
             turboSpeedTrigger = driverXbox.rightBumper();
             shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
 
@@ -315,7 +302,6 @@ public class RobotContainer {
         zeroHeading.onTrue(new ZeroHeadingCommand(robotDrive));
         intakeToggle.onTrue(Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
         extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
-        //climbTrigger.onTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
 
         pointRearToHub.whileTrue(new PointRearToAllianceHubCommand(robotDrive));
         shootTrigger.whileTrue(new ShootCommand(m_shooter));
