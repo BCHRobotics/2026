@@ -54,11 +54,11 @@ public class VisionTuningPath extends Command {
         rotationController.setTolerance(NavigationConstants.kRotationTolerance);
         rotationController.enableContinuousInput(-180.0, 180.0);
 
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "MaxSpeedMetersPerSecond",
-            DEFAULT_MAX_SPEED_METERS_PER_SECOND);
-        SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "PathPoints", "(14.2,1.0) -> (14.2,7.0) -> (14.2,1.0)");
-        SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", false);
-        SmartDashboard.putData(COMMAND_NAME, this);
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "MaxSpeedMetersPerSecond",
+        //     DEFAULT_MAX_SPEED_METERS_PER_SECOND);
+        // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "PathPoints", "(14.2,1.0) -> (14.2,7.0) -> (14.2,1.0)");
+        // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", false);
+        // SmartDashboard.putData(COMMAND_NAME, this);
 
         addRequirements(drivetrain);
     }
@@ -73,9 +73,9 @@ public class VisionTuningPath extends Command {
         rotationController.setSetpoint(heldHeadingDegrees);
         updateTargetSetpoints();
 
-        SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "HeldHeadingDegrees", heldHeadingDegrees);
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "TargetIndex", targetIndex);
+        // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "HeldHeadingDegrees", heldHeadingDegrees);
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "TargetIndex", targetIndex);
     }
 
     @Override
@@ -121,14 +121,14 @@ public class VisionTuningPath extends Command {
         );
         drivetrain.setChassisSpeeds(chassisSpeeds);
 
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentTargetX", targetPose.getX());
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentTargetY", targetPose.getY());
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseX", currentPose.getX());
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseY", currentPose.getY());
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentHeadingDegrees", drivetrain.getHeading());
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "RequestedXSpeed", xSpeed);
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "RequestedYSpeed", ySpeed);
-        SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "RequestedRotationSpeed", rotationSpeed);
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentTargetX", targetPose.getX());
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentTargetY", targetPose.getY());
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseX", currentPose.getX());
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseY", currentPose.getY());
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentHeadingDegrees", drivetrain.getHeading());
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "RequestedXSpeed", xSpeed);
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "RequestedYSpeed", ySpeed);
+        // SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "RequestedRotationSpeed", rotationSpeed);
     }
 
     @Override

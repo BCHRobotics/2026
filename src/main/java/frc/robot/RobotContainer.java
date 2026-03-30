@@ -268,10 +268,10 @@ public class RobotContainer {
 
         if (driverPS5 != null) {
             pointRearToHub = driverPS5.square();
-            intakeToggle = driverPS5.circle();
+            intakeToggle = driverPS5.L1();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
-            climbTrigger = driverPS5.L1();
+            climbTrigger = driverPS5.circle();
             turboSpeedTrigger = driverPS5.R1();
             shootTrigger = driverPS5.R2().or(driverPS5.L2());
 
@@ -279,10 +279,10 @@ public class RobotContainer {
             leftX = () -> -driverPS5.getLeftX();
         } else {
             pointRearToHub = driverXbox.x();
-            intakeToggle = driverXbox.b();
+            intakeToggle = driverXbox.leftBumper();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
-            climbTrigger = driverXbox.leftBumper();
+            climbTrigger = driverXbox.b();
             turboSpeedTrigger = driverXbox.rightBumper();
             shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
 
@@ -310,14 +310,12 @@ public class RobotContainer {
 
         }
 
-        // ========== Vision-Based Navigation Commands ==========
-
         // Main controller commands
 
-        intakeToggle.onTrue(Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
         zeroHeading.onTrue(new ZeroHeadingCommand(robotDrive));
+        intakeToggle.onTrue(Commands.runOnce(m_ballIntake::toggleRun, m_ballIntake));
         extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
-        climbTrigger.onTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+        //climbTrigger.onTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
 
         pointRearToHub.whileTrue(new PointRearToAllianceHubCommand(robotDrive));
         shootTrigger.whileTrue(new ShootCommand(m_shooter));
@@ -326,8 +324,8 @@ public class RobotContainer {
                 robotDrive::enableTurboSpeed,
                 robotDrive::disableTurboSpeed,
                 robotDrive
-            )
-        );
+            ));
+
 
         // Operator controller commands
         killshooter.onTrue(Commands.runOnce(m_shooter::killShooter, m_shooter));
@@ -373,13 +371,13 @@ public class RobotContainer {
     }
 
     public Command getTeleopInitCommand() {
-        return new ZeroHeadingCommand(robotDrive)
-            .andThen(
-                new ConditionalCommand(
+        /*return new ZeroHeadingCommand(robotDrive)
+            .andThen(*/
+                return new ConditionalCommand(
                     Commands.none(),
                     new CalibrateBallIntakeCommand(m_ballIntake),
                     m_ballIntake::isCalibrated
-                )
-            );
+                );
+           // );
     }
 }

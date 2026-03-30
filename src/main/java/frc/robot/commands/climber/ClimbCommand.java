@@ -71,7 +71,7 @@ public class ClimbCommand extends Command {
   @Override
   public void initialize() {
     Pose2d selectedPose = selectedStartPoseSupplier.get();
-    startPose = selectedPose != null ? selectedPose : ClimbConstants.kBlueLeftStartPose;
+    startPose = selectedPose != null ? selectedPose : ClimbConstants.kBlueRightStartPose;
     Pose2d currentPose = drivetrain.getPose();
 
     // transformBy() applies motion in the robot's local frame, so this moves the robot

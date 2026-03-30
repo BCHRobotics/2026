@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-5_path_1"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_2"
+            "pathName": "Climber-4_path_1"
           }
         },
         {
@@ -31,7 +19,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 4.0
+            "waitTime": 5.0
           }
         },
         {
@@ -43,19 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-5_path_3"
+            "pathName": "Climber-4_path_2"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "climber on"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_4"
           }
         }
       ]

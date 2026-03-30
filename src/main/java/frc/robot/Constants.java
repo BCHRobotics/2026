@@ -60,7 +60,7 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
     public static final double maxSpeedNormal = 5.0; // 3.3
-    public static final double maxSpeedTurbo = 7.0; 
+    public static final double maxSpeedTurbo = 5.73; 
     public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
@@ -302,8 +302,8 @@ public final class Constants {
     public static final boolean kProximitySwitchActiveLow = true;
     public static final boolean kMotorInverted = false;
     public static final int kMotorCurrentLimit = 60;
-    public static final double kExtendSpeed = 1.0;
-    public static final double kRetractSpeed = -0.6;
+    public static final double kExtendSpeed = 0.5;
+    public static final double kRetractSpeed =-0.5;
     public static final double kCurrentSpikeThresholdAmps = 40.0;
     public static final double kCurrentAverageWindowSeconds = 0.1;
 
@@ -314,19 +314,19 @@ public final class Constants {
     public static final double kDriveForwardDistanceMeters = Units.inchesToMeters(20.0);
     public static final double kDriveMaxSpeedMetersPerSecond = 0.5;
 
-    public static final Pose2d kBlueLeftStartPose = new Pose2d(
+    public static final Pose2d kBlueRightStartPose = new Pose2d(
         kStartDistanceFromEndWallMeters,
         NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(-90.0));
-    public static final Pose2d kBlueRightStartPose = new Pose2d(
+    public static final Pose2d kBlueLeftStartPose = new Pose2d(
         kStartDistanceFromEndWallMeters,
         kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(90.0));
-    public static final Pose2d kRedLeftStartPose = new Pose2d(
+    public static final Pose2d kRedRightStartPose = new Pose2d(
         NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
         kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(90.0));
-    public static final Pose2d kRedRightStartPose = new Pose2d(
+    public static final Pose2d kRedLeftStartPose = new Pose2d(
         NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
         NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(90.0));
@@ -352,7 +352,7 @@ public final class Constants {
     // Extend position control
     public static final double kExtendPositionConversionFactor = 1.0;
     public static final double kExtendVelocityConversionFactor = 1.0;
-    public static final double kExtendedPosition = 16.8;
+    public static final double kExtendedPosition = 16.8 * 5/3;
     public static final double kRetractedPosition = 0.0;
     public static final double kExtendPositionTolerance = 1.0;
     public static final double kExtendPositionP = 0.08;
@@ -366,7 +366,7 @@ public final class Constants {
 
     // Calibration: slow retract until current spike or timeout
     public static final double kCalibrateSpeed = -0.2;
-    public static final double kCalibrateCurrentThreshold = 35.0; // amps
+    public static final double kCalibrateCurrentThreshold = 20.0; // amps
     public static final double kCalibrateTimeoutSeconds = 3.0;
   }
 

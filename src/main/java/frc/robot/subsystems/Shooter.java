@@ -253,7 +253,7 @@ public class Shooter extends SubsystemBase {
         final double MIN_DISTANCE = 1.0;      // Minimum shooting distance (meters)
         final double MAX_DISTANCE = 3.0;     // Maximum shooting distance (meters)
         final double MIN_RPM = 1500.0;         // RPM at minimum distance
-        final double MAX_RPM = 3800.0;         // RPM at maximum distance
+        final double MAX_RPM = 3800.0 * 0.82 ;         // RPM at maximum distance
 
         // Clamp distance to valid range
         double clampedDistance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distanceFromHub));
