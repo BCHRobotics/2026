@@ -8,12 +8,9 @@ import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import java.util.Optional;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,7 +25,6 @@ public class Robot extends TimedRobot {
   private boolean previousHubActive;
 
   public static boolean isRed;
-  public static boolean hubActive;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -53,11 +49,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    boolean currentHubActive = isHubActive();
+    boolean currentHubActive = DriverStationState.refreshHubActive();
     if (!previousHubActive && currentHubActive && DriverStation.isTeleopEnabled()) {
       m_robotContainer.rumbleHubActiveTransition();
     }
-    hubActive = currentHubActive;
     previousHubActive = currentHubActive;
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
@@ -65,55 +60,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-  }
-
-  public static boolean isHubActive() {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    if (alliance.isEmpty()) {
-      return false;
-    }
-
-    if (DriverStation.isAutonomousEnabled()) {
-      return true;
-    }
-
-    if (!DriverStation.isTeleopEnabled()) {
-      return false;
-    }
-
-    double matchTime = DriverStation.getMatchTime();
-    String gameData = DriverStation.getGameSpecificMessage();
-    if (gameData.isEmpty()) {
-      return true;
-    }
-
-    boolean redInactiveFirst;
-    switch (gameData.charAt(0)) {
-      case 'R' -> redInactiveFirst = true;
-      case 'B' -> redInactiveFirst = false;
-      default -> {
-        return true;
-      }
-    }
-
-    boolean shift1Active = switch (alliance.get()) {
-      case Red -> !redInactiveFirst;
-      case Blue -> redInactiveFirst;
-    };
-
-    if (matchTime > 130) {
-      return true;
-    } else if (matchTime > 105) {
-      return shift1Active;
-    } else if (matchTime > 80) {
-      return !shift1Active;
-    } else if (matchTime > 55) {
-      return shift1Active;
-    } else if (matchTime > 30) {
-      return !shift1Active;
-    } else {
-      return true;
-    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
