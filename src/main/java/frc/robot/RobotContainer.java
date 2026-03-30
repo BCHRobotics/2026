@@ -19,10 +19,12 @@ import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -365,5 +367,21 @@ public class RobotContainer {
                     m_ballIntake::isCalibrated
                 );
            // );
+    }
+
+    public void rumbleHubActiveTransition() {
+        CommandScheduler.getInstance().schedule(
+            Commands.startEnd(
+                    () -> setDriverRumble(1.0),
+                    () -> setDriverRumble(0.0))
+                .withTimeout(3.0));
+    }
+
+    private void setDriverRumble(double intensity) {
+        if (driverPS5 != null) {
+            driverPS5.getHID().setRumble(RumbleType.kBothRumble, intensity);
+        } else if (driverXbox != null) {
+            driverXbox.getHID().setRumble(RumbleType.kBothRumble, intensity);
+        }
     }
 }

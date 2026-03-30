@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private boolean previousHubActive;
 
   public static boolean isRed;
   public static boolean hubActive;
@@ -52,7 +53,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    hubActive = isHubActive();
+    boolean currentHubActive = isHubActive();
+    if (!previousHubActive && currentHubActive && DriverStation.isTeleopEnabled()) {
+      m_robotContainer.rumbleHubActiveTransition();
+    }
+    hubActive = currentHubActive;
+    previousHubActive = currentHubActive;
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
