@@ -119,9 +119,6 @@ public class Vision extends SubsystemBase {
      * for debugging and verification.
      */
     private final Field2d field2d = new Field2d();
-
-    private List<PhotonTrackedTarget> visibleGamePieces;
-    private PhotonCamera ballCamera = null; // Will be set to banana_1 camera from cameraModules
         
         /**
          * Creates a new Vision subsystem with multi-camera support.
@@ -133,8 +130,7 @@ public class Vision extends SubsystemBase {
          */
         public Vision(Drivetrain drivetrain) {
             this.drivetrain = drivetrain;
-            this.visibleGamePieces = new LinkedList<PhotonTrackedTarget>();
-            
+
             // Load 2026 Rebuilt AprilTag field layout
             aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
             
@@ -170,32 +166,6 @@ public class Vision extends SubsystemBase {
             }
             
             System.out.println("Vision: " + cameraModules.size() + " cameras active");
-            
-            // Find and assign the ball detection camera (banana_1)
-            for (CameraModule module : cameraModules) {
-                if (module.name.equals("banana_1")) {
-                    ballCamera = module.camera;
-                    System.out.println("Vision: Ball detection camera (banana_1) assigned from Camera " + module.index);
-                    break;
-                }
-            }
-            
-            if (ballCamera == null) {
-                System.err.println("Vision: Warning - Ball detection camera 'banana_1' not found in enabled cameras!");
-            }
-            
-            // Add field visualization to SmartDashboard
-            SmartDashboard.putData("Vision Field", field2d);
-            publishTuningDefaults();
-            //SmartDashboard.putData("Odometry Field", odometryField2d);
-        }
-    
-        public PhotonTrackedTarget getBallPosition() {
-            if (visibleGamePieces.size() > 0) {
-                return visibleGamePieces.get(0);
-            } else {
-                return null;
-            }
         }
         
         @Override

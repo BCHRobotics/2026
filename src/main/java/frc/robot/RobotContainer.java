@@ -287,7 +287,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -320,7 +320,8 @@ public class RobotContainer {
             vortexSpeedShot = operatorPS5.R2();
             jiggleIntake = operatorPS5.L2();
             calibrateIntake = operatorPS5.R1();
-            holdIntakeExtend = operatorPS5.L1();
+            holdIntakeExtend = operatorPS5.povUp();
+            holdIntakeRetract = operatorPS5.povDown();
         } else {
             killshooter = operatorXbox.x();
             killIntake = operatorXbox.b();
@@ -329,8 +330,8 @@ public class RobotContainer {
             vortexSpeedShot = operatorXbox.rightTrigger();
             jiggleIntake = operatorXbox.leftTrigger();
             calibrateIntake = operatorXbox.rightBumper();
-            holdIntakeExtend = operatorXbox.leftBumper();
-
+            holdIntakeExtend = operatorXbox.povUp();
+            holdIntakeRetract = operatorXbox.povDown();
 
         }
 
@@ -359,6 +360,12 @@ public class RobotContainer {
             new HoldBallIntakeExtendCommand(
                 m_ballIntake,
                 1.0,
+                this::isIntakeOverrideCalibrationAndLimitsEnabled));
+
+        holdIntakeRetract.whileTrue(
+            new HoldBallIntakeExtendCommand(
+                m_ballIntake,
+                -1.0,
                 this::isIntakeOverrideCalibrationAndLimitsEnabled));
 
         climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
