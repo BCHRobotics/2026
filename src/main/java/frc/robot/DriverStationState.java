@@ -6,7 +6,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
 public final class DriverStationState {
+  private static final double kHubActiveLeadTimeSeconds = 5.0;
+
   private static boolean hubActive;
+  private static boolean hubActiveFiveSecondsEarly;
 
   private DriverStationState() {}
 
@@ -14,12 +17,17 @@ public final class DriverStationState {
     return hubActive;
   }
 
+  public static boolean isHubActiveFiveSecondsEarly() {
+    return hubActiveFiveSecondsEarly;
+  }
+
   public static boolean refreshHubActive() {
-    hubActive = computeHubActive();
+    hubActive = computeHubActive(0.0);
+    hubActiveFiveSecondsEarly = computeHubActive(kHubActiveLeadTimeSeconds);
     return hubActive;
   }
 
-  private static boolean computeHubActive() {
+  private static boolean computeHubActive(double leadTimeSeconds) {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isEmpty()) {
       return false;
@@ -33,7 +41,7 @@ public final class DriverStationState {
       return false;
     }
 
-    double matchTime = DriverStation.getMatchTime();
+    double matchTime = DriverStation.getMatchTime() - leadTimeSeconds;
     String gameData = DriverStation.getGameSpecificMessage();
     if (gameData.isEmpty()) {
       return true;
