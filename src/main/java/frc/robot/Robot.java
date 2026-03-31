@@ -7,6 +7,8 @@ package frc.robot;
 import com.pathplanner.lib.pathfinding.LocalADStar;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -24,6 +26,7 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private boolean previousHubActive;
 
   public static boolean isRed;
 
@@ -61,6 +64,12 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
+    boolean currentHubActive = DriverStationState.refreshHubActive();
+    if (!previousHubActive && currentHubActive && DriverStation.isTeleopEnabled()) {
+      m_robotContainer.rumbleHubActiveTransition();
+    }
+    previousHubActive = currentHubActive;
+
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
