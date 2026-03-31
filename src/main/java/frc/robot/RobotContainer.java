@@ -183,10 +183,10 @@ public class RobotContainer {
         SmartDashboard.putData("Climb Command", new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
         SmartDashboard.putData(
             "Intake Hold Extend",
-            new HoldBallIntakeExtendCommand(m_ballIntake, 1.0, 1.0, this::isIntakeOverrideCalibrationAndLimitsEnabled));
+            new HoldBallIntakeExtendCommand(m_ballIntake, 1.0, this::isIntakeOverrideCalibrationAndLimitsEnabled));
         SmartDashboard.putData(
             "Intake Hold Retract",
-            new HoldBallIntakeExtendCommand(m_ballIntake, -1.0, 1.0, this::isIntakeOverrideCalibrationAndLimitsEnabled));
+            new HoldBallIntakeExtendCommand(m_ballIntake, -1.0, this::isIntakeOverrideCalibrationAndLimitsEnabled));
     }
 
     private boolean isIntakeOverrideCalibrationAndLimitsEnabled() {
@@ -358,7 +358,6 @@ public class RobotContainer {
         holdIntakeExtend.whileTrue(
             new HoldBallIntakeExtendCommand(
                 m_ballIntake,
-                1.0,
                 1.0,
                 this::isIntakeOverrideCalibrationAndLimitsEnabled));
 

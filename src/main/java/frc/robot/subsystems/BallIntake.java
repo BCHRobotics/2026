@@ -170,25 +170,17 @@ public class BallIntake extends SubsystemBase {
 
   /**
    * Manually drives the extend mechanism while enforcing the calibrated travel range.
-   * Positive direction extends, negative direction retracts, and zero stops.
+     * Positive speed extends, negative speed retracts, and zero stops.
    */
-  public void moveWhileHeld(double direction) {
-    moveWhileHeld(direction, 1.0, false);
-  }
-
-  /**
-   * Manually drives the extend mechanism while enforcing the calibrated travel range.
-   * Speed is clamped to [0, 1].
-   */
-  public void moveWhileHeld(double direction, double speed) {
-    moveWhileHeld(direction, speed, false);
-  }
+    public void moveWhileHeld(double speed) {
+      moveWhileHeld(speed, false);
+    }
 
   /**
    * Manually drives the extend mechanism. When overrideCalibrationAndLimits is false,
    * movement requires calibration and is clamped to the calibrated travel range.
    */
-  public void moveWhileHeld(double direction, double speed, boolean overrideCalibrationAndLimits) {
+    public void moveWhileHeld(double speed, boolean overrideCalibrationAndLimits) {
     // Normal operation refuses manual motion until homing has established a valid zero point.
     // The override path intentionally bypasses that safeguard for recovery and testing.
     if (!overrideCalibrationAndLimits && !isCalibrated()) {
@@ -196,11 +188,10 @@ public class BallIntake extends SubsystemBase {
       return;
     }
 
-    double clampedDirection = MathUtil.clamp(direction, -1.0, 1.0);
-    double clampedSpeed = MathUtil.clamp(speed, 0.0, 1.0);
+      double clampedSpeed = MathUtil.clamp(speed, -1.0, 1.0);
     double currentPosition = getExtendPosition();
 
-    if (clampedDirection > 0.0) {
+      if (clampedSpeed > 0.0) {
       if (!overrideCalibrationAndLimits && currentPosition >= BallIntakeConstants.kExtendedPosition) {
         m_extendEnabled = true;
         m_targetExtendPosition = BallIntakeConstants.kExtendedPosition;
@@ -210,11 +201,11 @@ public class BallIntake extends SubsystemBase {
 
       m_extendEnabled = true;
       m_targetExtendPosition = BallIntakeConstants.kExtendedPosition;
-      m_extendMotor.set(BallIntakeConstants.kExtendSpeed * clampedDirection * clampedSpeed);
+        m_extendMotor.set(BallIntakeConstants.kExtendSpeed * clampedSpeed);
       return;
     }
 
-    if (clampedDirection < 0.0) {
+      if (clampedSpeed < 0.0) {
       if (!overrideCalibrationAndLimits && currentPosition <= BallIntakeConstants.kRetractedPosition) {
         m_extendEnabled = false;
         m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
@@ -224,7 +215,7 @@ public class BallIntake extends SubsystemBase {
 
       m_extendEnabled = false;
       m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
-      m_extendMotor.set(Math.abs(BallIntakeConstants.kRetractSpeed) * clampedDirection * clampedSpeed);
+        m_extendMotor.set(Math.abs(BallIntakeConstants.kRetractSpeed) * clampedSpeed);
       return;
     }
 
