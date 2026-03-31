@@ -8,6 +8,7 @@ import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.shooter.VortexSpeedShotCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
+import frc.robot.commands.ballintake.HoldBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.climber.ClimbCommand;
 import frc.robot.subsystems.BallIntake;
@@ -61,6 +62,7 @@ public class RobotContainer {
     private final SendableChooser<Pose2d> climbStartPoseChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
+    private final SendableChooser<Boolean> intakeOverrideCalibrationLimitsChooser = new SendableChooser<>();
 
     // The container for the robot, initializing everything and setting up the
     // controller chooser
@@ -94,6 +96,7 @@ public class RobotContainer {
         // Configure field pose chooser
         configureClimbStartPoseChooser();
         configurePathPlannerPidChoosers();
+        configureIntakeOverrideChooser();
         configureVisionTuning();
         configureDashboardCommands();
         registerPathPlannerCommands();
@@ -164,9 +167,26 @@ public class RobotContainer {
         ppRotationPidChooser.addOption("Aggressive (1.6, 0.0, 0.0)", new PIDConstants(1.6, 0.0, 0.0));
     }
 
+    private void configureIntakeOverrideChooser() {
+        intakeOverrideCalibrationLimitsChooser.setDefaultOption("Limits Enabled", false);
+        intakeOverrideCalibrationLimitsChooser.addOption("Override Calibration And Limits", true);
+        SmartDashboard.putData("Intake Extend Override", intakeOverrideCalibrationLimitsChooser);
+    }
+
     private void configureDashboardCommands() {
         // putData publishes a clickable command button to SmartDashboard.
         SmartDashboard.putData("Climb Command", new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+        SmartDashboard.putData(
+            "Intake Hold Extend",
+            new HoldBallIntakeExtendCommand(m_ballIntake, 1.0, 1.0, this::isIntakeOverrideCalibrationAndLimitsEnabled));
+        SmartDashboard.putData(
+            "Intake Hold Retract",
+            new HoldBallIntakeExtendCommand(m_ballIntake, -1.0, 1.0, this::isIntakeOverrideCalibrationAndLimitsEnabled));
+    }
+
+    private boolean isIntakeOverrideCalibrationAndLimitsEnabled() {
+        Boolean selected = intakeOverrideCalibrationLimitsChooser.getSelected();
+        return selected != null && selected;
     }
 
     private void registerPathPlannerCommands() {
@@ -252,7 +272,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -285,6 +305,7 @@ public class RobotContainer {
             vortexSpeedShot = operatorPS5.R2();
             jiggleIntake = operatorPS5.L2();
             calibrateIntake = operatorPS5.R1();
+            holdIntakeExtend = operatorPS5.L1();
         } else {
             killshooter = operatorXbox.x();
             killIntake = operatorXbox.b();
@@ -293,6 +314,7 @@ public class RobotContainer {
             vortexSpeedShot = operatorXbox.rightTrigger();
             jiggleIntake = operatorXbox.leftTrigger();
             calibrateIntake = operatorXbox.rightBumper();
+            holdIntakeExtend = operatorXbox.leftBumper();
 
 
         }
@@ -318,6 +340,12 @@ public class RobotContainer {
         killIntake.onTrue(Commands.runOnce(m_ballIntake::stopRun, m_ballIntake));
         jiggleIntake.onTrue(Commands.runOnce(m_ballIntake::JiggleIntake, m_ballIntake));
         calibrateIntake.onTrue(new CalibrateBallIntakeCommand(m_ballIntake));
+        holdIntakeExtend.whileTrue(
+            new HoldBallIntakeExtendCommand(
+                m_ballIntake,
+                1.0,
+                1.0,
+                this::isIntakeOverrideCalibrationAndLimitsEnabled));
 
         climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
