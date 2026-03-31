@@ -14,6 +14,7 @@ import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -165,6 +166,69 @@ public class BallIntake extends SubsystemBase {
   /** Stops the extend/retract motor. */
   public void stopExtend() {
     m_extendMotor.set(0.0);
+  }
+
+  /**
+   * Manually drives the extend mechanism while enforcing the calibrated travel range.
+   * Positive direction extends, negative direction retracts, and zero stops.
+   */
+  public void moveWhileHeld(double direction) {
+    moveWhileHeld(direction, 1.0, false);
+  }
+
+  /**
+   * Manually drives the extend mechanism while enforcing the calibrated travel range.
+   * Speed is clamped to [0, 1].
+   */
+  public void moveWhileHeld(double direction, double speed) {
+    moveWhileHeld(direction, speed, false);
+  }
+
+  /**
+   * Manually drives the extend mechanism. When overrideCalibrationAndLimits is false,
+   * movement requires calibration and is clamped to the calibrated travel range.
+   */
+  public void moveWhileHeld(double direction, double speed, boolean overrideCalibrationAndLimits) {
+    // Normal operation refuses manual motion until homing has established a valid zero point.
+    // The override path intentionally bypasses that safeguard for recovery and testing.
+    if (!overrideCalibrationAndLimits && !isCalibrated()) {
+      stopExtend();
+      return;
+    }
+
+    double clampedDirection = MathUtil.clamp(direction, -1.0, 1.0);
+    double clampedSpeed = MathUtil.clamp(speed, 0.0, 1.0);
+    double currentPosition = getExtendPosition();
+
+    if (clampedDirection > 0.0) {
+      if (!overrideCalibrationAndLimits && currentPosition >= BallIntakeConstants.kExtendedPosition) {
+        m_extendEnabled = true;
+        m_targetExtendPosition = BallIntakeConstants.kExtendedPosition;
+        stopExtend();
+        return;
+      }
+
+      m_extendEnabled = true;
+      m_targetExtendPosition = BallIntakeConstants.kExtendedPosition;
+      m_extendMotor.set(BallIntakeConstants.kExtendSpeed * clampedDirection * clampedSpeed);
+      return;
+    }
+
+    if (clampedDirection < 0.0) {
+      if (!overrideCalibrationAndLimits && currentPosition <= BallIntakeConstants.kRetractedPosition) {
+        m_extendEnabled = false;
+        m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
+        stopExtend();
+        return;
+      }
+
+      m_extendEnabled = false;
+      m_targetExtendPosition = BallIntakeConstants.kRetractedPosition;
+      m_extendMotor.set(Math.abs(BallIntakeConstants.kRetractSpeed) * clampedDirection * clampedSpeed);
+      return;
+    }
+
+    stopExtend();
   }
 
   // ── Run (roller) ─────────────────────────────────────────────────────────
