@@ -30,6 +30,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SubsystemBase {
   // Create MAXSwerveModules
@@ -239,6 +240,7 @@ public class Drivetrain extends SubsystemBase {
     
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
+    logAdvantageScopeData();
 
     // Print comprehensive diagnostics once every 5 seconds
     double currentTime = WPIUtilJNI.now() * 1e-6;
@@ -292,6 +294,26 @@ public class Drivetrain extends SubsystemBase {
     diagnostics.append("=======================================\n");
     
     System.out.print(diagnostics.toString());
+  }
+
+  private void logAdvantageScopeData() {
+    Pose2d fusedPose = getPose();
+    Pose2d odometryPose = getOdometryPose();
+    ChassisSpeeds chassisSpeeds = getChassisSpeeds();
+
+    Logger.recordOutput("Drivetrain/Pose", fusedPose);
+    Logger.recordOutput("Drivetrain/Pose3d", new edu.wpi.first.math.geometry.Pose3d(fusedPose));
+    Logger.recordOutput("Drivetrain/OdometryPose", odometryPose);
+    Logger.recordOutput("Drivetrain/OdometryPose3d", new edu.wpi.first.math.geometry.Pose3d(odometryPose));
+    Logger.recordOutput("Drivetrain/ModuleStates", getModuleStates());
+    Logger.recordOutput("Drivetrain/HeadingDegrees", getHeading());
+    Logger.recordOutput("Drivetrain/ChassisSpeeds/VxMetersPerSecond", chassisSpeeds.vxMetersPerSecond);
+    Logger.recordOutput("Drivetrain/ChassisSpeeds/VyMetersPerSecond", chassisSpeeds.vyMetersPerSecond);
+    Logger.recordOutput("Drivetrain/ChassisSpeeds/OmegaRadiansPerSecond", chassisSpeeds.omegaRadiansPerSecond);
+    Logger.recordOutput(
+        "Drivetrain/VisionPoseErrorMeters",
+        fusedPose.getTranslation().getDistance(odometryPose.getTranslation())
+    );
   }
 
   /**

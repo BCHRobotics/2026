@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.commands.drivetrain.PointRearToAllianceHubCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -83,6 +85,7 @@ public class RobotContainer {
 
         // Connect Vision subsystem to Drivetrain for diagnostics
         robotDrive.setVision(vision);
+        configurePathPlannerLogging();
 
     
         // Configure default commands
@@ -211,6 +214,16 @@ public class RobotContainer {
 
     private void configureVisionTuning() {
         SmartDashboard.putData("VisionTuningPath", new VisionTuningPath(robotDrive));
+    }
+
+    private void configurePathPlannerLogging() {
+        PathPlannerLogging.setLogActivePathCallback(activePath ->
+            Logger.recordOutput("Auto/ActivePath", activePath.toArray(new Pose2d[0]))
+        );
+        PathPlannerLogging.setLogTargetPoseCallback(targetPose -> {
+            Logger.recordOutput("Auto/TargetPose", targetPose);
+            Logger.recordOutput("Auto/TargetPose3d", new edu.wpi.first.math.geometry.Pose3d(targetPose));
+        });
     }
 
     /**

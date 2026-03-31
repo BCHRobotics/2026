@@ -6,15 +6,18 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -198,6 +201,9 @@ public class Vision extends SubsystemBase {
         @Override
         public void periodic() {
         boolean acceptedMeasurement = false;
+        List<Pose3d> acceptedRobotPoses = new ArrayList<>();
+        int lastAcceptedTagCount = 0;
+        double lastAcceptedAverageTagDistanceMeters = 0.0;
 
         // Process vision measurements from all cameras
         for (CameraModule module : cameraModules) {
@@ -214,6 +220,10 @@ public class Vision extends SubsystemBase {
                     accepted.stdDevs
                 );
 
+                acceptedRobotPoses.add(accepted.estimatedPose.estimatedPose);
+                lastAcceptedTagCount = accepted.tagCount;
+                lastAcceptedAverageTagDistanceMeters = accepted.averageTagDistanceMeters;
+
                 acceptedMeasurement = true;
 
                 // SmartDashboard.putString("Vision/LastAcceptedCamera", module.name);
@@ -228,6 +238,22 @@ public class Vision extends SubsystemBase {
             }
 
             SmartDashboard.putString("Vision/" + module.name + "/LastRejectReason", module.lastRejectReason);
+        }
+
+        List<Pose3d> detectedTagFieldPoses = getDetectedTagFieldPoses();
+    List<Pose3d> cameraFieldPoses = getCameraFieldPoses();
+        Logger.recordOutput("Vision/RobotPoses", acceptedRobotPoses.toArray(new Pose3d[0]));
+    Logger.recordOutput("Vision/CameraPoses", cameraFieldPoses.toArray(new Pose3d[0]));
+        Logger.recordOutput("Vision/TagPoses", detectedTagFieldPoses.toArray(new Pose3d[0]));
+        Logger.recordOutput("Vision/VisibleTagCount", getVisibleTagCount());
+        Logger.recordOutput("Vision/VisibleTagIds", getVisibleAprilTags().stream().mapToInt(Integer::intValue).toArray());
+        Logger.recordOutput("Vision/HasVisionPose", acceptedMeasurement);
+        Logger.recordOutput("Vision/LastAcceptedTagCount", lastAcceptedTagCount);
+        Logger.recordOutput("Vision/LastAcceptedAvgTagDistanceMeters", lastAcceptedAverageTagDistanceMeters);
+
+        for (CameraModule module : cameraModules) {
+            Logger.recordOutput("Vision/" + module.name + "/HasTargets", module.lastResult != null && module.lastResult.hasTargets());
+            Logger.recordOutput("Vision/" + module.name + "/LastRejectReason", module.lastRejectReason);
         }
 
         SmartDashboard.putBoolean("Vision/HasVisionPose", acceptedMeasurement);
@@ -514,6 +540,40 @@ public class Vision extends SubsystemBase {
      */
     public AprilTagFieldLayout getFieldLayout() {
         return aprilTagFieldLayout;
+    }
+
+    public List<Pose3d> getDetectedTagFieldPoses() {
+        List<Pose3d> detectedTagFieldPoses = new ArrayList<>();
+        Set<Integer> loggedTagIds = new LinkedHashSet<>();
+
+        for (CameraModule module : cameraModules) {
+            PhotonPipelineResult result = module.lastResult;
+            if (result == null || !result.hasTargets()) {
+                continue;
+            }
+
+            for (PhotonTrackedTarget target : result.getTargets()) {
+                int tagId = target.getFiducialId();
+                if (!loggedTagIds.add(tagId)) {
+                    continue;
+                }
+
+                aprilTagFieldLayout.getTagPose(tagId).ifPresent(detectedTagFieldPoses::add);
+            }
+        }
+
+        return detectedTagFieldPoses;
+    }
+
+    public List<Pose3d> getCameraFieldPoses() {
+        List<Pose3d> cameraFieldPoses = new ArrayList<>();
+        Pose3d robotPose = new Pose3d(drivetrain.getPose());
+
+        for (CameraModule module : cameraModules) {
+            cameraFieldPoses.add(robotPose.transformBy(VisionConstants.kRobotToCams[module.index]));
+        }
+
+        return cameraFieldPoses;
     }
     
     /**
