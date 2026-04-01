@@ -166,7 +166,10 @@ public class Vision extends SubsystemBase {
             }
             
             System.out.println("Vision: " + cameraModules.size() + " cameras active");
+            SmartDashboard.putData("Vision/Field", field2d);
+            publishTuningDefaults();
         }
+
         
         @Override
         public void periodic() {
