@@ -346,8 +346,7 @@ public class RobotContainer {
         turboSpeedTrigger.whileTrue(
             Commands.startEnd(
                 robotDrive::enableTurboSpeed,
-                robotDrive::disableTurboSpeed,
-                robotDrive
+                robotDrive::disableTurboSpeed
             ));
 
 
