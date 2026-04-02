@@ -284,7 +284,7 @@ public class Shooter extends SubsystemBase {
         double feederSpeed = SmartDashboard.getNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
         double hubdistance = getHubDistance();
-        ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
+        ShooterConstants.targetRpm = calculateRpmFromDistance(3.0);
 
         ShooterConstants.readyRpm = readyRpm;
         ShooterConstants.feederSpeed = feederSpeed;
