@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -233,6 +232,10 @@ public class Vision extends SubsystemBase {
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+        if (cameraModules.isEmpty()) {
+            return Optional.empty();
+        }
+
         Optional<VisionMeasurement> measurement = getEstimatedGlobalPose(cameraModules.get(0));
         return measurement.map(value -> value.estimatedPose);
     }
