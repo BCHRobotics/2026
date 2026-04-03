@@ -60,7 +60,7 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
     public static final double maxSpeedNormal = 4.0; // 3.3
-    public static final double maxSpeedTurbo = 5.0; 
+    public static final double maxSpeedTurbo = 5.0; //5.0
     public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
@@ -160,13 +160,13 @@ public final class Constants {
     public static final double kRotationDistanceWeight = 0.03;
     
     // Maximum camera-to-tag distance (meters) at which we will accept vision updates.
-    public static final double kMaxSingleTagDistance = 4.0;
-    public static final double kMaxMultiTagDistance = 4.0;
+    public static final double kMaxSingleTagDistance = 8.0;
+    public static final double kMaxMultiTagDistance = 8.0;
 
     // Reject measurements that jump too far from the current fused pose estimate.
-    public static final double kMaxSingleTagPoseDeltaMeters = 0.75;
+    public static final double kMaxSingleTagPoseDeltaMeters = 1.0;
     public static final double kMaxMultiTagPoseDeltaMeters = 99.0;
-    public static final double kMaxSingleTagRotationDeltaDegrees = 15.0;
+    public static final double kMaxSingleTagRotationDeltaDegrees = 30.0;
     public static final double kMaxMultiTagRotationDeltaDegrees = 300.0;
     
     // Allowed error tolerances

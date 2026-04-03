@@ -107,7 +107,7 @@ public class RobotContainer {
         registerPathPlannerCommands();
 
         // Auto Paths with Climb 
-        // autoChooser.addOption("Climber-1_Auto", new PathPlannerAuto("Climber-1_Auto"));
+        autoChooser.addOption("OSCRT_Auto", new PathPlannerAuto("OSCRT_Auto"));
         // autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
         // autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
         // autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
@@ -346,8 +346,7 @@ public class RobotContainer {
         turboSpeedTrigger.whileTrue(
             Commands.startEnd(
                 robotDrive::enableTurboSpeed,
-                robotDrive::disableTurboSpeed,
-                robotDrive
+                robotDrive::disableTurboSpeed
             ));
 
 
@@ -406,14 +405,14 @@ public class RobotContainer {
     }
 
     public Command getTeleopInitCommand() {
-        /*return new ZeroHeadingCommand(robotDrive)
-            .andThen(*/
-                return new ConditionalCommand(
+        return new ZeroHeadingCommand(robotDrive)
+            .andThen(
+                new ConditionalCommand(
                     Commands.none(),
                     new CalibrateBallIntakeCommand(m_ballIntake),
                     m_ballIntake::isCalibrated
-                );
-           // );
+                )
+            );
     }
 
     public void rumbleHubActiveTransition() {
@@ -426,7 +425,8 @@ public class RobotContainer {
 
     private void setDriverRumble(double intensity) {
         if (driverPS5 != null) {
-            driverPS5.getHID().setRumble(RumbleType.kBothRumble, intensity);
+            driverPS5.getHID().setRumble(RumbleType.kLeftRumble, intensity);
+            driverPS5.getHID().setRumble(RumbleType.kRightRumble, intensity);
         } else if (driverXbox != null) {
             driverXbox.getHID().setRumble(RumbleType.kBothRumble, intensity);
         }

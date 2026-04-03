@@ -284,10 +284,10 @@ public class Shooter extends SubsystemBase {
         double feederSpeed = SmartDashboard.getNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
         double hubdistance = getHubDistance();
-        ShooterConstants.targetRpm = calculateRpmFromDistance(3.0);
+        ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
 
         ShooterConstants.readyRpm = readyRpm;
-        ShooterConstants.feederSpeed = feederSpeed;
+        ShooterConstants.feederSpeed = feederSpeed;        
 
         // Check if PIDF or MaxOutput changed
         if (motor1F != ShooterConstants.kF1
