@@ -27,6 +27,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -105,6 +106,9 @@ public class Vision extends SubsystemBase {
         }
     }
     
+    private static final double VISION_TIMEOUT_SECONDS = 0.2; // How long to consider vision pose valid without new measurements
+    private double lastVisionMeasurementTimestamp = Double.NEGATIVE_INFINITY;
+
     // List of active camera modules
     private final List<CameraModule> cameraModules = new ArrayList<>();
     private final AprilTagFieldLayout aprilTagFieldLayout;
@@ -197,6 +201,7 @@ public class Vision extends SubsystemBase {
                 lastAcceptedAverageTagDistanceMeters = accepted.averageTagDistanceMeters;
 
                 acceptedMeasurement = true;
+                lastVisionMeasurementTimestamp = Timer.getFPGATimestamp();
 
                 // SmartDashboard.putString("Vision/LastAcceptedCamera", module.name);
                 // SmartDashboard.putNumber("Vision/LastAcceptedTagCount", accepted.tagCount);
@@ -219,7 +224,8 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("Vision/TagPoses", detectedTagFieldPoses.toArray(new Pose3d[0]));
         Logger.recordOutput("Vision/VisibleTagCount", getVisibleTagCount());
         Logger.recordOutput("Vision/VisibleTagIds", getVisibleAprilTags().stream().mapToInt(Integer::intValue).toArray());
-        Logger.recordOutput("Vision/HasVisionPose", acceptedMeasurement);
+        boolean hasVisionPose = (Timer.getFPGATimestamp() - lastVisionMeasurementTimestamp) < VISION_TIMEOUT_SECONDS;
+        Logger.recordOutput("Vision/HasVisionPose", hasVisionPose);
         Logger.recordOutput("Vision/LastAcceptedTagCount", lastAcceptedTagCount);
         Logger.recordOutput("Vision/LastAcceptedAvgTagDistanceMeters", lastAcceptedAverageTagDistanceMeters);
 
@@ -228,7 +234,7 @@ public class Vision extends SubsystemBase {
             Logger.recordOutput("Vision/" + module.name + "/LastRejectReason", module.lastRejectReason);
         }
 
-        SmartDashboard.putBoolean("Vision/HasVisionPose", acceptedMeasurement);
+        SmartDashboard.putBoolean("Vision/HasVisionPose", hasVisionPose);
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
