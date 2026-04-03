@@ -171,6 +171,7 @@ public class Drivetrain extends SubsystemBase {
 
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
+    SmartDashboard.putData("Field", field); // Register once, not every loop
     configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
   }
 
@@ -249,14 +250,15 @@ public class Drivetrain extends SubsystemBase {
     
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
-    SmartDashboard.putData("Field", field);
     logAdvantageScopeData();
 
-    // Print comprehensive diagnostics once every 5 seconds
-    double currentTime = WPIUtilJNI.now() * 1e-6;
-    if (currentTime - lastPrintTime >= 5.0) {
-      printDiagnostics();
-      lastPrintTime = currentTime;
+    // Print diagnostics once every 5 seconds (real robot only — console I/O causes loop overruns in sim)
+    if (RobotBase.isReal()) {
+      double currentTime = WPIUtilJNI.now() * 1e-6;
+      if (currentTime - lastPrintTime >= 5.0) {
+        printDiagnostics();
+        lastPrintTime = currentTime;
+      }
     }
   }
   

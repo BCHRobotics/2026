@@ -206,7 +206,15 @@ public class Vision extends SubsystemBase {
         int lastAcceptedTagCount = 0;
         double lastAcceptedAverageTagDistanceMeters = 0.0;
 
-        // Process vision measurements from all cameras
+        // Collected once per loop to avoid redundant iterations below
+        List<Pose3d> detectedTagFieldPoses = new ArrayList<>();
+        List<Pose3d> cameraFieldPoses = new ArrayList<>();
+        Set<Integer> loggedTagIds = new LinkedHashSet<>();
+        int totalVisibleTags = 0;
+        int[] visibleTagIds = new int[0];
+        Pose3d robotPose3d = new Pose3d(drivetrain.getPose());
+
+        // Process vision measurements from all cameras in a single pass
         for (CameraModule module : cameraModules) {
             Optional<VisionMeasurement> measurement = getEstimatedGlobalPose(module);
 
@@ -224,30 +232,35 @@ public class Vision extends SubsystemBase {
                 acceptedRobotPoses.add(accepted.estimatedPose.estimatedPose);
                 lastAcceptedTagCount = accepted.tagCount;
                 lastAcceptedAverageTagDistanceMeters = accepted.averageTagDistanceMeters;
-
                 acceptedMeasurement = true;
-
-                // SmartDashboard.putString("Vision/LastAcceptedCamera", module.name);
-                // SmartDashboard.putNumber("Vision/LastAcceptedTagCount", accepted.tagCount);
-                // SmartDashboard.putNumber("Vision/LastAcceptedAvgDistance", accepted.averageTagDistanceMeters);
-                // SmartDashboard.putNumber("Vision/LastAcceptedXYStdDev", accepted.stdDevs.get(0, 0));
-                // SmartDashboard.putNumber("Vision/LastAcceptedThetaStdDev", accepted.stdDevs.get(2, 0));
-                // SmartDashboard.putNumber("Vision/EstimatedPose/X", visionPose.getX());
-                // SmartDashboard.putNumber("Vision/EstimatedPose/Y", visionPose.getY());
-                // SmartDashboard.putNumber("Vision/EstimatedPose/Rotation", visionPose.getRotation().getDegrees());
-                // SmartDashboard.putNumber("Vision/PoseTimestamp", accepted.estimatedPose.timestampSeconds);
             }
 
             SmartDashboard.putString("Vision/" + module.name + "/LastRejectReason", module.lastRejectReason);
+
+            // Accumulate camera poses
+            cameraFieldPoses.add(robotPose3d.transformBy(VisionConstants.kRobotToCams[module.index]));
+
+            // Accumulate detected tag poses and IDs (deduplicated)
+            PhotonPipelineResult result = module.lastResult;
+            if (result != null && result.hasTargets()) {
+                totalVisibleTags += result.getTargets().size();
+                for (PhotonTrackedTarget target : result.getTargets()) {
+                    int tagId = target.getFiducialId();
+                    if (loggedTagIds.add(tagId)) {
+                        aprilTagFieldLayout.getTagPose(tagId).ifPresent(detectedTagFieldPoses::add);
+                    }
+                }
+            }
         }
 
-        List<Pose3d> detectedTagFieldPoses = getDetectedTagFieldPoses();
-    List<Pose3d> cameraFieldPoses = getCameraFieldPoses();
+        // Build visible tag ID array once
+        visibleTagIds = loggedTagIds.stream().mapToInt(Integer::intValue).toArray();
+
         Logger.recordOutput("Vision/RobotPoses", acceptedRobotPoses.toArray(new Pose3d[0]));
-    Logger.recordOutput("Vision/CameraPoses", cameraFieldPoses.toArray(new Pose3d[0]));
+        Logger.recordOutput("Vision/CameraPoses", cameraFieldPoses.toArray(new Pose3d[0]));
         Logger.recordOutput("Vision/TagPoses", detectedTagFieldPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput("Vision/VisibleTagCount", getVisibleTagCount());
-        Logger.recordOutput("Vision/VisibleTagIds", getVisibleAprilTags().stream().mapToInt(Integer::intValue).toArray());
+        Logger.recordOutput("Vision/VisibleTagCount", totalVisibleTags);
+        Logger.recordOutput("Vision/VisibleTagIds", visibleTagIds);
         Logger.recordOutput("Vision/HasVisionPose", acceptedMeasurement);
         Logger.recordOutput("Vision/LastAcceptedTagCount", lastAcceptedTagCount);
         Logger.recordOutput("Vision/LastAcceptedAvgTagDistanceMeters", lastAcceptedAverageTagDistanceMeters);
