@@ -14,6 +14,9 @@ import java.util.Set;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.littletonrobotics.junction.Logger;
@@ -27,6 +30,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -111,6 +115,9 @@ public class Vision extends SubsystemBase {
 
     // Used to get current odometry pose and update pose estimator with vision measurements
     private final Drivetrain drivetrain;
+
+    // Simulation
+    private VisionSystemSim visionSim;
     
     /**
      * Field2d widget for visualizing vision estimates on dashboard.
@@ -167,6 +174,28 @@ public class Vision extends SubsystemBase {
             System.out.println("Vision: " + cameraModules.size() + " cameras active");
             SmartDashboard.putData("Vision/Field", field2d);
             publishTuningDefaults();
+
+            // Initialize PhotonVision simulation (only used in sim, no-op on real robot)
+            if (RobotBase.isSimulation()) {
+                visionSim = new VisionSystemSim("main");
+                visionSim.addAprilTags(aprilTagFieldLayout);
+
+                // Add a simulated camera for each active camera module
+                for (CameraModule module : cameraModules) {
+                    SimCameraProperties props = new SimCameraProperties();
+                    // OV9281 approximate properties (1280x800, 70° diagonal FOV)
+                    props.setCalibration(1280, 800, edu.wpi.first.math.geometry.Rotation2d.fromDegrees(70));
+                    props.setCalibError(0.35, 0.10);
+                    props.setFPS(20);
+                    props.setAvgLatencyMs(35);
+                    props.setLatencyStdDevMs(5);
+
+                    PhotonCameraSim cameraSim = new PhotonCameraSim(module.camera, props);
+                    cameraSim.enableDrawWireframe(true);
+                    visionSim.addCamera(cameraSim, VisionConstants.kRobotToCams[module.index]);
+                    System.out.println("Vision: Added sim camera for " + module.name);
+                }
+            }
         }
 
         
@@ -229,6 +258,13 @@ public class Vision extends SubsystemBase {
         }
 
         SmartDashboard.putBoolean("Vision/HasVisionPose", acceptedMeasurement);
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        // Feed the current robot pose into the vision simulation so cameras
+        // can detect AprilTags at their correct field positions
+        visionSim.update(drivetrain.getPose());
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {

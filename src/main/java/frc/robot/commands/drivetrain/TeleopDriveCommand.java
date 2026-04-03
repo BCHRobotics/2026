@@ -1,6 +1,7 @@
 package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drivetrain;
@@ -58,6 +59,8 @@ public class TeleopDriveCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        m_drivetrain.drive(0, 0, 0, false, false);
+        // Stop instantly via setChassisSpeeds, bypassing the slew rate limiter,
+        // so the robot doesn't coast after auto ends or command is interrupted
+        m_drivetrain.setChassisSpeeds(new ChassisSpeeds());
     }
 }

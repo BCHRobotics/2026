@@ -14,11 +14,14 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkSim;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Configs;
 
 public class MAXSwerveModule {
@@ -33,6 +36,9 @@ public class MAXSwerveModule {
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+
+  // Simulation
+  private SparkSim m_drivingSparkSim;
 
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
@@ -61,6 +67,10 @@ public class MAXSwerveModule {
     m_chassisAngularOffset = chassisAngularOffset;
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
+
+    if (RobotBase.isSimulation()) {
+      m_drivingSparkSim = new SparkSim(m_drivingSpark, DCMotor.getNeoVortex(1));
+    }
   }
 
   /**
@@ -130,5 +140,50 @@ public class MAXSwerveModule {
    */
   public double getTurnCurrent() {
     return m_turningSpark.getOutputCurrent();
+  }
+
+  // Simulation: tracks module state directly since AbsoluteEncoder can't be driven by SparkSim
+  private double simDrivePositionMeters = 0.0;
+  private double simDriveVelocityMps = 0.0;
+  private double simTurnPositionRad = 0.0;
+
+  /**
+   * Advances the simulated module state by dt seconds.
+   * Bypasses the closed-loop controllers and directly tracks the desired state,
+   * which is the standard approach for swerve simulation since the absolute
+   * turning encoder cannot be driven through SparkSim.
+   *
+   * @param dt Loop period in seconds (typically 0.02)
+   */
+  public void simulationUpdate(double dt) {
+    // Drive: integrate desired velocity into position
+    simDriveVelocityMps = m_desiredState.speedMetersPerSecond;
+    simDrivePositionMeters += simDriveVelocityMps * dt;
+
+    // Turn: instantly snap to desired angle (perfect sim steering)
+    simTurnPositionRad = m_desiredState.angle.getRadians() + m_chassisAngularOffset;
+
+    // Push drive values into SparkFlex sim so getVelocity()/getPosition() work
+    m_drivingSparkSim.iterate(simDriveVelocityMps, 12.0, dt);
+  }
+
+  /**
+   * Returns the current simulated state of the module.
+   * Only call this in simulation — in real mode use getState().
+   */
+  public SwerveModuleState getSimState() {
+    return new SwerveModuleState(
+        simDriveVelocityMps,
+        new Rotation2d(simTurnPositionRad - m_chassisAngularOffset));
+  }
+
+  /**
+   * Returns the current simulated position of the module.
+   * Only call this in simulation — in real mode use getPosition().
+   */
+  public SwerveModulePosition getSimPosition() {
+    return new SwerveModulePosition(
+        simDrivePositionMeters,
+        new Rotation2d(simTurnPositionRad - m_chassisAngularOffset));
   }
 }

@@ -25,6 +25,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -57,6 +59,12 @@ public class Drivetrain extends SubsystemBase {
 
   // The gyro sensor
   public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+
+  // Simulation: integrated yaw from chassis speeds (replaces NavX in sim)
+  private double simYaw = 0.0;
+
+  // Field visualization for sim GUI and AdvantageScope
+  private final Field2d field = new Field2d();
 
   // Slew rate filter variables for controlling lateral acceleration
   private double slew_currentRotation = 0.0;
@@ -217,29 +225,31 @@ public class Drivetrain extends SubsystemBase {
 
     setSpeedPercent();
 
-    // Update odometry with latest wheel positions
-    odometry.update(
-        getRotation2d(),
-        new SwerveModulePosition[] {
-            frontLeftModule.getPosition(),
-            frontRightModule.getPosition(),
-            rearLeftModule.getPosition(),
-            rearRightModule.getPosition()
-        });
-    
-    // Update pose estimator with latest wheel positions
-    // Vision measurements are added separately via addVisionMeasurement()
-    poseEstimator.update(
-        getRotation2d(),
-        new SwerveModulePosition[] {
-            frontLeftModule.getPosition(),
-            frontRightModule.getPosition(),
-            rearLeftModule.getPosition(),
-            rearRightModule.getPosition()
-        });
+    // In simulation, odometry/poseEstimator are updated in simulationPeriodic() using
+    // sim module positions. On the real robot, update here from actual encoders.
+    if (RobotBase.isReal()) {
+      odometry.update(
+          getRotation2d(),
+          new SwerveModulePosition[] {
+              frontLeftModule.getPosition(),
+              frontRightModule.getPosition(),
+              rearLeftModule.getPosition(),
+              rearRightModule.getPosition()
+          });
+
+      poseEstimator.update(
+          getRotation2d(),
+          new SwerveModulePosition[] {
+              frontLeftModule.getPosition(),
+              frontRightModule.getPosition(),
+              rearLeftModule.getPosition(),
+              rearRightModule.getPosition()
+          });
+    }
     
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
+    SmartDashboard.putData("Field", field);
     logAdvantageScopeData();
 
     // Print comprehensive diagnostics once every 5 seconds
@@ -510,8 +520,11 @@ public class Drivetrain extends SubsystemBase {
 
   /** Returns the robot heading as a Rotation2d. Always authoritative source. */
   public Rotation2d getRotation2d() {
-      // NavX upside-down mounting already corrects for CCW
-      return Rotation2d.fromDegrees(gyro.getAngle());
+    if (RobotBase.isSimulation()) {
+      return new Rotation2d(simYaw);
+    }
+    // NavX upside-down mounting already corrects for CCW
+    return Rotation2d.fromDegrees(gyro.getAngle());
   }
 
   /** Returns the robot heading in degrees. */
@@ -534,7 +547,9 @@ public class Drivetrain extends SubsystemBase {
    * @param speed The chassis speeds to apply
    */
   public void setChassisSpeeds(ChassisSpeeds speed) {
-    SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speed);
+    // Discretize compensates for swerve drift caused by rotation during the loop period
+    ChassisSpeeds discretized = ChassisSpeeds.discretize(speed, 0.02);
+    SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(discretized);
     setModuleStates(moduleStates);
   }
 
@@ -568,5 +583,37 @@ public class Drivetrain extends SubsystemBase {
    */
   public void driveRobotRelative(ChassisSpeeds speeds) {
     setChassisSpeeds(speeds);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // Advance each module's simulated encoder state
+    frontLeftModule.simulationUpdate(0.02);
+    frontRightModule.simulationUpdate(0.02);
+    rearLeftModule.simulationUpdate(0.02);
+    rearRightModule.simulationUpdate(0.02);
+
+    // Compute chassis speeds from sim module states (not real encoders)
+    ChassisSpeeds simSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(
+        frontLeftModule.getSimState(),
+        frontRightModule.getSimState(),
+        rearLeftModule.getSimState(),
+        rearRightModule.getSimState());
+
+    // Integrate yaw from omega
+    simYaw += simSpeeds.omegaRadiansPerSecond * 0.02;
+
+    // Update odometry with sim positions so getPose() is correct
+    SwerveModulePosition[] simPositions = {
+        frontLeftModule.getSimPosition(),
+        frontRightModule.getSimPosition(),
+        rearLeftModule.getSimPosition(),
+        rearRightModule.getSimPosition()
+    };
+    odometry.update(getRotation2d(), simPositions);
+    poseEstimator.update(getRotation2d(), simPositions);
+
+    // Keep field widget in sync
+    field.setRobotPose(getPose());
   }
 }
