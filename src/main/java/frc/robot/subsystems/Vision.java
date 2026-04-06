@@ -229,6 +229,20 @@ public class Vision extends SubsystemBase {
         }
 
         SmartDashboard.putBoolean("Vision/HasVisionPose", acceptedMeasurement);
+
+        Logger.recordOutput("Vision/Tuning/MaxAmbiguity", getMaxAmbiguity());
+        Logger.recordOutput("Vision/Tuning/SingleTagXYStdDev", getSingleTagXYStdDev());
+        Logger.recordOutput("Vision/Tuning/SingleTagThetaStdDev", getSingleTagThetaStdDev());
+        Logger.recordOutput("Vision/Tuning/MultiTagXYStdDev", getMultiTagXYStdDev());
+        Logger.recordOutput("Vision/Tuning/MultiTagThetaStdDev", getMultiTagThetaStdDev());
+        Logger.recordOutput("Vision/Tuning/DistanceWeight", getDistanceWeight());
+        Logger.recordOutput("Vision/Tuning/RotationDistanceWeight", getRotationDistanceWeight());
+        Logger.recordOutput("Vision/Tuning/MaxSingleTagDistance", getMaxSingleTagDistance());
+        Logger.recordOutput("Vision/Tuning/MaxMultiTagDistance", getMaxMultiTagDistance());
+        Logger.recordOutput("Vision/Tuning/MaxSingleTagPoseDeltaMeters", getMaxSingleTagPoseDeltaMeters());
+        Logger.recordOutput("Vision/Tuning/MaxMultiTagPoseDeltaMeters", getMaxMultiTagPoseDeltaMeters());
+        Logger.recordOutput("Vision/Tuning/MaxSingleTagRotationDeltaDegrees", getMaxSingleTagRotationDeltaDegrees());
+        Logger.recordOutput("Vision/Tuning/MaxMultiTagRotationDeltaDegrees", getMaxMultiTagRotationDeltaDegrees());
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
@@ -321,6 +335,8 @@ public class Vision extends SubsystemBase {
 
         SmartDashboard.putNumber("Vision/" + module.name + "/PoseDeltaMeters", translationDeltaMeters);
         SmartDashboard.putNumber("Vision/" + module.name + "/RotationDeltaDegrees", rotationDeltaDegrees);
+        Logger.recordOutput("Vision/" + module.name + "/PoseDeltaMeters", translationDeltaMeters);
+        Logger.recordOutput("Vision/" + module.name + "/RotationDeltaDegrees", rotationDeltaDegrees);
 
         if (translationDeltaMeters > maxTranslationDeltaMeters) {
             module.lastRejectReason = String.format(
@@ -384,22 +400,22 @@ public class Vision extends SubsystemBase {
     }
 
     private void publishTuningDefaults() {
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxAmbiguity", VisionConstants.kMaxAmbiguity);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxAmbiguity", VisionConstants.kMaxAmbiguity);
 
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "SingleTagXYStdDev", VisionConstants.kSingleTagStdDevs.get(0, 0));
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "SingleTagThetaStdDev", VisionConstants.kSingleTagStdDevs.get(2, 0));
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MultiTagXYStdDev", VisionConstants.kMultiTagStdDevs.get(0, 0));
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MultiTagThetaStdDev", VisionConstants.kMultiTagStdDevs.get(2, 0));
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "SingleTagXYStdDev", VisionConstants.kSingleTagStdDevs.get(0, 0));
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "SingleTagThetaStdDev", VisionConstants.kSingleTagStdDevs.get(2, 0));
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MultiTagXYStdDev", VisionConstants.kMultiTagStdDevs.get(0, 0));
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MultiTagThetaStdDev", VisionConstants.kMultiTagStdDevs.get(2, 0));
 
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "DistanceWeight", VisionConstants.kDistanceWeight);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "RotationDistanceWeight", VisionConstants.kRotationDistanceWeight);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "DistanceWeight", VisionConstants.kDistanceWeight);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "RotationDistanceWeight", VisionConstants.kRotationDistanceWeight);
 
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagDistance", VisionConstants.kMaxSingleTagDistance);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagDistance", VisionConstants.kMaxMultiTagDistance);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagPoseDeltaMeters", VisionConstants.kMaxSingleTagPoseDeltaMeters);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagPoseDeltaMeters", VisionConstants.kMaxMultiTagPoseDeltaMeters);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagRotationDeltaDegrees", VisionConstants.kMaxSingleTagRotationDeltaDegrees);
-        // SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagRotationDeltaDegrees", VisionConstants.kMaxMultiTagRotationDeltaDegrees);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagDistance", VisionConstants.kMaxSingleTagDistance);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagDistance", VisionConstants.kMaxMultiTagDistance);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagPoseDeltaMeters", VisionConstants.kMaxSingleTagPoseDeltaMeters);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagPoseDeltaMeters", VisionConstants.kMaxMultiTagPoseDeltaMeters);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxSingleTagRotationDeltaDegrees", VisionConstants.kMaxSingleTagRotationDeltaDegrees);
+        SmartDashboard.putNumber(TUNING_KEY_PREFIX + "MaxMultiTagRotationDeltaDegrees", VisionConstants.kMaxMultiTagRotationDeltaDegrees);
     }
 
     private double getTuningValue(String keySuffix, double defaultValue) {

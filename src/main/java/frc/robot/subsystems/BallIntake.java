@@ -18,6 +18,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 import frc.robot.Constants.BallIntakeConstants;
 
 /**
@@ -392,9 +393,21 @@ public class BallIntake extends SubsystemBase {
     SmartDashboard.putNumber("BallIntake/ExtendPosition", getExtendPosition());
     SmartDashboard.putNumber("BallIntake/TargetExtendPosition", m_targetExtendPosition);
     SmartDashboard.putBoolean("BallIntake/ExtendEnabled", m_extendEnabled);
-    // SmartDashboard.putBoolean("BallIntake/JiggleActive", m_jiggleIntakeActive);
-    // SmartDashboard.putBoolean("BallIntake/RunEnabled", m_runEnabled);
+    SmartDashboard.putBoolean("BallIntake/JiggleActive", m_jiggleIntakeActive);
+    SmartDashboard.putBoolean("BallIntake/RunEnabled", m_runEnabled);
     SmartDashboard.putBoolean("BallIntake/AtTarget", isAtTargetPosition());
     SmartDashboard.putNumber("BallIntake/RunCurrent",     m_runMotor.getOutputCurrent());
+
+    Logger.recordOutput("BallIntake/CalibrateState", m_calibrateState.toString());
+    Logger.recordOutput("BallIntake/ExtendCurrent", extendCurrent);
+    Logger.recordOutput("BallIntake/FilteredExtendCurrent", m_filteredExtendCurrent);
+    Logger.recordOutput("BallIntake/CurrentSpike", currentSpike);
+    Logger.recordOutput("BallIntake/ExtendPosition", getExtendPosition());
+    Logger.recordOutput("BallIntake/TargetExtendPosition", m_targetExtendPosition);
+    Logger.recordOutput("BallIntake/ExtendEnabled", m_extendEnabled);
+    Logger.recordOutput("BallIntake/JiggleActive", m_jiggleIntakeActive);
+    Logger.recordOutput("BallIntake/RunEnabled", m_runEnabled);
+    Logger.recordOutput("BallIntake/AtTarget", isAtTargetPosition());
+    Logger.recordOutput("BallIntake/RunCurrent", m_runMotor.getOutputCurrent());
   }
 }
