@@ -105,6 +105,10 @@ public class Shooter extends SubsystemBase {
         Logger.recordOutput("Shooter/RPM", shooterMotor1.getEncoder().getVelocity());
         Logger.recordOutput("Shooter/Charged", isCharged());
         Logger.recordOutput("Shooter/Active", isShooterActive);
+        Logger.recordOutput("Shooter/Motor1CurrentAmps", shooterMotor1.getOutputCurrent());
+        Logger.recordOutput("Shooter/Motor2CurrentAmps", shooterMotor2.getOutputCurrent());
+        Logger.recordOutput("Shooter/FeederCurrentAmps", feederMotor.getOutputCurrent());
+        Logger.recordOutput("Shooter/RPMError", shooterMotor1.getEncoder().getVelocity() - ShooterConstants.targetRpm);
     }
 
     private void applyClosedLoopConfig(SparkFlexConfig config, double p, double i, double d, double f) {

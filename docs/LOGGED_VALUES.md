@@ -36,6 +36,11 @@ All values published to AdvantageKit Logger or SmartDashboard.
 | `Vision/LastAcceptedAvgTagDistanceMeters` | double | [Y] |
 | `Vision/{cameraName}/HasTargets` | boolean | [Y] |
 | `Vision/{cameraName}/LastRejectReason` | String | [Y] |
+| `Vision/{cameraName}/TotalRejectedFrames` | int | [Y] |
+| `Vision/{cameraName}/LatencyMillis` | double | [Y] |
+| `Vision/{cameraName}/FrameTimestamp` | double | [Y] |
+| `Vision/{cameraName}/AppliedXYStdDev` | double | [Y] |
+| `Vision/{cameraName}/AppliedThetaStdDev` | double | [Y] |
 
 ### Auto (PathPlanner callbacks)
 
@@ -60,6 +65,8 @@ All values published to AdvantageKit Logger or SmartDashboard.
 | `BallIntake/RunEnabled` | boolean | [Y] |
 | `BallIntake/AtTarget` | boolean | [Y] |
 | `BallIntake/RunCurrent` | double | [Y] |
+| `BallIntake/ExtendAppliedOutput` | double | [Y] |
+| `BallIntake/RunAppliedOutput` | double | [Y] |
 
 ### Climber
 
@@ -92,6 +99,10 @@ All values published to AdvantageKit Logger or SmartDashboard.
 | `Shooter/RPM` | double | [Y] |
 | `Shooter/Charged` | boolean | [Y] |
 | `Shooter/Active` | boolean | [Y] |
+| `Shooter/Motor1CurrentAmps` | double | [Y] |
+| `Shooter/Motor2CurrentAmps` | double | [Y] |
+| `Shooter/FeederCurrentAmps` | double | [Y] |
+| `Shooter/RPMError` | double | [Y] |
 
 ### ClimbCommand
 
@@ -114,6 +125,11 @@ All values published to AdvantageKit Logger or SmartDashboard.
 |-----|------|-----------|
 | `Vision/{cameraName}/PoseDeltaMeters` | double | [Y] |
 | `Vision/{cameraName}/RotationDeltaDegrees` | double | [Y] |
+| `Vision/{cameraName}/TotalRejectedFrames` | int | [Y] |
+| `Vision/{cameraName}/LatencyMillis` | double | [Y] |
+| `Vision/{cameraName}/FrameTimestamp` | double | [Y] |
+| `Vision/{cameraName}/AppliedXYStdDev` | double | [Y] |
+| `Vision/{cameraName}/AppliedThetaStdDev` | double | [Y] |
 | `Vision/Tuning/MaxAmbiguity` | double | [Y] |
 | `Vision/Tuning/SingleTagXYStdDev` | double | [Y] |
 | `Vision/Tuning/SingleTagThetaStdDev` | double | [Y] |

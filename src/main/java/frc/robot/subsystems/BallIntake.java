@@ -409,5 +409,7 @@ public class BallIntake extends SubsystemBase {
     Logger.recordOutput("BallIntake/RunEnabled", m_runEnabled);
     Logger.recordOutput("BallIntake/AtTarget", isAtTargetPosition());
     Logger.recordOutput("BallIntake/RunCurrent", m_runMotor.getOutputCurrent());
+    Logger.recordOutput("BallIntake/ExtendAppliedOutput", m_extendMotor.getAppliedOutput());
+    Logger.recordOutput("BallIntake/RunAppliedOutput", m_runMotor.getAppliedOutput());
   }
 }

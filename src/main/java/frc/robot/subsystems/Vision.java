@@ -20,6 +20,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -75,6 +76,7 @@ public class Vision extends SubsystemBase {
         public final String name;
         public PhotonPipelineResult lastResult;
         public String lastRejectReason;
+        public int rejectedFrameCount = 0;
         
         public CameraModule(PhotonCamera camera, PhotonPoseEstimator estimator, int index, String name) {
             this.camera = camera;
@@ -196,6 +198,9 @@ public class Vision extends SubsystemBase {
                 lastAcceptedTagCount = accepted.tagCount;
                 lastAcceptedAverageTagDistanceMeters = accepted.averageTagDistanceMeters;
 
+                Logger.recordOutput("Vision/" + module.name + "/AppliedXYStdDev", accepted.stdDevs.get(0, 0));
+                Logger.recordOutput("Vision/" + module.name + "/AppliedThetaStdDev", accepted.stdDevs.get(2, 0));
+
                 acceptedMeasurement = true;
 
                 // SmartDashboard.putString("Vision/LastAcceptedCamera", module.name);
@@ -226,6 +231,11 @@ public class Vision extends SubsystemBase {
         for (CameraModule module : cameraModules) {
             Logger.recordOutput("Vision/" + module.name + "/HasTargets", module.lastResult != null && module.lastResult.hasTargets());
             Logger.recordOutput("Vision/" + module.name + "/LastRejectReason", module.lastRejectReason);
+            Logger.recordOutput("Vision/" + module.name + "/TotalRejectedFrames", module.rejectedFrameCount);
+            if (module.lastResult != null) {
+                Logger.recordOutput("Vision/" + module.name + "/LatencyMillis", (Timer.getFPGATimestamp() - module.lastResult.getTimestampSeconds()) * 1000.0);
+                Logger.recordOutput("Vision/" + module.name + "/FrameTimestamp", module.lastResult.getTimestampSeconds());
+            }
         }
 
         SmartDashboard.putBoolean("Vision/HasVisionPose", acceptedMeasurement);
@@ -282,6 +292,7 @@ public class Vision extends SubsystemBase {
         // Check if we detected any targets
         if (!result.hasTargets()) {
             module.lastRejectReason = "No AprilTags detected";
+            module.rejectedFrameCount++;
             return Optional.empty();
         }
         
@@ -297,6 +308,7 @@ public class Vision extends SubsystemBase {
                 bestTarget.getPoseAmbiguity(),
                 maxAmbiguity
             );
+            module.rejectedFrameCount++;
             return Optional.empty();
         }
 
@@ -306,6 +318,7 @@ public class Vision extends SubsystemBase {
         }
         if (visionEst.isEmpty()) {
             module.lastRejectReason = "PhotonPoseEstimator returned no pose";
+            module.rejectedFrameCount++;
             return Optional.empty();
         }
 
@@ -319,6 +332,7 @@ public class Vision extends SubsystemBase {
                 averageTagDistanceMeters,
                 maxDistanceMeters
             );
+            module.rejectedFrameCount++;
             return Optional.empty();
         }
 
@@ -344,6 +358,7 @@ public class Vision extends SubsystemBase {
                 translationDeltaMeters,
                 maxTranslationDeltaMeters
             );
+            module.rejectedFrameCount++;
             return Optional.empty();
         }
 
@@ -353,6 +368,7 @@ public class Vision extends SubsystemBase {
                 rotationDeltaDegrees,
                 maxRotationDeltaDegrees
             );
+            module.rejectedFrameCount++;
             return Optional.empty();
         }
 
