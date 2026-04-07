@@ -12,6 +12,7 @@ import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.HoldBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeandFeederCommand;
+import frc.robot.commands.climber.CalibrateClimberCommand;
 import frc.robot.commands.climber.ClimbCommand;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Climber;
@@ -407,6 +408,11 @@ public class RobotContainer {
                         Commands.none(),
                         new PrintCommand("BallIntake calibration failed."),
                         m_ballIntake::isCalibrated))
+                .andThen(new CalibrateClimberCommand(climber))
+                .andThen(new ConditionalCommand(
+                        Commands.none(),
+                        new PrintCommand("Climber calibration failed."),
+                        climber::isCalibrated))
                 .andThen(selectedAuto);
 
     }
@@ -418,6 +424,13 @@ public class RobotContainer {
                     Commands.none(),
                     new CalibrateBallIntakeCommand(m_ballIntake),
                     m_ballIntake::isCalibrated
+                )
+            )
+            .andThen(
+                new ConditionalCommand(
+                    Commands.none(),
+                    new CalibrateClimberCommand(climber),
+                    climber::isCalibrated
                 )
             );
     }

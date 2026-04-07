@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -29,7 +30,10 @@ public class Climber extends SubsystemBase {
     RETRACTING
   }
 
+  private enum CalibrateState { IDLE, CALIBRATING, CALIBRATED, FAILED }
+
   private final SparkMax climbMotor;
+  private final RelativeEncoder encoder;
   private final SparkLimitSwitch forwardLimitSwitch;
   private final SparkLimitSwitch reverseLimitSwitch;
   private final DigitalInput proximitySwitch;
@@ -37,6 +41,7 @@ public class Climber extends SubsystemBase {
   private final Timer motionTimer = new Timer();
   private double filteredCurrent = 0.0;
   private MotionState motionState = MotionState.STOPPED;
+  private CalibrateState calibrateState = CalibrateState.IDLE;
 
   public Climber() {
     climbMotor = new SparkMax(ClimbConstants.kMotorCanId, MotorType.kBrushless);
@@ -53,6 +58,10 @@ public class Climber extends SubsystemBase {
         .smartCurrentLimit(ClimbConstants.kMotorCurrentLimit);
 
     climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    // Acquire the built-in encoder and zero it now so 0 = retracted.
+    encoder = climbMotor.getEncoder();
+    encoder.setPosition(0.0);
   }
 
   public void extendClimber() {
@@ -123,10 +132,15 @@ public class Climber extends SubsystemBase {
     return ClimbConstants.kProximitySwitchActiveLow ? !rawValue : rawValue;
   }
 
+  public double getEncoderPosition() {
+    return encoder.getPosition();
+  }
+
   public boolean isExtendLimitReached() {
     return isForwardLimitSwitchPressed()
         || isCurrentSpikeDetected()
-        || hasMotionTimedOut(MotionState.EXTENDING);
+        || hasMotionTimedOut(MotionState.EXTENDING)
+        || getEncoderPosition() >= ClimbConstants.kEncoderExtendedPosition;
   }
 
   public boolean isRetractLimitReached() {
@@ -139,11 +153,48 @@ public class Climber extends SubsystemBase {
     return isForwardLimitSwitchPressed() || isReverseLimitSwitchPressed();
   }
 
+  /**
+   * Starts a calibration run: retracts the climber until a current spike or reverse
+   * limit switch is detected, then zeros the encoder. Driven from periodic().
+   */
+  public void startCalibration() {
+    calibrateState = CalibrateState.CALIBRATING;
+    setMotionState(MotionState.RETRACTING); // starts the motion timeout timer
+  }
+
+  public boolean isCalibrated() {
+    return calibrateState == CalibrateState.CALIBRATED;
+  }
+
+  public boolean isCalibrationFailed() {
+    return calibrateState == CalibrateState.FAILED;
+  }
+
   @Override
   public void periodic() {
+    // Run calibration state machine before updating filtered current so the spike
+    // check below uses the value from the previous loop (consistent with normal use).
+    if (calibrateState == CalibrateState.CALIBRATING) {
+      if (hasMotionTimedOut(MotionState.RETRACTING)) {
+        climbMotor.set(0.0);
+        setMotionState(MotionState.STOPPED);
+        calibrateState = CalibrateState.FAILED;
+      } else if (isReverseLimitSwitchPressed() || isCurrentSpikeDetected()) {
+        climbMotor.set(0.0);
+        encoder.setPosition(0.0);
+        setMotionState(MotionState.STOPPED);
+        calibrateState = CalibrateState.CALIBRATED;
+      } else {
+        climbMotor.set(ClimbConstants.kRetractSpeed);
+      }
+    }
+
     filteredCurrent = currentFilter.calculate(climbMotor.getOutputCurrent());
 
     // Publish the important climber signals so students can debug the mechanism from the dashboard.
+    SmartDashboard.putString("Climber/CalibrateState", calibrateState.name());
+    Logger.recordOutput("Climber/CalibrateState", calibrateState.name());
+
     SmartDashboard.putBoolean("Climber/ForwardLimitPressed", isForwardLimitSwitchPressed());
     SmartDashboard.putBoolean("Climber/ReverseLimitPressed", isReverseLimitSwitchPressed());
     SmartDashboard.putBoolean("Climber/LimitPressed", isLimitSwitchPressed());
@@ -171,5 +222,7 @@ public class Climber extends SubsystemBase {
     Logger.recordOutput("Climber/Current", climbMotor.getOutputCurrent());
     Logger.recordOutput("Climber/FilteredCurrent", filteredCurrent);
     Logger.recordOutput("Climber/AppliedOutput", climbMotor.getAppliedOutput());
+    Logger.recordOutput("Climber/EncoderPosition", getEncoderPosition());
+    SmartDashboard.putNumber("Climber/EncoderPosition", getEncoderPosition());
   }
 }

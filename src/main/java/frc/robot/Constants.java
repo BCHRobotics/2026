@@ -307,6 +307,10 @@ public final class Constants {
     public static final double kCurrentSpikeThresholdAmps = 40.0;
     public static final double kCurrentAverageWindowSeconds = 0.1;
 
+    // Motor encoder position at full extension (rotations). 0 = fully retracted.
+    // TODO: measure and update this value during commissioning.
+    public static final double kEncoderExtendedPosition = 50.0;
+
     // The requested starting locations are measured from the field walls, then converted to
     // WPILib field coordinates so commands can use the same Pose2d math as the rest of the robot.
     public static final double kStartDistanceFromEndWallMeters = Units.inchesToMeters(41.5);
