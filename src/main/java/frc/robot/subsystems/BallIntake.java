@@ -252,6 +252,15 @@ public class BallIntake extends SubsystemBase {
     run();
   }
 
+  public void toggleReverseRun() {
+    if (m_runEnabled) {
+      stopRun();
+      return;
+    }
+
+    eject();
+  }
+
   /** Stops both motors. */
   public void stop() {
     stopExtend();

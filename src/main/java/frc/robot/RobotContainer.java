@@ -11,6 +11,7 @@ import frc.robot.commands.shooter.VortexSpeedShotCommand;
 import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.HoldBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
+import frc.robot.commands.ballintake.ToggleBallIntakeandFeederCommand;
 import frc.robot.commands.climber.ClimbCommand;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Climber;
@@ -287,7 +288,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseTrigger;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -322,6 +323,7 @@ public class RobotContainer {
             calibrateIntake = operatorPS5.R1();
             holdIntakeExtend = operatorPS5.povUp();
             holdIntakeRetract = operatorPS5.povDown();
+            reverseTrigger = operatorPS5.povLeft();
         } else {
             killshooter = operatorXbox.x();
             killIntake = operatorXbox.b();
@@ -332,6 +334,7 @@ public class RobotContainer {
             calibrateIntake = operatorXbox.rightBumper();
             holdIntakeExtend = operatorXbox.povUp();
             holdIntakeRetract = operatorXbox.povDown();
+            reverseTrigger = operatorXbox.povLeft();
 
         }
 
@@ -370,7 +373,7 @@ public class RobotContainer {
         climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
         vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
-
+        reverseTrigger.whileTrue(new ToggleBallIntakeandFeederCommand(m_ballIntake, m_shooter));
     }
 
     /**
