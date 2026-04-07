@@ -150,6 +150,7 @@ public class RobotContainer {
         climbStartPoseChooser.addOption("Blue Right", ClimbConstants.kBlueRightStartPose);
         climbStartPoseChooser.addOption("Red Left", ClimbConstants.kRedLeftStartPose);
         climbStartPoseChooser.addOption("Red Right", ClimbConstants.kRedRightStartPose);
+        climbStartPoseChooser.addOption("PracticePose", ClimbConstants.PracticePose);
 
         SmartDashboard.putData("Climb Start Pose", climbStartPoseChooser);
     }
@@ -288,26 +289,28 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseTrigger;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseTrigger, drivetopose;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
             pointRearToHub = driverPS5.square();
-            intakeToggle = driverPS5.L1();
+            intakeToggle = driverPS5.L2();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
             turboSpeedTrigger = driverPS5.R1();
-            shootTrigger = driverPS5.R2().or(driverPS5.L2());
+            shootTrigger = driverPS5.R2();
+            drivetopose = driverPS5.circle();
 
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
         } else {
             pointRearToHub = driverXbox.x();
-            intakeToggle = driverXbox.leftBumper();
+            intakeToggle = driverXbox.leftTrigger();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
             turboSpeedTrigger = driverXbox.rightBumper();
-            shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());
+            shootTrigger = driverXbox.rightTrigger();
+            drivetopose = driverXbox.b();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -374,6 +377,7 @@ public class RobotContainer {
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
         vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
         reverseTrigger.whileTrue(new ToggleBallIntakeandFeederCommand(m_ballIntake, m_shooter));
+        drivetopose.whileTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
     }
 
     /**

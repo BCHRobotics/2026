@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Climber-5_path_1"
@@ -95,6 +101,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake off"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Climber-5_path_3"
@@ -104,12 +116,6 @@
           "type": "named",
           "data": {
             "name": "climber on"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_4"
           }
         }
       ]

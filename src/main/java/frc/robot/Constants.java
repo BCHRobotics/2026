@@ -250,7 +250,7 @@ public final class Constants {
      */
     public static final double kPositionP = 0.8;
     public static final double kPositionI = 0.00;
-    public static final double kPositionD = 0.02;
+    public static final double kPositionD = 0.0;
     
     /**
      * PID gains for rotation control.
@@ -322,14 +322,18 @@ public final class Constants {
         kStartDistanceFromEndWallMeters,
         kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(90.0));
-    public static final Pose2d kRedRightStartPose = new Pose2d(
+    public static final Pose2d kRedLeftStartPose = new Pose2d(
         NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
         kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(90.0));
-    public static final Pose2d kRedLeftStartPose = new Pose2d(
+    public static final Pose2d kRedRightStartPose = new Pose2d(
         NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
         NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(90.0));
+    public static final Pose2d PracticePose = new Pose2d(
+        16 - 2.959,
+        3.948,        
+        Rotation2d.fromDegrees(0.0));
   }
 
   public static final class BallIntakeConstants {
