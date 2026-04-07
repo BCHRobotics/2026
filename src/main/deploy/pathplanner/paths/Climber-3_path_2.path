@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6842225392296717,
-        "y": 0.7209615384538268
+        "x": 2.0739879518072284,
+        "y": 1.6309036144578317
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9156743813002501,
-        "y": 0.6264626241630478
+        "x": 1.4649624017583518,
+        "y": 2.4920891316302822
       },
       "isLocked": false,
       "linkedName": "Climber-1_Path_1End"
@@ -20,8 +20,8 @@
         "y": 2.6047307692307697
       },
       "prevControl": {
-        "x": 1.0454583870799703,
-        "y": 2.293179708575979
+        "x": 1.188719093269778,
+        "y": 2.301438977737209
       },
       "nextControl": null,
       "isLocked": false,
@@ -61,7 +61,7 @@
   "folder": "Climber_path_3",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -133.01349770673585
+    "rotation": -136.13
   },
   "useDefaultConstraints": true
 }
