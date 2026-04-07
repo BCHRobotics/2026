@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import org.littletonrobotics.junction.Logger;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.NavigationConstants;
 import frc.robot.subsystems.Climber;
@@ -89,12 +90,19 @@ public class ClimbCommand extends Command {
     rotationController.reset();
     setDriveTarget(startPose);
 
-    // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "InitialPose", poseToString(currentPose));
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "SelectedStartPose", poseToString(startPose));
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "TargetPose", poseToString(targetPose));
-    // SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", false);
-    // SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
+    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", true);
+    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "InitialPose", poseToString(currentPose));
+    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "SelectedStartPose", poseToString(startPose));
+    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "TargetPose", poseToString(targetPose));
+    SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", false);
+    SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
+
+    Logger.recordOutput("ClimbCommand/Running", true);
+    Logger.recordOutput("ClimbCommand/InitialPose", currentPose);
+    Logger.recordOutput("ClimbCommand/SelectedStartPose", startPose);
+    Logger.recordOutput("ClimbCommand/TargetPose", targetPose);
+    Logger.recordOutput("ClimbCommand/AtStartPose", false);
+    Logger.recordOutput("ClimbCommand/Phase", phase.name());
   }
 
   @Override
@@ -169,6 +177,9 @@ public class ClimbCommand extends Command {
 
     SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "Running", false);
     SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "LastResult", interrupted ? "Interrupted" : "Completed");
+
+    Logger.recordOutput("ClimbCommand/Running", false);
+    Logger.recordOutput("ClimbCommand/LastResult", interrupted ? "Interrupted" : "Completed");
   }
 
   @Override
@@ -212,6 +223,11 @@ public class ClimbCommand extends Command {
     SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentPoseY", currentPose.getY());
     SmartDashboard.putNumber(DASHBOARD_KEY_PREFIX + "CurrentHeadingDegrees", currentPose.getRotation().getDegrees());
     SmartDashboard.putBoolean(DASHBOARD_KEY_PREFIX + "AtStartPose", isAtPose(currentPose, startPose));
+
+    Logger.recordOutput("ClimbCommand/CurrentPoseX", currentPose.getX());
+    Logger.recordOutput("ClimbCommand/CurrentPoseY", currentPose.getY());
+    Logger.recordOutput("ClimbCommand/CurrentHeadingDegrees", currentPose.getRotation().getDegrees());
+    Logger.recordOutput("ClimbCommand/AtStartPose", isAtPose(currentPose, startPose));
 
     return isAtPose(currentPose, desiredPose);
   }

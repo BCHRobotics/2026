@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Timer;
+import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
 
@@ -92,7 +93,22 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Shooter2RPM", shooterMotor2.getEncoder().getVelocity());
         SmartDashboard.putNumber("Shooter/AppliedFeederSpeed", currentFeederSpeed);
         SmartDashboard.putBoolean("Shooter/VortexSpeedShotActive", isVortexSpeedShotActive);
-        // SmartDashboard.putBoolean("Shooter/VortexSpeedShotReady", isVortexSpeedShotReady());
+        SmartDashboard.putBoolean("Shooter/VortexSpeedShotReady", isVortexSpeedShotReady());
+
+        Logger.recordOutput("Shooter/Distance", getHubDistance());
+        Logger.recordOutput("Shooter/TargetRPM", ShooterConstants.targetRpm);
+        Logger.recordOutput("Shooter/ReadyRPM", ShooterConstants.readyRpm);
+        Logger.recordOutput("Shooter/Shooter1RPM", shooterMotor1.getEncoder().getVelocity());
+        Logger.recordOutput("Shooter/Shooter2RPM", shooterMotor2.getEncoder().getVelocity());
+        Logger.recordOutput("Shooter/AppliedFeederSpeed", currentFeederSpeed);
+        Logger.recordOutput("Shooter/VortexSpeedShotActive", isVortexSpeedShotActive);
+        Logger.recordOutput("Shooter/RPM", shooterMotor1.getEncoder().getVelocity());
+        Logger.recordOutput("Shooter/Charged", isCharged());
+        Logger.recordOutput("Shooter/Active", isShooterActive);
+        Logger.recordOutput("Shooter/Motor1CurrentAmps", shooterMotor1.getOutputCurrent());
+        Logger.recordOutput("Shooter/Motor2CurrentAmps", shooterMotor2.getOutputCurrent());
+        Logger.recordOutput("Shooter/FeederCurrentAmps", feederMotor.getOutputCurrent());
+        Logger.recordOutput("Shooter/RPMError", shooterMotor1.getEncoder().getVelocity() - ShooterConstants.targetRpm);
     }
 
     private void applyClosedLoopConfig(SparkFlexConfig config, double p, double i, double d, double f) {
