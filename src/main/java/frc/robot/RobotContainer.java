@@ -328,7 +328,6 @@ public class RobotContainer {
             calibrateIntake = operatorPS5.R1();
             holdIntakeExtend = operatorPS5.povUp();
             holdIntakeRetract = operatorPS5.povDown();
-            reverseTrigger = operatorPS5.povLeft();
             reverseIntakeAndFeeder = operatorPS5.povRight();
         } else {
             killshooter = operatorXbox.x();
@@ -340,7 +339,6 @@ public class RobotContainer {
             calibrateIntake = operatorXbox.rightBumper();
             holdIntakeExtend = operatorXbox.povUp();
             holdIntakeRetract = operatorXbox.povDown();
-            reverseTrigger = operatorXbox.povLeft();
             reverseIntakeAndFeeder = operatorXbox.povRight();
         }
 
@@ -379,9 +377,7 @@ public class RobotContainer {
         climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
         vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
-        reverseTrigger.whileTrue(new ToggleBallIntakeandFeederCommand(m_ballIntake, m_shooter));
         reverseIntakeAndFeeder.whileTrue(new ReverseBallIntakeAndFeederCommand(m_ballIntake, m_shooter));
-        drivetopose.whileTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
     }
 
     /**
