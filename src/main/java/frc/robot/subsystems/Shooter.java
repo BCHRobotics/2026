@@ -239,11 +239,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void toggleReverseFeeder() {
-        if (currentFeederSpeed == 0.0) {
-            currentFeederSpeed = -ShooterConstants.feederSpeed;
-        } else {
-            currentFeederSpeed = 0.0;
-        }
+        currentFeederSpeed = -ShooterConstants.feederSpeed;
     }
 
     /** Stops the feeder belt */
