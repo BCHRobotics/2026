@@ -128,7 +128,7 @@ public class Shooter extends SubsystemBase {
         SparkMaxConfig feederConfig = new SparkMaxConfig();
         feederConfig
             .inverted(true)
-            .idleMode(IdleMode.kBrake);  // Hard-stop when commanded to 0
+            .idleMode(IdleMode.kCoast);  // Hard-stop when commanded to 0
 
         // --- Primary flywheel motor (closed-loop velocity) ---
         // Reuse the instance variable shooter1Config
@@ -240,11 +240,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void toggleReverseFeeder() {
-        if (currentFeederSpeed == 0.0) {
-            currentFeederSpeed = -ShooterConstants.feederSpeed;
-        } else {
-            currentFeederSpeed = 0.0;
-        }
+        currentFeederSpeed = -ShooterConstants.feederSpeed;
     }
 
     /**

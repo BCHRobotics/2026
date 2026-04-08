@@ -61,18 +61,6 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "jiggle on"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
             "waitTime": 0.0
           }
         },
@@ -86,12 +74,6 @@
           "type": "path",
           "data": {
             "pathName": "Climber-1_Path_2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-1_Path_3"
           }
         },
         {

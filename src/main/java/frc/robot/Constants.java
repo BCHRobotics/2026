@@ -248,8 +248,8 @@ public final class Constants {
      * PID gains for X position control (field-relative).
      * Controls forward/backward movement accuracy.
      */
-    public static final double kPositionP = 0.8;
-    public static final double kPositionI = 0.00;
+    public static final double kPositionP = 0.9;
+    public static final double kPositionI = 0.001;
     public static final double kPositionD = 0.0;
     
     /**
@@ -260,7 +260,7 @@ public final class Constants {
     public static final double kRotationI = 0.00;
     public static final double kRotationD = 0.00;
  
-    public static final double kPositionTolerance = 0.05; // meters
+    public static final double kPositionTolerance = 0.07; // meters
     public static final double kRotationTolerance = 5.0; // degrees
 
     public static final double kMaxLinearSpeed = 5.0; // m/s
@@ -307,10 +307,14 @@ public final class Constants {
     public static final double kCurrentSpikeThresholdAmps = 40.0;
     public static final double kCurrentAverageWindowSeconds = 0.1;
 
+    // Motor encoder position at full extension (rotations). 0 = fully retracted.
+    // TODO: measure and update this value during commissioning.
+    public static final double kEncoderExtendedPosition = 60.0;
+
     // The requested starting locations are measured from the field walls, then converted to
     // WPILib field coordinates so commands can use the same Pose2d math as the rest of the robot.
-    public static final double kStartDistanceFromEndWallMeters = Units.inchesToMeters(41.5);
-    public static final double kStartDistanceFromSideWallMeters = Units.inchesToMeters(120.0);
+    public static final double kStartDistanceFromEndWallMeters = Units.inchesToMeters(45.3);
+    public static final double kStartDistanceFromSideWallMeters = Units.inchesToMeters(123.0);
     public static final double kDriveForwardDistanceMeters = Units.inchesToMeters(20.0);
     public static final double kDriveMaxSpeedMetersPerSecond = 0.5;
 
@@ -366,7 +370,7 @@ public final class Constants {
 
     // Run motor speeds (positive = intake, negative = eject)
     public static final double kRunSpeed = 1.0;
-    public static final double kEjectSpeed = -0.1;
+    public static final double kEjectSpeed = -0.85;
 
     // Calibration: slow retract until current spike or timeout
     public static final double kCalibrateSpeed = -0.2;
