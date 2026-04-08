@@ -295,23 +295,23 @@ public class RobotContainer {
 
         if (driverPS5 != null) {
             pointRearToHub = driverPS5.square();
-            intakeToggle = driverPS5.L2();
+            intakeToggle = driverPS5.circle();
             zeroHeading = driverPS5.triangle();
             extendToggle = driverPS5.cross();
             turboSpeedTrigger = driverPS5.R1();
-            shootTrigger = driverPS5.R2();
-            drivetopose = driverPS5.circle();
+            shootTrigger = driverPS5.R2().or(driverPS5.L2());
+            // drivetopose = driverPS5.circle();
 
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
         } else {
             pointRearToHub = driverXbox.x();
-            intakeToggle = driverXbox.leftTrigger();
+            intakeToggle = driverXbox.b();
             zeroHeading = driverXbox.y();
             extendToggle = driverXbox.a();
             turboSpeedTrigger = driverXbox.rightBumper();
-            shootTrigger = driverXbox.rightTrigger();
-            drivetopose = driverXbox.b();
+            shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());;
+            // drivetopose = driverXbox.b();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -377,8 +377,8 @@ public class RobotContainer {
         climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
         vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
-        reverseTrigger.whileTrue(new ToggleBallIntakeandFeederCommand(m_ballIntake, m_shooter));
-        drivetopose.whileTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+        //reverseTrigger.whileTrue(new ToggleBallIntakeandFeederCommand(m_ballIntake, m_shooter));
+        // drivetopose.whileTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
     }
 
     /**

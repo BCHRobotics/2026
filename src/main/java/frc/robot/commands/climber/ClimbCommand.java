@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
@@ -52,6 +53,7 @@ public class ClimbCommand extends Command {
   private Phase phase = Phase.ALIGNING_TO_START;
   private Pose2d startPose = ClimbConstants.kBlueLeftStartPose;
   private Pose2d targetPose = ClimbConstants.kBlueLeftStartPose;
+  private final Timer approachTimer = new Timer();
 
   public ClimbCommand(Drivetrain drivetrain, Climber climber, Supplier<Pose2d> selectedStartPoseSupplier) {
     this.drivetrain = drivetrain;
@@ -109,6 +111,8 @@ public class ClimbCommand extends Command {
   public void execute() {
     
     if (phase == Phase.ALIGNING_TO_START) {
+      approachTimer.stop();
+      approachTimer.reset();
       if (driveToPose(startPose)) {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         // if (climber.isExtendLimitReached()) {
@@ -139,7 +143,11 @@ public class ClimbCommand extends Command {
     }
 
     if (phase == Phase.APPROACHING_CLIMB) {
-      if (climber.isClimbPlateDetected()) {
+      if (!approachTimer.isRunning()) {
+        approachTimer.restart();
+      }
+
+      if (climber.isClimbPlateDetected() || approachTimer.hasElapsed(3.0))  {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         phase = Phase.CLIMBING;
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
@@ -160,7 +168,7 @@ public class ClimbCommand extends Command {
     if (phase == Phase.CLIMBING) {
       drivetrain.setChassisSpeeds(new ChassisSpeeds());
 
-      if (climber.isRetractLimitReached()) {
+      if (Math.abs(climber.getEncoderPosition()) <=5.0) {
         climber.stop();
         phase = Phase.FINISHED;
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());

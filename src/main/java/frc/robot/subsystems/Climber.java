@@ -149,6 +149,12 @@ public class Climber extends SubsystemBase {
         || hasMotionTimedOut(MotionState.RETRACTING);
   }
 
+    public boolean isRetractLimitReachedClimb() {
+    return isReverseLimitSwitchPressed()
+        || isCurrentSpikeDetected()
+        || hasMotionTimedOut(MotionState.RETRACTING);
+  }
+
   public boolean isLimitSwitchPressed() {
     return isForwardLimitSwitchPressed() || isReverseLimitSwitchPressed();
   }
