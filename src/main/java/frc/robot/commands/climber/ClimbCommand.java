@@ -19,7 +19,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 
 public class ClimbCommand extends Command {
-  private static final double kMinTranslationErrorForArrivalMeters = Units.inchesToMeters(1.0);
+  private static final double kMinTranslationErrorForArrivalMeters = Units.inchesToMeters(3.0);
 
   // The command first drives from the robot's current estimated pose to the selected climb
   // start pose, extends the climber there if needed, and then advances to the final climb
@@ -111,9 +111,7 @@ public class ClimbCommand extends Command {
   public void execute() {
     
     if (phase == Phase.ALIGNING_TO_START) {
-      approachTimer.stop();
-      approachTimer.reset();
-      if (driveToPose(startPose)) {
+      if (driveToPose(startPose) || approachTimer.hasElapsed(5.0)){
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         // if (climber.isExtendLimitReached()) {
         //   phase = Phase.APPROACHING_CLIMB;
@@ -133,6 +131,8 @@ public class ClimbCommand extends Command {
 
       if (climber.isExtendLimitReached()) {
         climber.stop();
+        approachTimer.stop();
+        approachTimer.reset();
         phase = Phase.ALIGNING_TO_START;
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
       } else {

@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 1.054,
-        "y": 2.6047307692307697
+        "y": 2.2
       },
       "prevControl": null,
       "nextControl": {
         "x": 1.038002802648339,
-        "y": 2.9939237200580884
+        "y": 2.589192950827319
       },
       "isLocked": false,
       "linkedName": "collect6end"

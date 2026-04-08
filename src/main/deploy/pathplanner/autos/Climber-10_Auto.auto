@@ -75,12 +75,6 @@
           "data": {
             "name": "climber on"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-10_path_4"
-          }
         }
       ]
     }

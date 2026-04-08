@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.0605128205128216,
-        "y": 4.744320512820513
+        "x": 1.054,
+        "y": 4.9
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3099920678561412,
-        "y": 4.760448288395922
+        "x": 1.3034792473433197,
+        "y": 4.916127775575409
       },
       "isLocked": false,
       "linkedName": "Climber-2_Path_2end"

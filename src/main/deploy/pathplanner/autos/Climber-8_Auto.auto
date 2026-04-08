@@ -105,12 +105,6 @@
           "data": {
             "name": "climber on"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-8_path_7"
-          }
         }
       ]
     }
