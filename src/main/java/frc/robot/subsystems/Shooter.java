@@ -53,6 +53,7 @@ public class Shooter extends SubsystemBase {
 
     private boolean isShooterActive  = false;
     private boolean isVortexSpeedShotActive = false;
+    private boolean isFeederReversed = false;
     private double  currentFeederSpeed = 0.0;
 
     public Shooter(Drivetrain drivetrain) {
@@ -246,6 +247,21 @@ public class Shooter extends SubsystemBase {
         }
     }
 
+    /**
+     * Runs the feeder in reverse regardless of shooter state.
+     * Safe to call while the shooter is stopped — does not interact with
+     * {@link #isCharged()} since that gate only applies when
+     * {@code isShooterActive} is true.
+     */
+    public void reverseFeeder() {
+        isFeederReversed = true;
+    }
+
+    /** Stops the feeder that was running in reverse via {@link #reverseFeeder()}. */
+    public void stopReverseFeeder() {
+        isFeederReversed = false;
+    }
+
     /** Stops the feeder belt */
     public void stopFeeder() {
         currentFeederSpeed = 0.0;
@@ -348,6 +364,7 @@ public class Shooter extends SubsystemBase {
         if (!DriverStation.isEnabled()) {
             shooterMotor1.set(0);
             shooterMotor2.set(0);
+            isFeederReversed = false;
         } else if (isVortexSpeedShotActive) {
             flywheelController1.setSetpoint(VORTEX_SPEED_SHOT_TARGET_RPM, ControlType.kVelocity);
             if (isVortexSpeedShotReady()) {
@@ -359,6 +376,10 @@ public class Shooter extends SubsystemBase {
             if (isCharged() && shooterSpinTimer.hasElapsed(1.0)) {  // Add a short delay after reaching target RPM
                 feederOutput = currentFeederSpeed;
             }
+        } else if (isFeederReversed) {
+            // Direct reverse without shooter active — isCharged() is not involved here
+            flywheelController1.setSetpoint(IDLE_RPM, ControlType.kVelocity);
+            feederOutput = -ShooterConstants.feederSpeed;
         } else {
             flywheelController1.setSetpoint(IDLE_RPM, ControlType.kVelocity);
         }

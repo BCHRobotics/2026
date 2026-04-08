@@ -237,6 +237,17 @@ public class BallIntake extends SubsystemBase {
     m_runMotor.set(BallIntakeConstants.kEjectSpeed);
   }
 
+  /** Runs the roller in reverse at full eject speed (non-toggle). */
+  public void reverseRun() {
+    m_runEnabled = true;
+    m_runMotor.set(BallIntakeConstants.kEjectSpeed);
+  }
+
+  /** Stops the roller if it was running in reverse via reverseRun(). */
+  public void stopReverseRun() {
+    stopRun();
+  }
+
   /** Stops the run motor. */
   public void stopRun() {
     m_runEnabled = false;
