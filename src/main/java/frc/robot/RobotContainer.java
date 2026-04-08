@@ -109,11 +109,11 @@ public class RobotContainer {
 
         // Auto Paths with Climb 
         autoChooser.addOption("OSCRT_Auto", new PathPlannerAuto("OSCRT_Auto"));
-        // autoChooser.addOption("Climber-2_Auto", new PathPlannerAuto("Climber-2_Auto"));
-        // autoChooser.addOption("Climber-3_Auto", new PathPlannerAuto("Climber-3_Auto"));
-        // autoChooser.addOption("Climber-4_Auto", new PathPlannerAuto("Climber-4_Auto"));
-        // autoChooser.addOption("Climber-5_Auto", new PathPlannerAuto("Climber-5_Auto"));
-        // autoChooser.addOption("Climber-6_Auto", new PathPlannerAuto("Climber-6_Auto"));
+        autoChooser.addOption("OSCRB_Auto", new PathPlannerAuto("OSCRB_Auto"));
+        autoChooser.addOption("OSCRM_Auto", new PathPlannerAuto("OSCRM_Auto"));
+        autoChooser.addOption("S8CLT_Auto", new PathPlannerAuto("S8CLT_Auto"));
+        autoChooser.addOption("S8CRT_Auto", new PathPlannerAuto("S8CRT_Auto"));
+        autoChooser.addOption("S8CRM_Auto", new PathPlannerAuto("S8CRM_Auto"));
         // autoChooser.addOption("Climber-7_Auto", new PathPlannerAuto("Climber-7_Auto"));
         // autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
         // autoChooser.addOption("Climber-9_Auto", new PathPlannerAuto("Climber-9_Auto"));

@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "ORB_path"
@@ -13,7 +19,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 2.5
           }
         },
         {
@@ -85,7 +91,37 @@
         {
           "type": "wait",
           "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
             "waitTime": 0.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake off"
           }
         },
         {
@@ -104,12 +140,6 @@
           "type": "named",
           "data": {
             "name": "climber on"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-5_path_4"
           }
         }
       ]
