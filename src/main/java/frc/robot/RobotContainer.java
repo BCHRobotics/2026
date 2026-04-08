@@ -377,7 +377,7 @@ public class RobotContainer {
         climberExtend.whileTrue(Commands.startEnd(climber::extendClimber, climber::stop, climber));
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
         vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
-        //reverseTrigger.whileTrue(new ToggleBallIntakeandFeederCommand(m_ballIntake, m_shooter));
+        reverseTrigger.whileTrue(new ToggleBallIntakeandFeederCommand(m_ballIntake, m_shooter));
         // drivetopose.whileTrue(new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
     }
 
