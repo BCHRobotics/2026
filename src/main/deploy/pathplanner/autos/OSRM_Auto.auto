@@ -5,24 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-8_path_1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter on"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "intake on"
@@ -31,55 +13,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-8_path_2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter off"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-8_path_3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter on"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-8_path_4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter off"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climber-8_path_5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shooter on"
+            "pathName": "OM_path"
           }
         },
         {
@@ -91,7 +25,109 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climber-8_path_6"
+            "pathName": "Shooter-5_path_2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
           }
         },
         {
@@ -101,15 +137,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "climber on"
+            "pathName": "OSR-Turn"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Climber_Autos",
+  "folder": "Shooter_Autos",
   "choreoAuto": false
 }
