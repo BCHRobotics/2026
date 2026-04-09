@@ -29,6 +29,7 @@
   "autoFolders": [
     "Climber_Autos",
     "Collector_Autos",
+    "DepotShoot_Autos",
     "Shooter_Autos"
   ],
   "defaultMaxVel": 3.0,

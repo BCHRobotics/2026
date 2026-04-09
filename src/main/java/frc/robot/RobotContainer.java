@@ -131,7 +131,7 @@ public class RobotContainer {
 
         autoChooser.addOption("OSRT_Auto", new PathPlannerAuto("OSRT_Auto"));
         autoChooser.addOption("OSRB_Auto", new PathPlannerAuto("OSRB_Auto"));
-        autoChooser.addOption("OSRM_Auto", new PathPlannerAuto("OSRM_Auto"));
+        autoChooser.addOption("OSM_Auto", new PathPlannerAuto("OSM_Auto"));
         autoChooser.addOption("S8L_Auto", new PathPlannerAuto("S8L_Auto"));
         autoChooser.addOption("S8M_Auto", new PathPlannerAuto("S8M_Auto"));
         autoChooser.addOption("S8R_Auto", new PathPlannerAuto("S8R_Auto"));
