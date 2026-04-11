@@ -9,19 +9,19 @@
       "prevControl": null,
       "nextControl": {
         "x": 2.973529365519992,
-        "y": 0.7
+        "y": 0.7000000000000001
       },
       "isLocked": false,
       "linkedName": "Climber-1_pathstart"
     },
     {
       "anchor": {
-        "x": 0.8556,
-        "y": 0.7
+        "x": 0.9855349500713262,
+        "y": 0.6903566333808839
       },
       "prevControl": {
-        "x": 1.3384281225426462,
-        "y": 0.6999999999999998
+        "x": 1.4683630726139723,
+        "y": 0.6903566333808838
       },
       "nextControl": null,
       "isLocked": false,

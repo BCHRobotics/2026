@@ -321,23 +321,23 @@ public class RobotContainer {
             killIntake = operatorPS5.circle();
             climberExtend = operatorPS5.triangle();
             climberRetract = operatorPS5.cross();
-            vortexSpeedShot = operatorPS5.R2();
+            vortexSpeedShot = operatorPS5.povLeft();
             jiggleIntake = operatorPS5.L2();
             calibrateIntake = operatorPS5.R1();
             holdIntakeExtend = operatorPS5.povUp();
             holdIntakeRetract = operatorPS5.povDown();
-            reverseIntakeAndFeeder = operatorPS5.povRight();
+            reverseIntakeAndFeeder = operatorPS5.R2();
         } else {
             killshooter = operatorXbox.x();
             killIntake = operatorXbox.b();
             climberExtend = operatorXbox.y();
             climberRetract = operatorXbox.a();
-            vortexSpeedShot = operatorXbox.rightTrigger();
+            vortexSpeedShot = operatorXbox.povLeft();
             jiggleIntake = operatorXbox.leftTrigger();
             calibrateIntake = operatorXbox.rightBumper();
             holdIntakeExtend = operatorXbox.povUp();
             holdIntakeRetract = operatorXbox.povDown();
-            reverseIntakeAndFeeder = operatorXbox.povRight();
+            reverseIntakeAndFeeder = operatorXbox.rightTrigger();
         }
 
         // Main controller commands

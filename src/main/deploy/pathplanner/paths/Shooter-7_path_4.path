@@ -20,7 +20,7 @@
         "y": 2.4419358974358976
       },
       "prevControl": {
-        "x": 1.761572830175931,
+        "x": 1.7615728301759308,
         "y": 2.254206748499894
       },
       "nextControl": null,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -149.15
+    "rotation": -149.251
   },
   "reversed": false,
   "folder": "Shooter_path_7",

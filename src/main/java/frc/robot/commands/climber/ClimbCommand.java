@@ -148,7 +148,7 @@ public class ClimbCommand extends Command {
         approachTimer.restart();
       }
 
-      if (climber.isClimbPlateDetected() || approachTimer.hasElapsed(3.0))  {
+      if (climber.isClimbPlateDetected() || approachTimer.hasElapsed(2.0))  {
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         phase = Phase.CLIMBING;
         SmartDashboard.putString(DASHBOARD_KEY_PREFIX + "Phase", phase.name());
