@@ -80,6 +80,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Climber_Autos",
+  "folder": "Collector_Autos",
   "choreoAuto": false
 }

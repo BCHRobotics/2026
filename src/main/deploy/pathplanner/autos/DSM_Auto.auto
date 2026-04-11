@@ -104,6 +104,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Shooter_Autos",
+  "folder": "DepotShoot_Autos",
   "choreoAuto": false
 }
