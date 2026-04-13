@@ -24,6 +24,7 @@ import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,6 +53,9 @@ public class RobotContainer {
     // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
 
+    private final Timer hubTimer = new Timer();
+    private boolean timerRunning = false;
+    private static final double timerDuration = 25.0;
     
     // Controllers
     CommandPS5Controller driverPS5;
@@ -297,7 +301,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseIntakeAndFeeder;
+        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseIntakeAndFeeder, hubTimerTrigger;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -333,6 +337,7 @@ public class RobotContainer {
             holdIntakeExtend = operatorPS5.povUp();
             holdIntakeRetract = operatorPS5.povDown();
             reverseIntakeAndFeeder = operatorPS5.R2();
+            hubTimerTrigger = operatorPS5.touchpad();
         } else {
             killshooter = operatorXbox.x();
             killIntake = operatorXbox.b();
@@ -344,6 +349,7 @@ public class RobotContainer {
             holdIntakeExtend = operatorXbox.povUp();
             holdIntakeRetract = operatorXbox.povDown();
             reverseIntakeAndFeeder = operatorXbox.rightTrigger();
+            hubTimerTrigger = operatorXbox.leftBumper();
         }
 
         // Main controller commands
@@ -382,6 +388,13 @@ public class RobotContainer {
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
         vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
         reverseIntakeAndFeeder.whileTrue(new ReverseBallIntakeAndFeederCommand(m_ballIntake, m_shooter));
+        hubTimerTrigger.onTrue(
+            Commands.runOnce(() -> {
+                hubTimer.reset();
+                hubTimer.start();
+                timerRunning = true;
+            })
+        );
     }
 
     /**
@@ -453,5 +466,20 @@ public class RobotContainer {
         } else if (driverXbox != null) {
             driverXbox.getHID().setRumble(RumbleType.kBothRumble, intensity);
         }
+    }
+
+    public void updateTimerDashboard() {
+        double timeLeft;
+        if (timerRunning) {
+            timeLeft = timerDuration - hubTimer.get();
+            if (timeLeft <= 0) {
+                timeLeft = 0;
+                hubTimer.stop();
+                timerRunning = false;
+            }
+        } else {
+            timeLeft = 0;
+        }
+        SmartDashboard.putNumber("Hub Timer", timeLeft);
     }
 }

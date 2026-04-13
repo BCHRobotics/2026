@@ -25,6 +25,9 @@ public class ReverseBallIntakeAndFeederCommand extends Command {
 
     @Override
     public void initialize() {
+        m_shooter.stopShooter();
+        m_shooter.stopFeeder();
+        m_ballIntake.stopRun();
         m_ballIntake.reverseRun();
         m_shooter.reverseFeeder();
     }

@@ -60,7 +60,7 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum and minimum capable speeds of
     // the robot, rather the allowed maximum and minimum speeds.
     public static final double maxSpeedNormal = 4.0; // 3.3
-    public static final double maxSpeedTurbo = 5.0; //5.0
+    public static final double maxSpeedTurbo = 5.5; //5.0
     public static final double maxAngularSpeed = 2.0 * Math.PI; // radians per second
 
     // Slew rate limits
@@ -370,7 +370,7 @@ public final class Constants {
 
     // Run motor speeds (positive = intake, negative = eject)
     public static final double kRunSpeed = 1.0;
-    public static final double kEjectSpeed = -0.85;
+    public static final double kEjectSpeed = -0.85; // Make 1.0 if necessary
 
     // Calibration: slow retract until current spike or timeout
     public static final double kCalibrateSpeed = -0.2;

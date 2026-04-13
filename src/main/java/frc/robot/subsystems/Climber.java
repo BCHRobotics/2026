@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -56,6 +57,12 @@ public class Climber extends SubsystemBase {
         .inverted(ClimbConstants.kMotorInverted)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ClimbConstants.kMotorCurrentLimit);
+
+    climbConfig.limitSwitch
+        .forwardLimitSwitchType(Type.kNormallyOpen)
+        .reverseLimitSwitchType(Type.kNormallyOpen)
+        .forwardLimitSwitchEnabled(true)
+        .reverseLimitSwitchEnabled(true);
 
     climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
