@@ -80,6 +80,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Collector_Autos",
+  "folder": null,
   "choreoAuto": false
 }

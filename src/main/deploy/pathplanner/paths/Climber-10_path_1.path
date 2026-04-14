@@ -8,36 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.555211271898183,
-        "y": 0.6547516937046386
+        "x": 4.427218259629101,
+        "y": 0.6515406562054205
       },
       "isLocked": false,
       "linkedName": "Climber-8_path_1start"
     },
     {
       "anchor": {
-        "x": 5.258294871794873,
-        "y": 0.65
+        "x": 6.096305278174036,
+        "y": 0.7
       },
       "prevControl": {
-        "x": 5.008345270630818,
-        "y": 0.6550196491839166
-      },
-      "nextControl": {
-        "x": 5.508244472958928,
-        "y": 0.6449803508160834
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.014128205128206,
-        "y": 0.8139871794871807
-      },
-      "prevControl": {
-        "x": 5.783719361343691,
-        "y": 0.7169729294726468
+        "x": 6.096305278174036,
+        "y": 0.4500000000000002
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,11 +30,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.20175438596491052,
+      "waypointRelativePos": 0.1,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0.0
     }
   ],
@@ -65,7 +49,7 @@
     },
     {
       "name": "intake on",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.25,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -80,13 +64,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 73.323
+    "rotation": 61.57433124165239
   },
   "reversed": false,
   "folder": "Climber_path_10",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -107.95
+    "rotation": 77.09309528894875
   },
   "useDefaultConstraints": false
 }

@@ -51,7 +51,7 @@ public class Robot extends LoggedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     // CameraServer.startAutomaticCapture("ShooterRight_Camera", 1);
-    // CameraServer.startAutomaticCapture("ShooterLeft_Camera", 0);
+    // CameraServer.startAutomaticCapture("ShooterLeft_Camera1", 0);
 
   }
 
