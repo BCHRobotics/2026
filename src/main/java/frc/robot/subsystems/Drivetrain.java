@@ -511,7 +511,7 @@ public class Drivetrain extends SubsystemBase {
   /** Returns the robot heading as a Rotation2d. Always authoritative source. */
   public Rotation2d getRotation2d() {
       // NavX upside-down mounting already corrects for CCW
-      return Rotation2d.fromDegrees(gyro.getAngle());
+      return Rotation2d.fromDegrees(-gyro.getAngle());
   }
 
   /** Returns the robot heading in degrees. */

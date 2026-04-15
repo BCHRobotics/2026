@@ -64,11 +64,6 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    boolean currentHubActive = DriverStationState.refreshHubActive();
-    if (!previousHubActive && currentHubActive && DriverStation.isTeleopEnabled()) {
-      m_robotContainer.rumbleHubActiveTransition();
-    }
-    previousHubActive = currentHubActive;
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
@@ -81,6 +76,10 @@ public class Robot extends LoggedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    //Stop hubtimer
+    m_robotContainer.stopMatchTimer();
+    m_robotContainer.setTeleopEnabled(false);
+    
   }
 
   /** This function is called periodically during Disabled mode. */
@@ -97,6 +96,10 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+    // Ensure teleop toggle is disabled during autonomous
+    m_robotContainer.setTeleopEnabled(false);
+    // Start the autonomous timer (AUTO phase)
+    m_robotContainer.startAutonomousTimer();
   }
 
   /** This function is called periodically during autonomous. */
@@ -115,6 +118,10 @@ public class Robot extends LoggedRobot {
     }
 
     CommandScheduler.getInstance().schedule(m_robotContainer.getTeleopInitCommand());
+
+  // Enable teleop toggle and start the teleop timer (begin at TRANSITION)
+  m_robotContainer.setTeleopEnabled(true);
+  m_robotContainer.startTeleopTimer();
   }
 
   /** This function is called periodically during operator control. */
@@ -132,3 +139,5 @@ public class Robot extends LoggedRobot {
   @Override
   public void testPeriodic() {}
 }
+
+    	// Start transition phase when teleop starts (remaining shifts/endgame run afterward)

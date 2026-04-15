@@ -24,8 +24,6 @@ import frc.robot.Constants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,9 +51,13 @@ public class RobotContainer {
     // Vision subsystem for AprilTag detection and pose estimation.
     private final Vision vision = new Vision(robotDrive);
 
-    private final Timer hubTimer = new Timer();
-    private boolean timerRunning = false;
-    private static final double timerDuration = 25.0;
+    // Encapsulated match timer logic
+    private final MatchTimer matchTimer = new MatchTimer();
+    // Make hubTimerTrigger a field so we can sample its state elsewhere
+    private Trigger hubTimerTrigger;
+    // Teleop and shift toggle state
+    private boolean teleopEnabled = false;
+    private boolean shiftToggle = false; // latched: toggled once per touchpad press during teleop
     
     // Controllers
     CommandPS5Controller driverPS5;
@@ -300,8 +302,8 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-        Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
-        Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseIntakeAndFeeder, hubTimerTrigger;
+    Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
+    Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseIntakeAndFeeder;
         DoubleSupplier leftY, leftX;
 
         if (driverPS5 != null) {
@@ -352,6 +354,17 @@ public class RobotContainer {
             hubTimerTrigger = operatorXbox.leftBumper();
         }
 
+        // Toggle the shift selection on a single press, but only when teleop is enabled
+        // and the press happens during TRANSITION (so the selection is decided before shifts).
+        hubTimerTrigger.onTrue(
+            Commands.runOnce(() -> {
+                // When pressed during TRANSITION, select SHIFT1 & SHIFT3.
+                if (teleopEnabled && matchTimer.isInTransitionPhase()) {
+                    shiftToggle = true;
+                }
+            })
+        );
+
         // Main controller commands
 
         zeroHeading.onTrue(new ZeroHeadingCommand(robotDrive));
@@ -388,13 +401,6 @@ public class RobotContainer {
         climberRetract.whileTrue(Commands.startEnd(climber::retractClimber, climber::stop, climber));
         vortexSpeedShot.whileTrue(new VortexSpeedShotCommand(m_shooter));
         reverseIntakeAndFeeder.whileTrue(new ReverseBallIntakeAndFeederCommand(m_ballIntake, m_shooter));
-        hubTimerTrigger.onTrue(
-            Commands.runOnce(() -> {
-                hubTimer.reset();
-                hubTimer.start();
-                timerRunning = true;
-            })
-        );
     }
 
     /**
@@ -451,35 +457,52 @@ public class RobotContainer {
             );
     }
 
-    public void rumbleHubActiveTransition() {
-        CommandScheduler.getInstance().schedule(
-            Commands.startEnd(
-                    () -> setDriverRumble(1.0),
-                    () -> setDriverRumble(0.0))
-                .withTimeout(3.0));
+    /**
+     * Start the match timer if it is not already running.
+     * This is public so Robot mode init methods can start the timer automatically.
+     */
+    public void startMatchTimer() {
+        // Start AUTO phase from beginning
+        matchTimer.start();
     }
 
-    private void setDriverRumble(double intensity) {
-        if (driverPS5 != null) {
-            driverPS5.getHID().setRumble(RumbleType.kLeftRumble, intensity);
-            driverPS5.getHID().setRumble(RumbleType.kRightRumble, intensity);
-        } else if (driverXbox != null) {
-            driverXbox.getHID().setRumble(RumbleType.kBothRumble, intensity);
+    /** Start the timer at the beginning of TRANSITION (used when teleop begins). */
+    public void startMatchTimerTransition() {
+        matchTimer.startTransition();
+    }
+
+    /** Stop the match timer (used when disabled). */
+    public void stopMatchTimer() {
+        matchTimer.stop();
+    }
+
+    /**
+     * Convenience API: start the autonomous timer (AUTO phase).
+     */
+    public void startAutonomousTimer() {
+        startMatchTimer();
+    }
+
+    /**
+     * Convenience API: start the teleop timer beginning at TRANSITION.
+     */
+    public void startTeleopTimer() {
+        startMatchTimerTransition();
+    }
+
+    /** Set whether the robot is in teleop mode (enables the shift toggle input). */
+    public void setTeleopEnabled(boolean enabled) {
+        teleopEnabled = enabled;
+        if (!enabled) {
+            // reset latch when leaving teleop (optional)
+            // shiftToggle = false;
         }
     }
+
+
 
     public void updateTimerDashboard() {
-        double timeLeft;
-        if (timerRunning) {
-            timeLeft = timerDuration - hubTimer.get();
-            if (timeLeft <= 0) {
-                timeLeft = 0;
-                hubTimer.stop();
-                timerRunning = false;
-            }
-        } else {
-            timeLeft = 0;
-        }
-        SmartDashboard.putNumber("Hub Timer", timeLeft);
+        // Pass the latched shift toggle into the MatchTimer so shifts use the toggled mapping.
+        matchTimer.updateDashboard(shiftToggle);
     }
 }

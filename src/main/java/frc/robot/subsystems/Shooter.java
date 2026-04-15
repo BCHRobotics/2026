@@ -281,7 +281,7 @@ public class Shooter extends SubsystemBase {
         double clampedDistance = Math.max(MIN_DISTANCE, Math.min(MAX_DISTANCE, distanceFromHub));
 
         // Linear interpolation
-        double rpm = MIN_RPM + (clampedDistance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE) * (MAX_RPM - MIN_RPM);
+        double rpm = (MIN_RPM + (clampedDistance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE) * (MAX_RPM - MIN_RPM)) * 1.00;
 
         return rpm;
     }
@@ -369,7 +369,7 @@ public class Shooter extends SubsystemBase {
         } else if (isShooterActive) {
             // Delegate PID calculation to the SPARK MAX (runs at 1 kHz on-board)
             flywheelController1.setSetpoint(ShooterConstants.targetRpm, ControlType.kVelocity);
-            if (isCharged() && shooterSpinTimer.hasElapsed(1.0)) {  // Add a short delay after reaching target RPM
+            if (isCharged() && shooterSpinTimer.hasElapsed(0.5)) {  // Add a short delay after reaching target RPM
                 feederOutput = currentFeederSpeed;
             }
         } else if (isFeederReversed) {
