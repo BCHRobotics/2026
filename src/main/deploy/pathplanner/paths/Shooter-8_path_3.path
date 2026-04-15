@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.982,
-        "y": 2.631
+        "x": 2.2794008559201138,
+        "y": 2.7605420827389446
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3866666950935223,
-        "y": 3.831902240036386
+        "x": 2.6840675510136363,
+        "y": 3.9614443227753307
       },
       "isLocked": false,
       "linkedName": "Climber-6_path_5end"
@@ -53,7 +53,7 @@
   "folder": "Shooter_path_8",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -149.251
+    "rotation": -151.879
   },
   "useDefaultConstraints": true
 }

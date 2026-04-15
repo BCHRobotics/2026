@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.982,
-        "y": 2.631
+        "x": 2.2794008559201138,
+        "y": 2.7605420827389446
       },
       "prevControl": {
-        "x": 1.7956144990170755,
-        "y": 2.412676513328836
+        "x": 2.0930153549371893,
+        "y": 2.542218596067781
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -149.251
+    "rotation": -151.879
   },
   "reversed": false,
   "folder": "Shooter_path_5",
