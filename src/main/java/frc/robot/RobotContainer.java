@@ -122,10 +122,6 @@ public class RobotContainer {
         autoChooser.addOption("S8CLT_Auto", new PathPlannerAuto("S8CLT_Auto"));
         autoChooser.addOption("S8CRT_Auto", new PathPlannerAuto("S8CRT_Auto"));
         autoChooser.addOption("S8CRM_Auto", new PathPlannerAuto("S8CRM_Auto"));
-        // autoChooser.addOption("Climber-7_Auto", new PathPlannerAuto("Climber-7_Auto"));
-        // autoChooser.addOption("Climber-8_Auto", new PathPlannerAuto("Climber-8_Auto"));
-        // autoChooser.addOption("Climber-9_Auto", new PathPlannerAuto("Climber-9_Auto"));
-        // autoChooser.addOption("Climber-10_Auto", new PathPlannerAuto("Climber-10_Auto"));
 
         // Auto Paths without Climb (only shoot)
         // Commented out the autos that use Depot:
@@ -134,17 +130,18 @@ public class RobotContainer {
         // autoChooser.addOption("DSOSL_Auto", new PathPlannerAuto("DSOSL_Auto"));
         // autoChooser.addOption("DSOSM_Auto", new PathPlannerAuto("DSOSM_Auto"));
         // autoChooser.addOption("OSDSR_Auto", new PathPlannerAuto("OSDSR_Auto"));
-
         autoChooser.addOption("OSRT_Auto", new PathPlannerAuto("OSRT_Auto"));
         autoChooser.addOption("OSRB_Auto", new PathPlannerAuto("OSRB_Auto"));
         autoChooser.addOption("OSM_Auto", new PathPlannerAuto("OSM_Auto"));
         autoChooser.addOption("S8L_Auto", new PathPlannerAuto("S8L_Auto"));
         autoChooser.addOption("S8M_Auto", new PathPlannerAuto("S8M_Auto"));
         autoChooser.addOption("S8R_Auto", new PathPlannerAuto("S8R_Auto"));
+
+        // Auto paths in neutral zone with Climb
+        autoChooser.addOption("NBSCRT_Auto", new PathPlannerAuto("NBSCRT_Auto"));
         
         // Safety null option
         autoChooser.addOption("None", Commands.none());
-        
 
         // Put the chooser on SmartDashboard for driver selection
         SmartDashboard.putData("Auto Mode", autoChooser);

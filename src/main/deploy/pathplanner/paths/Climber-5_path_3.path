@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9326282051282067,
-        "y": 2.4419358974358976
+        "x": 1.982,
+        "y": 2.631
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6535512820512839,
-        "y": 2.5000769230769233
+        "x": 1.7029230769230772,
+        "y": 2.6891410256410255
       },
       "isLocked": false,
       "linkedName": "Climber-6_path_5end"
@@ -20,7 +20,7 @@
         "y": 2.2
       },
       "prevControl": {
-        "x": 1.5488968542915125,
+        "x": 1.5488968542915122,
         "y": 2.106971264877702
       },
       "nextControl": null,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 4.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -50,5 +50,5 @@
     "velocity": 0,
     "rotation": -149.251
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

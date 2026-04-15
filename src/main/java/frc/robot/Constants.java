@@ -117,7 +117,7 @@ public final class Constants {
     
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
-      true,  // ShooterLeft_Camera
+      true,  // ShooterLeft_Camera1
       true,  // ShooterRight_Camera
       // true,  // Rear_Left_Camera
       // true,   // Rear_Right_Camera
@@ -125,7 +125,7 @@ public final class Constants {
     
     // Camera names
     public static final String[] kCameraNames = {
-      "ShooterLeft_Camera",  //ShooterLeft_Camera; facing robot forward, intake side
+      "ShooterLeft_Camera1",  //ShooterLeft_Camera1; facing robot forward, intake side
       "ShooterRight_Camera",  //ShooterRight_Camera
       // "Rear_Left_Camera",  // Rear_Left_Camera
       // "Rear_Right_Camera"   // Rear_Right_Camera
@@ -133,7 +133,7 @@ public final class Constants {
     
     // Transforms from robot center to each camera (in meters and radians)
     public static final Transform3d[] kRobotToCams = {
-      // ShooterLeft_Camera
+      // ShooterLeft_Camera1
       new Transform3d(
         new Translation3d(Units.inchesToMeters(-11.475), Units.inchesToMeters(11.253), Units.inchesToMeters(20.783)),
         new Rotation3d(0, 0, Math.toRadians(150))
