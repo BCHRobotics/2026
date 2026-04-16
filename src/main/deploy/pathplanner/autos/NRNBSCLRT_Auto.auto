@@ -1,0 +1,133 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector-1_path_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector3_path_1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "reverse on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "reverse off"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector3_path_2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector3_path_3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "reverse on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "climber on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "reverse off"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Collector_Autos",
+  "choreoAuto": false
+}

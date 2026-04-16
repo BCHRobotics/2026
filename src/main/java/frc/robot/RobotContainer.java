@@ -139,6 +139,7 @@ public class RobotContainer {
         // Auto paths in neutral zone with Climb
         autoChooser.addOption("NBSCRT_Auto", new PathPlannerAuto("NBSCRT_Auto"));
         autoChooser.addOption("NTSOSRB_Auto", new PathPlannerAuto("NTSOSRB_Auto"));
+        autoChooser.addOption("NRNBSCLRT_Auto ", new PathPlannerAuto("NRNBSCLRT_Auto "));
         
         // Safety null option
         autoChooser.addOption("None", Commands.none());
@@ -243,8 +244,13 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "reverse on", 
                 new ReverseBallIntakeAndFeederCommand(m_ballIntake, m_shooter)
-                    .withTimeout(3.5)
                 );
+        NamedCommands.registerCommand(
+                "reverse off", 
+                Commands.runOnce(() -> {
+                    m_ballIntake.stopReverseRun();
+                    m_shooter.stopReverseFeeder();
+                }, m_shooter, m_ballIntake));
     }
 
     private Pose2d getSelectedClimbStartPose() {
@@ -500,8 +506,6 @@ public class RobotContainer {
             // shiftToggle = false;
         }
     }
-
-
 
     public void updateTimerDashboard() {
         // Pass the latched shift toggle into the MatchTimer so shifts use the toggled mapping.
