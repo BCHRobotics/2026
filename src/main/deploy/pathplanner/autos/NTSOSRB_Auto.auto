@@ -1,0 +1,115 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "intake on"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector2_path_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector-1_path_1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector2_path_2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector2_path_3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector2_path_4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Collector2_path_5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climber-5_path_2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter on"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Collector_Autos",
+  "choreoAuto": false
+}

@@ -1,0 +1,95 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.723474358974359,
+        "y": 0.709333333333334
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.97895167824074,
+        "y": 2.198758029513889
+      },
+      "isLocked": false,
+      "linkedName": "neutral_right_1"
+    },
+    {
+      "anchor": {
+        "x": 7.534833984375,
+        "y": 3.6901510416666667
+      },
+      "prevControl": {
+        "x": 8.260893446180555,
+        "y": 3.4410998263888897
+      },
+      "nextControl": {
+        "x": 6.797032486883366,
+        "y": 3.9432299825114114
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.560845630787037,
+        "y": 2.1389868344907406
+      },
+      "prevControl": {
+        "x": 6.855305700231481,
+        "y": 2.74686841724537
+      },
+      "nextControl": {
+        "x": 6.14146655108344,
+        "y": 1.273223204042024
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.73172533275463,
+        "y": 0.709333333333334
+      },
+      "prevControl": {
+        "x": 5.481770852296562,
+        "y": 0.7141038363400878
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 100.0
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 110.78124535789364
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.4,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Collector2_path",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": false
+}
