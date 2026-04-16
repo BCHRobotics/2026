@@ -12,7 +12,6 @@ import frc.robot.commands.ballintake.CalibrateBallIntakeCommand;
 import frc.robot.commands.ballintake.HoldBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ReverseBallIntakeAndFeederCommand;
-import frc.robot.commands.ballintake.ToggleBallIntakeandFeederCommand;
 import frc.robot.commands.climber.CalibrateClimberCommand;
 import frc.robot.commands.climber.ClimbCommand;
 import frc.robot.subsystems.BallIntake;
@@ -240,6 +239,12 @@ public class RobotContainer {
                 Commands.runOnce(() ->  {
                     m_ballIntake.JiggleIntake();
                 }, m_ballIntake));
+
+        NamedCommands.registerCommand(
+                "Reverse Intake and Feeder", 
+                new ReverseBallIntakeAndFeederCommand(m_ballIntake, m_shooter)
+                    .withTimeout(1.0)
+                );
     }
 
     private Pose2d getSelectedClimbStartPose() {
