@@ -79,6 +79,18 @@
         {
           "type": "wait",
           "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "jiggle on"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
             "waitTime": 0.0
           }
         },
@@ -92,6 +104,12 @@
           "type": "path",
           "data": {
             "pathName": "Collector2_path_5"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.35
           }
         },
         {

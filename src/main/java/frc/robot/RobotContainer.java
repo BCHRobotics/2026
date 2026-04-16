@@ -138,6 +138,7 @@ public class RobotContainer {
 
         // Auto paths in neutral zone with Climb
         autoChooser.addOption("NBSCRT_Auto", new PathPlannerAuto("NBSCRT_Auto"));
+        autoChooser.addOption("NTSOSRB_Auto", new PathPlannerAuto("NTSOSRB_Auto"));
         
         // Safety null option
         autoChooser.addOption("None", Commands.none());
