@@ -135,12 +135,6 @@
           "data": {
             "name": "shooter off"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "OSR-Turn"
-          }
         }
       ]
     }
