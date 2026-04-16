@@ -239,11 +239,10 @@ public class RobotContainer {
                 Commands.runOnce(() ->  {
                     m_ballIntake.JiggleIntake();
                 }, m_ballIntake));
-
         NamedCommands.registerCommand(
-                "Reverse Intake and Feeder", 
+                "reverse on", 
                 new ReverseBallIntakeAndFeederCommand(m_ballIntake, m_shooter)
-                    .withTimeout(1.0)
+                    .withTimeout(3.5)
                 );
     }
 
