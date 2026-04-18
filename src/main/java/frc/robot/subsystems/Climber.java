@@ -20,7 +20,7 @@ import frc.robot.Constants.ClimbConstants;
 
 public class Climber extends SubsystemBase {
   private static final double kRobotLoopPeriodSeconds = 0.02;
-  private static final double kMotionTimeoutSeconds = 5.0;
+  private static final double kMotionTimeoutSeconds = 2.0;
   private static final int kCurrentAverageSamples = Math.max(
       1,
       (int) Math.round(ClimbConstants.kCurrentAverageWindowSeconds / kRobotLoopPeriodSeconds));

@@ -111,7 +111,7 @@ public class ClimbCommand extends Command {
   public void execute() {
     
     if (phase == Phase.ALIGNING_TO_START) {
-      if (driveToPose(startPose) || approachTimer.hasElapsed(5.0)){
+      if (driveToPose(startPose) || approachTimer.hasElapsed(2.0)){
         drivetrain.setChassisSpeeds(new ChassisSpeeds());
         // if (climber.isExtendLimitReached()) {
         //   phase = Phase.APPROACHING_CLIMB;
