@@ -123,8 +123,9 @@ public class RobotContainer {
         autoChooser.addOption("S8CRM_Auto", new PathPlannerAuto("S8CRM_Auto"));
 
         // Auto Paths without Climb (only shoot)
-        // Commented out the autos that use Depot:
-        // autoChooser.addOption("DSL_Auto", new PathPlannerAuto("DSL_Auto"));
+
+        autoChooser.addOption("DSL_Auto", new PathPlannerAuto("DSL_Auto"));
+        autoChooser.addOption("DSCLB_Auto", new PathPlannerAuto("DSCLB_Auto"));
         // autoChooser.addOption("DSM_Auto", new PathPlannerAuto("DSM_Auto"));
         // autoChooser.addOption("DSOSL_Auto", new PathPlannerAuto("DSOSL_Auto"));
         // autoChooser.addOption("DSOSM_Auto", new PathPlannerAuto("DSOSM_Auto"));

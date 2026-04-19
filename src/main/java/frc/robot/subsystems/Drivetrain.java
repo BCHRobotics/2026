@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
 public class Drivetrain extends SubsystemBase {
+  
   // Create MAXSwerveModules
   // front left wheel
   private final MAXSwerveModule frontLeftModule = new MAXSwerveModule(
@@ -164,6 +165,7 @@ public class Drivetrain extends SubsystemBase {
   // Creates a new Drivetrain subsystem
   public Drivetrain() {
     configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
+    SmartDashboard.putBoolean("Flip Gyro", true);
   }
 
   /**
@@ -510,8 +512,14 @@ public class Drivetrain extends SubsystemBase {
 
   /** Returns the robot heading as a Rotation2d. Always authoritative source. */
   public Rotation2d getRotation2d() {
-      // NavX upside-down mounting already corrects for CCW
-      return Rotation2d.fromDegrees(-gyro.getAngle());
+    boolean invert = SmartDashboard.getBoolean("Flip Gyro", true);
+    double angle = gyro.getAngle();
+
+    if (invert) {
+      angle = -angle;
+    }
+    return Rotation2d.fromDegrees(angle);
+      
   }
 
   /** Returns the robot heading in degrees. */
