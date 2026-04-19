@@ -23,3 +23,6 @@ public final class Main {
     RobotBase.startRobot(Robot::new);
   }
 }
+// if (lose) {
+//  don't 
+// }
