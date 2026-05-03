@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.commands.drivetrain.PointRearToAllianceHubCommand;
 import frc.robot.commands.drivetrain.TeleopDriveCommand;
 import frc.robot.commands.drivetrain.VisionTuningPath;
+import frc.robot.commands.drivetrain.PathfindToPoseCommand;
 import frc.robot.commands.drivetrain.ZeroHeadingCommand;
 import frc.robot.commands.shooter.ShootCommand;
 import frc.robot.commands.shooter.VortexSpeedShotCommand;
@@ -71,6 +72,9 @@ public class RobotContainer {
     // Field pose chooser — selects where the robot drives when the pose-nav button
     // is held
     private final SendableChooser<Pose2d> fieldPoseChooser = new SendableChooser<>();
+
+    // PathfindToPose chooser — 4 preset field positions selectable from SmartDashboard
+    private final SendableChooser<Pose2d> pathfindPoseChooser = new SendableChooser<>();
     private final SendableChooser<Pose2d> climbStartPoseChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppTranslationPidChooser = new SendableChooser<>();
     private final SendableChooser<PIDConstants> ppRotationPidChooser = new SendableChooser<>();
@@ -112,7 +116,11 @@ public class RobotContainer {
         configureIntakeOverrideChooser();
         configureVisionTuning();
         configureDashboardCommands();
+        configurePathfindPoseChooser();
         registerPathPlannerCommands();
+
+        // Ensure AutoBuilder is configured for teleop pathfinding (safe to call multiple times)
+        robotDrive.configureAutoBuilder(AutoConstants.translationConstants, AutoConstants.rotationConstants);
 
         // Auto Paths with Climb 
         autoChooser.addOption("OSCRT_Auto", new PathPlannerAuto("OSCRT_Auto"));
@@ -153,6 +161,38 @@ public class RobotContainer {
      * them automatically when the DriverStation reports red alliance:
      * red_x = fieldLength - x, red_y = fieldWidth - y, red_heading = 180 - heading
      */
+    /**
+     * Populates and publishes the pathfind target pose chooser on SmartDashboard.
+     *
+     * <p>Four preset blue-alliance-relative field positions are provided.
+     * The driver selects a target before holding the pathfind button (L1 / left bumper).
+     */
+    private void configurePathfindPoseChooser() {
+        pathfindPoseChooser.setDefaultOption(
+            "Blue Wing Center",
+            new Pose2d(2.0, 4.1, Rotation2d.fromDegrees(0)));
+        pathfindPoseChooser.addOption(
+            "Blue Stage Left",
+            new Pose2d(4.5, 6.5, Rotation2d.fromDegrees(0)));
+        pathfindPoseChooser.addOption(
+            "Blue Stage Right",
+            new Pose2d(4.5, 1.7, Rotation2d.fromDegrees(0)));
+        pathfindPoseChooser.addOption(
+            "Center Field",
+            new Pose2d(8.27, 4.1, Rotation2d.fromDegrees(180)));
+
+        SmartDashboard.putData("PathFind Target Pose", pathfindPoseChooser);
+    }
+
+    /**
+     * Returns the currently selected pathfind target pose.
+     * Falls back to Blue Wing Center if the chooser has not been initialised.
+     */
+    private Pose2d getSelectedPathfindPose() {
+        Pose2d selected = pathfindPoseChooser.getSelected();
+        return selected != null ? selected : new Pose2d(2.0, 4.1, Rotation2d.fromDegrees(0));
+    }
+
     private void configureClimbStartPoseChooser() {
         // These poses are predefined constants so the team can place the robot at known climb
         // Select positions from SmartDashboard before running the command.
@@ -303,7 +343,7 @@ public class RobotContainer {
     // Configures button and trigger bindings for controllers.
     private void configureBindings() {
 
-    Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger;
+    Trigger pointRearToHub, intakeToggle, zeroHeading, extendToggle, shootTrigger, turboSpeedTrigger, pathfindTrigger;
     Trigger killshooter, killIntake, climberExtend, climberRetract, vortexSpeedShot, jiggleIntake, calibrateIntake, holdIntakeExtend, holdIntakeRetract, reverseIntakeAndFeeder;
         DoubleSupplier leftY, leftX;
 
@@ -314,6 +354,7 @@ public class RobotContainer {
             extendToggle = driverPS5.cross();
             turboSpeedTrigger = driverPS5.R1();
             shootTrigger = driverPS5.R2().or(driverPS5.L2());
+            pathfindTrigger = driverPS5.L1();
 
             leftY = () -> -driverPS5.getLeftY();
             leftX = () -> -driverPS5.getLeftX();
@@ -324,6 +365,7 @@ public class RobotContainer {
             extendToggle = driverXbox.a();
             turboSpeedTrigger = driverXbox.rightBumper();
             shootTrigger = driverXbox.rightTrigger().or(driverXbox.leftTrigger());;
+            pathfindTrigger = driverXbox.leftBumper();
 
             leftY = () -> -driverXbox.getLeftY();
             leftX = () -> -driverXbox.getLeftX();
@@ -373,6 +415,7 @@ public class RobotContainer {
         extendToggle.onTrue(new ToggleBallIntakeExtendCommand(m_ballIntake));
 
         pointRearToHub.whileTrue(new PointRearToAllianceHubCommand(robotDrive));
+        pathfindTrigger.whileTrue(new PathfindToPoseCommand(robotDrive, this::getSelectedPathfindPose));
         shootTrigger.whileTrue(new ShootCommand(m_shooter));
         turboSpeedTrigger.whileTrue(
             Commands.startEnd(
