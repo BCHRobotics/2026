@@ -379,10 +379,20 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
-    // Shooter tuning
-    //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
-    public static double targetRpm   = 1500.0;
-    public static double readyRpm    = targetRpm * 0.98;   // Minimum RPM before feeder activates
+  // Shooter tuning
+  //public static double distance = 2.0;     // Distance to target (for feedforward compensation)
+  // Original dynamic target RPM (kept commented for reference):
+  // public static double targetRpm   = 1500.0;
+
+  // Fixed target RPM support (preferred):
+  // Default fixed RPM value (edit as needed)
+  public static final double FIXED_TARGET_RPM = 2500.0;
+  // Mutable fixed RPM that can be tuned at runtime via SmartDashboard
+  public static double fixedTargetRpm = FIXED_TARGET_RPM;
+  // Active target RPM used by the subsystem (initially set to the fixed RPM)
+  public static double targetRpm   = fixedTargetRpm;
+
+  public static double readyRpm    = targetRpm * 0.98;   // Minimum RPM before feeder activates
     public static double feederSpeed = 1.0;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 

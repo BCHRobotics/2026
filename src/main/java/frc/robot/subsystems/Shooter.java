@@ -84,6 +84,8 @@ public class Shooter extends SubsystemBase {
         // SmartDashboard.putNumber("Shooter/MaxOutput", ShooterConstants.maxOutput);
         // SmartDashboard.putNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
         // SmartDashboard.putNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
+        // Publish the fixed RPM tunable so it can be changed at runtime
+        SmartDashboard.putNumber("Shooter/FixedTargetRPM", ShooterConstants.fixedTargetRpm);
     }
 
     private void publishTelemetry() {
@@ -270,6 +272,9 @@ public class Shooter extends SubsystemBase {
      * @return the target RPM for the shooter flywheel
      */
     public double calculateRpmFromDistance(double distanceFromHub) {
+        // Distance-based calculation retained for reference but not used when fixed RPM is enabled.
+        // The original implementation is commented out below so it remains in the file.
+        /*
         // Linear interpolation model: RPM increases with distance
         // Adjust these constants based on your shooter's ballistics
         final double MIN_DISTANCE = 1.0;      // Minimum shooting distance (meters)
@@ -284,6 +289,9 @@ public class Shooter extends SubsystemBase {
         double rpm = (MIN_RPM + (clampedDistance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE) * (MAX_RPM - MIN_RPM)) * 1.00;
 
         return rpm;
+        */
+        // When called, return the fixed target RPM (for safety)
+        return ShooterConstants.fixedTargetRpm;
     }
 
     private Translation2d getAllianceHubCenter() {
@@ -319,8 +327,14 @@ public class Shooter extends SubsystemBase {
         double readyRpm = SmartDashboard.getNumber("Shooter/ReadyRPM", ShooterConstants.readyRpm);
         double feederSpeed = SmartDashboard.getNumber("Shooter/FeederSpeed", ShooterConstants.feederSpeed);
 
-        double hubdistance = getHubDistance();
-        ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
+    // Preserve original distance-based behavior for reference (commented out)
+    // double hubdistance = getHubDistance();
+    // ShooterConstants.targetRpm = calculateRpmFromDistance(hubdistance);
+
+    // Use a tunable fixed RPM from SmartDashboard
+    double fixedRpm = SmartDashboard.getNumber("Shooter/FixedTargetRPM", ShooterConstants.fixedTargetRpm);
+    ShooterConstants.fixedTargetRpm = fixedRpm;
+    ShooterConstants.targetRpm = ShooterConstants.fixedTargetRpm;
 
         ShooterConstants.readyRpm = readyRpm;
         ShooterConstants.feederSpeed = feederSpeed;        
