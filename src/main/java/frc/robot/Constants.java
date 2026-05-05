@@ -392,7 +392,8 @@ public final class Constants {
   // Active target RPM used by the subsystem (initially set to the fixed RPM)
   public static double targetRpm   = fixedTargetRpm;
 
-  public static double readyRpm    = targetRpm * 0.98;   // Minimum RPM before feeder activates
+  // public static double readyRpm    = targetRpm * 0.98;   // Minimum RPM before feeder activates
+    public static double readyRpm    = FIXED_TARGET_RPM;   // Minimum RPM is the same as target RPM for fixed RPM mode
     public static double feederSpeed = 1.0;      // Feeder open-loop duty cycle [0, 1]
     public static double maxOutput   = 0.85;     // Maximum closed-loop output [0, 1]
 
