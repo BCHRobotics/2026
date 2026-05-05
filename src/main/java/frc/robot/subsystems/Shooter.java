@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
     // (vs. 50 Hz if run on the RoboRIO with WPILib PIDController)
     private final SparkClosedLoopController flywheelController1;
 
-    private static final double IDLE_RPM = 1500.0;
+    private static final double IDLE_RPM = 500.0;
     private static final double VORTEX_SPEED_SHOT_TARGET_RPM = VortexMotorConstants.kFreeSpeedRpm * 0.95;
     private static final double VORTEX_SPEED_SHOT_READY_RPM = VORTEX_SPEED_SHOT_TARGET_RPM * 0.50;
 
