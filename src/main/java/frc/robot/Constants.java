@@ -117,8 +117,8 @@ public final class Constants {
     
     // Camera enable flags
     public static final boolean[] kCamerasEnabled = {
-      true,  // ShooterLeft_Camera1
-      true,  // ShooterRight_Camera
+      false,  // ShooterLeft_Camera1
+      false,  // ShooterRight_Camera
       // true,  // Rear_Left_Camera
       // true,   // Rear_Right_Camera
     };
