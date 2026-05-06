@@ -386,7 +386,7 @@ public final class Constants {
 
   // Fixed target RPM support (preferred):
   // Default fixed RPM value (edit as needed)
-  public static final double FIXED_TARGET_RPM = 2500.0;
+  public static final double FIXED_TARGET_RPM = 1000.0;
   // Mutable fixed RPM that can be tuned at runtime via SmartDashboard
   public static double fixedTargetRpm = FIXED_TARGET_RPM;
   // Active target RPM used by the subsystem (initially set to the fixed RPM)
