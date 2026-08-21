@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import frc.robot.utils.AllianceFlipUtil;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -392,6 +393,8 @@ public final class Constants {
     public static final double kDriveForwardDistanceMeters = Units.inchesToMeters(20.0);
     public static final double kDriveMaxSpeedMetersPerSecond = 0.5;
 
+    // Blue-side start poses are the AUTHORED constants (measured from the field
+    // walls, converted to WPILib field coordinates).
     public static final Pose2d kBlueRightStartPose = new Pose2d(
         kStartDistanceFromEndWallMeters,
         NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
@@ -400,14 +403,29 @@ public final class Constants {
         kStartDistanceFromEndWallMeters,
         kStartDistanceFromSideWallMeters,
         Rotation2d.fromDegrees(90.0));
-    public static final Pose2d kRedLeftStartPose = new Pose2d(
-        NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
-        kStartDistanceFromSideWallMeters,
-        Rotation2d.fromDegrees(90.0));
-    public static final Pose2d kRedRightStartPose = new Pose2d(
-        NavigationConstants.kFieldLength - kStartDistanceFromEndWallMeters,
-        NavigationConstants.kFieldWidth - kStartDistanceFromSideWallMeters,
-        Rotation2d.fromDegrees(90.0));
+
+    // =====================================================================
+    // CHANGE (AllianceFlipUtil fix): the red start poses are now GENERATED
+    // by mirroring the blue poses through AllianceFlipUtil.flip(), instead
+    // of being typed out by hand.
+    //
+    // Why: the old hand-written red poses were internally inconsistent —
+    // one of them was effectively the mirror of the WRONG blue pose, and
+    // another had a heading that didn't match any mirror rule. Because every
+    // heading here is straight up/down the field, the usual "180 - heading"
+    // mistake happened to be invisible; a diagonal target would not have been.
+    //
+    // Mirroring rotates the whole field 180 degrees about its center:
+    //   x -> FIELD_LENGTH - x,   y -> FIELD_WIDTH - y,   heading -> heading + 180
+    // so red now behaves EXACTLY like blue, just seen from the other wall.
+    // If your drive team's "Red Left"/"Red Right" labels mean the opposite
+    // handedness, swap which blue pose feeds which red constant below —
+    // that's the only knob.
+    // =====================================================================
+    public static final Pose2d kRedLeftStartPose = AllianceFlipUtil.flip(kBlueLeftStartPose);
+    public static final Pose2d kRedRightStartPose = AllianceFlipUtil.flip(kBlueRightStartPose);
+
+    // Practice-field pose: alliance-independent spot used at the shop.
     public static final Pose2d PracticePose = new Pose2d(
         16 - 2.959,
         3.948,        

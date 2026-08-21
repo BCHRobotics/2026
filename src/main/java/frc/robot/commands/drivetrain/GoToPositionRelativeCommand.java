@@ -8,19 +8,25 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.NavigationConstants;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.utils.AllianceFlipUtil;
 
 /**
  * Command to drive the robot to a specified position on the field with alliance-relative coordinates.
  * Uses PID control to navigate to the target X, Y coordinates with a specified rotation.
- * 
+ *
  * Alliance-Relative Coordinates:
- * - For Blue Alliance: (0, 0) is at the blue alliance corner (standard FRC coordinates)
- * - For Red Alliance: (0, 0) is mirrored to the opposite diagonal corner
- *   - X coordinates are mirrored: red_x = FIELD_LENGTH - blue_x
- *   - Y coordinates are mirrored: red_y = FIELD_WIDTH - blue_y
- *   - Rotation is mirrored: red_rotation = 180 - blue_rotation
- * 
- * This allows autonomous routines to use the same coordinates regardless of alliance color.
+ * - Author every target in the BLUE frame, then let AllianceFlipUtil mirror it.
+ * - For red, the whole field rotates 180 degrees around its center:
+ *   red_x = FIELD_LENGTH - blue_x
+ *   red_y = FIELD_WIDTH  - blue_y
+ *   red_heading = blue_heading + 180 degrees
+ *
+ * CHANGE (AllianceFlipUtil fix): this command used to hand-roll its own
+ * mirroring and got the rotation wrong — "180 - heading" instead of
+ * "heading + 180". For straight up/down targets (0/90/180/270 degrees) the
+ * two happen to agree, but any DIAGONAL heading landed pointing the wrong way
+ * on red. All mirroring now lives in one place (frc.robot.utils.AllianceFlipUtil)
+ * with unit tests proving flip(flip(x)) == x.
  */
 public class GoToPositionRelativeCommand extends Command {
     private final Drivetrain m_drivetrain;
@@ -93,31 +99,17 @@ public class GoToPositionRelativeCommand extends Command {
 
     /**
      * Converts alliance-relative coordinates to field-absolute coordinates.
-     * 
-     * Blue Alliance: No conversion needed (0,0 is already at blue corner)
-     * Red Alliance: Mirror across field diagonal
-     *   - X: field_length - relative_x
-     *   - Y: field_width - relative_y
-     *   - Rotation: 180 - relative_rotation (facing opposite direction)
+     *
+     * CHANGE (AllianceFlipUtil fix): the mirroring math moved into
+     * AllianceFlipUtil.apply(pose, alliance) — see the class comment above for
+     * why "180 - rotation" was replaced with "+180".
      * 
      * @return Field-absolute Pose2d
      */
     private Pose2d convertToFieldCoordinates() {
-        double fieldX, fieldY, fieldRotation;
-        
-        if (m_alliance == Alliance.Red) {
-            // Mirror for red alliance
-            fieldX = NavigationConstants.kFieldLength - m_relativeX;
-            fieldY = NavigationConstants.kFieldWidth - m_relativeY;
-            fieldRotation = 180.0 - m_relativeRotation;
-        } else {
-            // Blue alliance uses coordinates as-is
-            fieldX = m_relativeX;
-            fieldY = m_relativeY;
-            fieldRotation = m_relativeRotation;
-        }
-        
-        return new Pose2d(fieldX, fieldY, Rotation2d.fromDegrees(fieldRotation));
+        Pose2d blueFramePose =
+            new Pose2d(m_relativeX, m_relativeY, Rotation2d.fromDegrees(m_relativeRotation));
+        return AllianceFlipUtil.apply(blueFramePose, m_alliance);
     }
 
     @Override

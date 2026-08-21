@@ -154,9 +154,9 @@ public class RobotContainer {
     /**
      * Populates and publishes the field pose chooser on SmartDashboard.
      *
-     * Coordinates are blue-alliance-relative. GoToPositionRelativeCommand mirrors
-     * them automatically when the DriverStation reports red alliance:
-     * red_x = fieldLength - x, red_y = fieldWidth - y, red_heading = 180 - heading
+     * Coordinates are blue-alliance-relative. Mirroring to the red frame is
+     * handled by AllianceFlipUtil (x -> FIELD_LENGTH - x, y -> FIELD_WIDTH - y,
+     * heading -> heading + 180) — see the fix note in GoToPositionRelativeCommand.
      */
     private void configureClimbStartPoseChooser() {
         // These poses are predefined constants so the team can place the robot at known climb
