@@ -154,8 +154,56 @@ public final class Constants {
     
     // Pose estimation tuning
     public static final double kMaxAmbiguity = 0.2;
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.35, 0.35, 0.45);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.1, 0.1, 0.15);
+
+    // ------------------------------------------------------------------
+    // CHANGE #2 (v2 vision update): soft limits instead of hard walls.
+    //
+    // The old code threw away a measurement the instant it crossed a limit,
+    // which starved us of vision data near the cage (tags partly blocked ->
+    // measurements hovered at the limits -> rejected over and over).
+    //
+    // New model, using ambiguity as the example:
+    //   * ambiguity <= kMaxAmbiguity            -> full trust
+    //   * kMaxAmbiguity < ambiguity < reject    -> "grey zone": still used,
+    //                                              but trusted less each step
+    //   * ambiguity >= kAmbiguityRejectLimit    -> dropped completely
+    // Distance works the same way with kDistanceRejectMultiplier.
+    // ------------------------------------------------------------------
+    /** Ambiguity above this starts losing trust (grey zone begins). */
+    public static final double kAmbiguityRejectLimit = 0.5;
+    /**
+     * How little we can trust a measurement before dropping it entirely.
+     * 6 means: in the worst grey-zone case we still listen, but at 1/6 weight.
+     */
+    public static final double kAmbiguityMaxPenalty = 6.0;
+    /**
+     * A frame is hard-rejected only when its average tag distance exceeds the
+     * trusted range by this factor (1.5x). Slightly-over-range frames are kept
+     * but penalized quadratically — camera error grows roughly with distance
+     * squared, so this mirrors reality instead of drawing a cliff edge.
+     */
+    public static final double kDistanceRejectMultiplier = 1.5;
+
+    // ------------------------------------------------------------------
+    // CHANGE #3 (v2 vision update): split the old combined matrices into
+    // separate numbers so heading can be handled differently from position.
+    //
+    // OLD: kSingleTagStdDevs = VecBuilder.fill(0.35, 0.35, 0.45)  <- 0.45 rad
+    //      fed single-tag HEADING into the estimator. A lone distant tag can
+    //      look like the robot faces two directions ("ambiguity"), so that
+    //      made the whole pose wobble when tags flickered.
+    //
+    // NEW: single-tag frames only correct X/Y position (theta is set to
+    // infinity inside Vision.java so the estimator ignores their rotation
+    // completely — the NavX gyro owns heading). Multi-tag frames still
+    // contribute rotation because seeing several tags at once pins it down.
+    // ------------------------------------------------------------------
+    /** Single-tag XY uncertainty (meters). Heading from one tag is never used. */
+    public static final double kSingleTagXYStdDev = 0.35;
+    /** Multi-tag XY uncertainty (meters). */
+    public static final double kMultiTagXYStdDev = 0.1;
+    /** Multi-tag heading uncertainty (radians). */
+    public static final double kMultiTagThetaStdDev = 0.15;
     public static final double kDistanceWeight = 0.01;
     public static final double kRotationDistanceWeight = 0.03;
     

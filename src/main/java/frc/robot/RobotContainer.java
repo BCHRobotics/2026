@@ -14,6 +14,11 @@ import frc.robot.commands.ballintake.ToggleBallIntakeExtendCommand;
 import frc.robot.commands.ballintake.ReverseBallIntakeAndFeederCommand;
 import frc.robot.commands.climber.CalibrateClimberCommand;
 import frc.robot.commands.climber.ClimbCommand;
+// CHANGE (v2 rollout): V2 climb command added ALONGSIDE the original.
+// The original ClimbCommand is still wired below ("Climb Command" button and
+// the "climber on" named command) so nothing existing breaks. Switch autos or
+// drivers over to V2 once bench testing proves it out.
+import frc.robot.commands.climber.ClimbCommandV2;
 import frc.robot.subsystems.BallIntake;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
@@ -193,6 +198,11 @@ public class RobotContainer {
     private void configureDashboardCommands() {
         // putData publishes a clickable command button to SmartDashboard.
         SmartDashboard.putData("Climb Command", new ClimbCommand(robotDrive, climber, this::getSelectedClimbStartPose));
+        // CHANGE (v2 rollout): new climb command on its own dashboard button.
+        // Same inputs as V1 — only the motion/accuracy strategy differs. Test it
+        // from the dashboard before ever wiring it into an auto.
+        SmartDashboard.putData("Climb Command V2",
+            new ClimbCommandV2(robotDrive, climber, this::getSelectedClimbStartPose));
         SmartDashboard.putData(
             "Intake Hold Extend",
             new HoldBallIntakeExtendCommand(m_ballIntake, 1.0, this::isIntakeOverrideCalibrationAndLimitsEnabled));
