@@ -254,10 +254,42 @@ public final class Constants {
     public static final double kMaxMultiTagDistance = 8.0;
 
     // Reject measurements that jump too far from the current fused pose estimate.
+    // CHANGE (vision acceptance hardening): multi-tag used to have "gates" of
+    // 99 meters / 300 degrees — so wide nothing ever hit them. A multi-tag
+    // solve is more trustworthy than single-tag, but it can still be WRONG
+    // (bad calibration, layout mismatch, reflections). 1.5 m / 90 degrees is
+    // still far more generous than what the robot can physically do in one
+    // 20 ms loop (about 0.11 m and 7.2 degrees), so real measurements pass
+    // and ghost solves get caught.
     public static final double kMaxSingleTagPoseDeltaMeters = 1.0;
-    public static final double kMaxMultiTagPoseDeltaMeters = 99.0;
+    public static final double kMaxMultiTagPoseDeltaMeters = 1.5;
     public static final double kMaxSingleTagRotationDeltaDegrees = 30.0;
-    public static final double kMaxMultiTagRotationDeltaDegrees = 300.0;
+    public static final double kMaxMultiTagRotationDeltaDegrees = 90.0;
+
+    // =================================================================
+    // CHANGE (vision acceptance hardening): three new sanity gates.
+    // These catch the classic "ghost solve" failure modes before the pose
+    // estimator ever sees them:
+    //   * FIELD BOUNDARY — the robot can never be outside the field walls.
+    //     If vision says otherwise, the solve is wrong (usually a layout
+    //     mismatch). We allow a small margin beyond the walls for bumper
+    //     overhang and measurement noise.
+    //   * Z HEIGHT — the robot drives on the floor (Z is roughly 0, plus
+    //     or minus a bit for ramps/tilt). A solve claiming the robot is
+    //     flying (or underground) is wrong.
+    //   * LATENCY — a frame that arrives very late describes the past, not
+    //     the present. The pose estimator can time-travel corrections, but
+    //     only within its memory buffer; anything this stale usually means
+    //     the coprocessor is overloaded and the data is suspect anyway.
+    // =================================================================
+    /** Meters of slack allowed beyond the field walls before rejecting a pose. */
+    public static final double kFieldBorderMarginMeters = 0.5;
+    /** Lowest believable robot height (meters). Below this = underground = reject. */
+    public static final double kMinRobotZMeters = -0.5;
+    /** Highest believable robot height (meters). Above this = flying = reject. */
+    public static final double kMaxRobotZMeters = 1.0;
+    /** Frames older than this (seconds) are rejected as stale. */
+    public static final double kMaxFrameLatencySeconds = 0.5;
     
     // Allowed error tolerances
     public static final double allowedXError = 0.025; // 5cm tolerance

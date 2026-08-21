@@ -80,6 +80,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.NavigationConstants;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
@@ -315,6 +316,15 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("Vision/Tuning/AmbiguityRejectLimit", VisionConstants.kAmbiguityRejectLimit);
         // CHANGE #5: make the heading-authority choice visible in every log.
         Logger.recordOutput("Vision/GyroIsHeadingAuthority", !VisionConstants.kMultiTagHeadingEnabled);
+        // CHANGE (vision acceptance hardening): record the active sanity-gate
+        // configuration so post-match log analysis knows exactly which limits
+        // were in force.
+        Logger.recordOutput("Vision/Gates/FieldBorderMarginMeters", VisionConstants.kFieldBorderMarginMeters);
+        Logger.recordOutput("Vision/Gates/MinRobotZMeters", VisionConstants.kMinRobotZMeters);
+        Logger.recordOutput("Vision/Gates/MaxRobotZMeters", VisionConstants.kMaxRobotZMeters);
+        Logger.recordOutput("Vision/Gates/MaxFrameLatencySeconds", VisionConstants.kMaxFrameLatencySeconds);
+        Logger.recordOutput("Vision/Gates/MaxMultiTagPoseDeltaMeters", VisionConstants.kMaxMultiTagPoseDeltaMeters);
+        Logger.recordOutput("Vision/Gates/MaxMultiTagRotationDeltaDegrees", VisionConstants.kMaxMultiTagRotationDeltaDegrees);
         Logger.recordOutput("Vision/Tuning/SingleTagXYStdDev", getSingleTagXYStdDev());
         Logger.recordOutput("Vision/Tuning/MultiTagXYStdDev", getMultiTagXYStdDev());
         Logger.recordOutput("Vision/Tuning/MultiTagThetaStdDev", getMultiTagThetaStdDev());
@@ -387,6 +397,49 @@ public class Vision extends SubsystemBase {
             return Optional.empty();
         }
 
+        // =================================================================
+        // CHANGE (vision acceptance hardening): sanity gates on the SOLVED
+        // pose. These run BEFORE the trust ramps below because they answer a
+        // different question: not "how much do we trust this?" but "is this
+        // physically possible at all?" A solve that fails these checks is not
+        // noisy data — it is WRONG data, and no amount of down-weighting
+        // makes a wrong answer useful. Each rejection is logged with its
+        // reason so tuning is done from match logs, not guesswork.
+        // =================================================================
+
+        // ---- Gate 1: field boundary ----
+        Pose2d solvedPose = visionEst.get().estimatedPose.toPose2d();
+        double border = VisionConstants.kFieldBorderMarginMeters;
+        if (solvedPose.getX() < -border
+            || solvedPose.getX() > NavigationConstants.kFieldLength + border
+            || solvedPose.getY() < -border
+            || solvedPose.getY() > NavigationConstants.kFieldWidth + border) {
+            module.lastRejectReason = String.format(
+                "Field-boundary violation at (%.2f, %.2f)", solvedPose.getX(), solvedPose.getY());
+            module.rejectedFrameCount++;
+            return Optional.empty();
+        }
+
+        // ---- Gate 2: Z height (3D sanity) ----
+        // The 3D solve can occasionally produce a pose floating above or below
+        // the floor. The 2D pose hides that, so we must check the 3D value.
+        double solvedZ = visionEst.get().estimatedPose.getZ();
+        if (solvedZ < VisionConstants.kMinRobotZMeters || solvedZ > VisionConstants.kMaxRobotZMeters) {
+            module.lastRejectReason = String.format(
+                "Z-height violation (%.2f m)", solvedZ);
+            module.rejectedFrameCount++;
+            return Optional.empty();
+        }
+
+        // ---- Gate 3: latency (stale frames describe the past) ----
+        double frameAgeSeconds = Timer.getFPGATimestamp() - visionEst.get().timestampSeconds;
+        if (frameAgeSeconds > VisionConstants.kMaxFrameLatencySeconds) {
+            module.lastRejectReason = String.format(
+                "Stale frame (%.0f ms old)", frameAgeSeconds * 1000.0);
+            module.rejectedFrameCount++;
+            return Optional.empty();
+        }
+
         // ---- CHANGE #2a (continued): distance trust ramp ----
         double averageTagDistanceMeters = getAverageTagDistanceMeters(result);
         double maxDistanceMeters = isMultiTag ? getMaxMultiTagDistance() : getMaxSingleTagDistance();
@@ -410,9 +463,9 @@ public class Vision extends SubsystemBase {
         // If the camera claims we jumped farther than a metre since the last
         // estimate, either it saw a ghost or something is badly wrong. Believing
         // it "a bit" makes no sense, so we drop it and count it.
-        Pose2d estimatedPose = visionEst.get().estimatedPose.toPose2d();
+        // (solvedPose was already computed by Gate 1 above — reused here.)
         Pose2d currentPose = drivetrain.getPose();
-        double translationDeltaMeters = estimatedPose.getTranslation().getDistance(currentPose.getTranslation());
+        double translationDeltaMeters = solvedPose.getTranslation().getDistance(currentPose.getTranslation());
         double maxTranslationDeltaMeters = isMultiTag
             ? getMaxMultiTagPoseDeltaMeters()
             : getMaxSingleTagPoseDeltaMeters();

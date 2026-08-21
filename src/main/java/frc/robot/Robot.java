@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import frc.robot.utils.logging.NoFMSNT4Publisher;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -38,9 +39,15 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     Logger.recordMetadata("ProjectName", "2026");
 
+    // CHANGE (FMS-aware logging): on the real robot we now publish log data
+    // over NetworkTables ONLY when NOT connected to the field (FMS). During a
+    // match, live NT publishing fought the Driver Station for scarce field
+    // Wi-Fi bandwidth. The .wpilog file on the RoboRIO still records EVERYTHING
+    // every cycle — nothing is lost, it just isn't streamed live mid-match.
+    // See utils/logging/NoFMSNT4Publisher.java (pattern from MA 6328).
     if (isReal()) {
       Logger.addDataReceiver(new WPILOGWriter());
-      Logger.addDataReceiver(new NT4Publisher());
+      Logger.addDataReceiver(new NoFMSNT4Publisher());
     } else {
       Logger.addDataReceiver(new NT4Publisher());
     }
