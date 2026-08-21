@@ -313,6 +313,8 @@ public class Vision extends SubsystemBase {
 
         Logger.recordOutput("Vision/Tuning/MaxAmbiguity", getMaxAmbiguity());
         Logger.recordOutput("Vision/Tuning/AmbiguityRejectLimit", VisionConstants.kAmbiguityRejectLimit);
+        // CHANGE #5: make the heading-authority choice visible in every log.
+        Logger.recordOutput("Vision/GyroIsHeadingAuthority", !VisionConstants.kMultiTagHeadingEnabled);
         Logger.recordOutput("Vision/Tuning/SingleTagXYStdDev", getSingleTagXYStdDev());
         Logger.recordOutput("Vision/Tuning/MultiTagXYStdDev", getMultiTagXYStdDev());
         Logger.recordOutput("Vision/Tuning/MultiTagThetaStdDev", getMultiTagThetaStdDev());
@@ -458,13 +460,37 @@ public class Vision extends SubsystemBase {
         double xyStdDev;
         double thetaStdDev;
 
+        // =================================================================
+        // CHANGE #5 (heading authority): THE GYRO IS THE ONLY HEADING SOURCE.
+        //
+        // Team decision: vision never corrects the robot's HEADING — not from
+        // one tag, not even from several. Vision corrects LOCATION (X/Y) only;
+        // the gyroscope owns rotation completely.
+        //
+        // Why this is the right call for OUR robot right now:
+        //   * A camera-derived heading depends on exact camera mounting angles
+        //     and an exactly-correct field layout. Both are still being
+        //     verified (see REVIEW.md A1), so vision heading is our least
+        //     trustworthy signal — and heading errors rotate the WHOLE pose,
+        //     which also corrupts where X/Y corrections land.
+        //   * The gyro measures rotation directly and smoothly. Its slow drift
+        //     over one match (< ~1 degree) is far smaller than what a flickery
+        //     tag was adding.
+        //   * Mechanical Advantage (6328) allows vision rotation ONLY for
+        //     multi-tag solves. We go one step more conservative until the
+        //     layout audit and repeatability testing pass. To restore
+        //     MA-style multi-tag heading later, set kMultiTagHeadingEnabled
+        //     to true in VisionConstants — nothing else changes.
+        //
+        // Infinite standard deviation = "estimator, please ignore this part".
+        // =================================================================
         int numTags = result.getTargets().size();
-        if (numTags > 1) {
-            // Multi-tag: strong on position AND rotation.
+        if (numTags > 1 && VisionConstants.kMultiTagHeadingEnabled) {
+            // Multi-tag AND heading enabled: strong on position AND rotation.
             xyStdDev = getMultiTagXYStdDev();
             thetaStdDev = getMultiTagThetaStdDev();
         } else {
-            // Single-tag: position only. Infinite theta = "don't touch heading".
+            // Position only. Infinite theta = "don't touch heading".
             xyStdDev = getSingleTagXYStdDev();
             thetaStdDev = Double.POSITIVE_INFINITY;
         }

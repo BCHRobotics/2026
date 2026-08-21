@@ -229,8 +229,23 @@ public final class Constants {
     public static final double kSingleTagXYStdDev = 0.35;
     /** Multi-tag XY uncertainty (meters). */
     public static final double kMultiTagXYStdDev = 0.1;
-    /** Multi-tag heading uncertainty (radians). */
+    /** Multi-tag heading uncertainty (radians). Used only if kMultiTagHeadingEnabled. */
     public static final double kMultiTagThetaStdDev = 0.15;
+
+    // ------------------------------------------------------------------
+    // CHANGE #5 (heading authority): THE GYRO IS THE ONLY HEADING SOURCE.
+    //
+    // false = vision NEVER corrects the robot's heading (gyro owns rotation
+    // completely). This is the conservative, recommended configuration while
+    // camera mounting and field layouts are still being verified — a bad
+    // vision frame can no longer rotate the whole pose estimate.
+    //
+    // true = MA-6328-style behavior: multi-tag solves (seeing 2+ tags at
+    // once) may gently correct heading, single-tag never does. Consider
+    // enabling only AFTER the coprocessor layout audit (REVIEW.md A1) and
+    // static repeatability testing both pass.
+    // ------------------------------------------------------------------
+    public static final boolean kMultiTagHeadingEnabled = false;
     public static final double kDistanceWeight = 0.01;
     public static final double kRotationDistanceWeight = 0.03;
     
