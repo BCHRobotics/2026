@@ -97,6 +97,32 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 17;
 
     public static final boolean kGyroReversed = true;
+
+    // =====================================================================
+    // GYRO SELECTION — which navigation sensor the robot should listen to.
+    //
+    // The robot currently has BOTH of these connected:
+    //   * navX2  (older sensor) on the RoboRIO MXP port, SPI wiring
+    //   * navX3-CAN (newer sensor) on the CAN bus
+    // Only ONE is used for driving at a time — this constant picks which.
+    // Flip to NAVX3_CAN once the new sensor is mounted and verified.
+    // =====================================================================
+    public enum GyroType {
+        /** Old sensor: navX2 via the MXP port (SPI). */
+        NAVX2_MXP_SPI,
+        /** New sensor: navX3-CAN via the CAN bus. */
+        NAVX3_CAN
+    }
+
+    /** CHANGE ME to GyroType.NAVX3_CAN when switching over to the new IMU. */
+    public static final GyroType kGyroType = GyroType.NAVX2_MXP_SPI;
+
+    /**
+     * CAN device ID for the navX3-CAN sensor. NavX3-CAN ships with a default
+     * ID (0) — if you change it on the sensor (Studica Hardware Manager),
+     * change it here too so the code looks for the right device.
+     */
+    public static final int kNavX3CanId = 0;
   }
 
   /**

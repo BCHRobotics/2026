@@ -6,12 +6,16 @@ package frc.robot.subsystems;
 
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+import com.studica.frc.Navx;
+// Note: Navx.Port exists for USB-connected navX3 units; this robot uses CAN,
+// so the Port enum is intentionally not imported/used here.
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -55,8 +59,43 @@ public class Drivetrain extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
-  // The gyro sensor
-  public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+  // ========================================================================
+  // GYRO SETUP — two navigation sensors, one selector constant
+  // ========================================================================
+  // The robot has BOTH a navX2 (old, on the MXP port) and a navX3-CAN (new,
+  // on the CAN bus) connected. Which one actually steers the robot is chosen
+  // by DriveConstants.kGyroType in Constants.java — flip that constant to
+  // switch sensors; no other code changes needed.
+  //
+  // WHY KEEP BOTH PLUGGED IN?
+  //   * While testing the navX3 you can compare its angle against the navX2's
+  //     on the dashboard (see "Gyro/NavX3 vs NavX2" in AdvantageScope) to
+  //     prove the new sensor reads correctly BEFORE trusting it.
+  //   * Both objects are created below, but only the selected one is read by
+  //     getRotation2d() — the idle one costs almost nothing.
+  //
+  // IMPORTANT (hardware): the StudicaLib library that talks to the navX3-CAN
+  // officially conflicts with the old Studica library used by the navX2.
+  // We ship both vendordeps so this comparison setup works. If you ever see
+  // strange gyro behavior after a WPILib/vendordep update, check
+  // vendordeps/Studica.json + StudicaLib.json are still both present.
+  // ========================================================================
+
+  /** Old sensor: navX2 on the MXP port (SPI). Always created for comparison. */
+  public final AHRS gyroNavX2 = new AHRS(NavXComType.kMXP_SPI);
+
+  /**
+   * New sensor: navX3-CAN on the CAN bus. Created only when selected —
+   * constructing it opens a CAN session, so we don't open one we won't use.
+   */
+  public final Navx gyroNavX3 = DriveConstants.kGyroType == DriveConstants.GyroType.NAVX3_CAN
+      ? new Navx(DriveConstants.kNavX3CanId)
+      : null;
+
+  /** Convenience accessor: whichever sensor kGyroType points at. */
+  public Object getActiveGyro() {
+    return DriveConstants.kGyroType == DriveConstants.GyroType.NAVX3_CAN ? gyroNavX3 : gyroNavX2;
+  }
 
   // Slew rate filter variables for controlling lateral acceleration
   private double slew_currentRotation = 0.0;
@@ -112,7 +151,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Resets only the gyro heading while preserving current translation. */
   public void zeroHeadingOnly() {
-      gyro.reset(); // NavX now treats current direction as zero
+      resetActiveGyro(); // active sensor now treats current direction as zero
       // offset rotation back to preserve translation
       odometry.resetPosition(
           Rotation2d.fromDegrees(0.0),
@@ -241,6 +280,7 @@ public class Drivetrain extends SubsystemBase {
     // Add gyro heading to Shuffleboard
     SmartDashboard.putNumber("Gyro Heading", getHeading());
     logAdvantageScopeData();
+    logGyroComparison();
 
     // Print comprehensive diagnostics once every 5 seconds
     double currentTime = WPIUtilJNI.now() * 1e-6;
@@ -296,6 +336,30 @@ public class Drivetrain extends SubsystemBase {
     System.out.print(diagnostics.toString());
   }
 
+  /**
+   * CHANGE (navX3): logs BOTH sensors' angles every cycle so they can be
+   * compared on AdvantageScope while testing. When kGyroType = NAVX3_CAN,
+   * watch "Gyro/NavX3vsNavX2/DeltaDegrees" — it should stay small (well
+   * under 1 degree) during normal driving before you fully trust the new
+   * sensor. The delta is also logged when the navX3 is NOT selected, so you
+   * can validate it in advance without changing any driving behavior.
+   */
+  private void logGyroComparison() {
+    double navX2AngleDeg = -gyroNavX2.getAngle(); // same sign convention as getRotation2d()
+    double navX3AngleDeg =
+        (gyroNavX3 != null) ? -gyroNavX3.getAngle().in(edu.wpi.first.units.Units.Degrees) : Double.NaN;
+
+    Logger.recordOutput("Gyro/NavX2/AngleDegrees", navX2AngleDeg);
+    Logger.recordOutput("Gyro/NavX3/AngleDegrees", navX3AngleDeg);
+    Logger.recordOutput("Gyro/NavX3/Connected", gyroNavX3 != null);
+    if (gyroNavX3 != null) {
+      // inputModulus wraps the difference to [-180, 180] so crossing the
+      // 0/360 boundary doesn't produce a huge fake spike.
+      double delta = MathUtil.inputModulus(navX3AngleDeg - navX2AngleDeg, -180.0, 180.0);
+      Logger.recordOutput("Gyro/NavX3vsNavX2/DeltaDegrees", delta);
+    }
+  }
+
   private void logAdvantageScopeData() {
     Pose2d fusedPose = getPose();
     Pose2d odometryPose = getOdometryPose();
@@ -347,6 +411,23 @@ public class Drivetrain extends SubsystemBase {
     resetPose(pose);
   }
   
+  /**
+   * Resets (zeros) whichever gyro DriveConstants.kGyroType selects.
+   *
+   * CHANGE (navX3): the two sensors zero differently —
+   *   navX2: reset()  (classic method, also restarts its calibration)
+   *   navX3: resetYaw() (returns a status code; 0 usually means OK)
+   * This helper hides that difference from the rest of the code.
+   */
+  private void resetActiveGyro() {
+    if (DriveConstants.kGyroType == DriveConstants.GyroType.NAVX3_CAN) {
+      int status = gyroNavX3.resetYaw();
+      Logger.recordOutput("Gyro/NavX3/ResetStatus", status);
+    } else {
+      gyroNavX2.reset();
+    }
+  }
+
   /**
    * Adds a vision measurement to the Kalman filter pose estimator.
    * 
@@ -508,10 +589,21 @@ public class Drivetrain extends SubsystemBase {
     setSpeedPercent();
   }
 
-  /** Returns the robot heading as a Rotation2d. Always authoritative source. */
+  /** Returns the robot heading as a Rotation2d. Always authoritative source.
+   *
+   * CHANGE (navX3): reads whichever sensor DriveConstants.kGyroType selects.
+   * The navX2's getAngle() returns degrees directly; the navX3's getAngle()
+   * returns a modern WPILib "Angle" measurement object, so we convert it to
+   * plain degrees with .in(Degrees). Both are negated because the sensor is
+   * mounted upside-down (kGyroReversed), same as before.
+   */
   public Rotation2d getRotation2d() {
-      // NavX upside-down mounting already corrects for CCW
-      return Rotation2d.fromDegrees(-gyro.getAngle());
+      if (DriveConstants.kGyroType == DriveConstants.GyroType.NAVX3_CAN) {
+        // New sensor: navX3-CAN. getAngle() gives a continuous angle measure.
+        return Rotation2d.fromDegrees(-gyroNavX3.getAngle().in(edu.wpi.first.units.Units.Degrees));
+      }
+      // Old sensor: navX2 via MXP SPI (unchanged behavior).
+      return Rotation2d.fromDegrees(-gyroNavX2.getAngle());
   }
 
   /** Returns the robot heading in degrees. */
