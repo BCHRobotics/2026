@@ -1,0 +1,3 @@
+# Preserve vendor CAD files byte-for-byte; do not treat STEP line endings as source text.
+*.step -text
+*.stp -text
